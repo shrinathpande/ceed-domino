@@ -2,52 +2,89 @@
 
 @layer base {
   :root {
-    --color-bg-primary: #ffffff;
-    --color-bg-secondary: #f5f5f7;
-    --color-text-primary: #1d1d1f;
-    --color-text-secondary: #86868b;
-    --color-border: #e5e5ea;
+    /* Industrial brutalist ledger ground & ink tokens */
+    --ground: #f4f3f1;
+    --surface: #ffffff;
+    --raised: #e9e8e5;
+    --border: #dcdad5;
+    --rule: #e5e3de;
+    --control: #cfccc5;
+    --text: #0e0e0e;
+    --muted: #6b6a65;
+    --accent: #111111;
+    
+    /* Functional signals (strict <=1% color budget) */
+    --positive: #1b7a3e;
+    --negative: #b91c1c;
+    --warning: #b45309;
+    --chart-accent: #0f4c81; /* Raw industrial blueprint cobalt */
+    
+    --radius-card: 4px;
+    --radius-control: 2px;
   }
 
   .dark {
-    --color-bg-primary: #09090b;
-    --color-bg-secondary: #18181b;
-    --color-text-primary: #fafafa;
-    --color-text-secondary: #a1a1aa;
-    --color-border: #27272a;
+    --ground: #0d0e11;
+    --surface: #141519;
+    --raised: #1d1f25;
+    --border: #282a32;
+    --rule: #202228;
+    --control: #383b45;
+    --text: #f0f0ee;
+    --muted: #8b8e98;
+    --accent: #f4f4f2;
+    
+    --positive: #2e7d32;
+    --negative: #c4242a;
+    --warning: #92400e;
+    --chart-accent: #38bdf8;
   }
 
   body {
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+    background-color: var(--ground);
+    color: var(--text);
+    font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
 
-  /* Optical typographic alignment and numbers */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+
+  .font-mono {
+    font-family: "Geist Mono", monospace;
+  }
 }
 
-/* Custom smooth transitions for theme switches */
-body, header, section, article {
-  transition-property: background-color, border-color, color;
-  transition-duration: 200ms;
+/* Industrial brutalist crisp precision */
+.ledger-border {
+  border: 1px solid var(--border);
 }
 
-/* Glass effect classes */
-.glass {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.ledger-rule-b {
+  border-bottom: 1px solid var(--rule);
 }
 
-.dark .glass {
-  background: rgba(24, 24, 27, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.ledger-rule-t {
+  border-top: 1px solid var(--rule);
+}
+
+.ledger-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+/* High contrast active domino check state */
+.domino-done-brutalist {
+  border-color: var(--text) !important;
+  background-color: var(--surface) !important;
+}
+
+.domino-done-brutalist .check-mark-box {
+  background-color: var(--text) !important;
+  color: var(--surface) !important;
 }

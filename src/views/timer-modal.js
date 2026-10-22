@@ -1,5 +1,5 @@
 /**
- * Timer Modal — full-width overlay for active countdown timer.
+ * Timer Modal — Industrial Brutalist Stopwatch Panel.
  */
 import { icon } from '../icons/index.js';
 import { ensureDayRecord } from '../core/state.js';
@@ -11,7 +11,6 @@ import { showNotification } from '../core/notifications.js';
 let _modalEl = null;
 let _onClose = null;
 
-/** Show the timer modal */
 export function showTimerModal(domino, durationMins, dateStr, onClose) {
   _onClose = onClose;
   const totalSeconds = durationMins * 60;
@@ -38,21 +37,18 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
       const progress = 1 - remaining / totalSeconds;
       progressEl.style.width = `${progress * 100}%`;
 
-      // Change color when close to completion
       if (remaining <= 60) {
-        displayEl.classList.add('text-red-500');
-        displayEl.classList.remove('text-gray-900', 'dark:text-white');
+        displayEl.classList.add('text-[var(--negative)]');
       }
     },
     onComplete: (state) => {
       displayEl.textContent = '00:00:00';
       progressEl.style.width = '100%';
-      showNotification(`${domino.title} Timer Complete!`, {
-        body: 'Great work! Mark it as done.',
+      showNotification(`${domino.title} Timer Complete`, {
+        body: 'Mark domino complete.',
       });
-      showToast(`${domino.title} complete! 🎉`, 'success');
+      showToast(`${domino.title} complete.`, 'success');
 
-      // Auto-complete the domino
       const day = ensureDayRecord(dateStr);
       if (!day.completed[domino.id]) {
         toggleDomino(domino.id, dateStr);
@@ -60,13 +56,11 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
     },
   });
 
-  // Pause/Resume
   pauseBtn.addEventListener('click', () => {
     const paused = togglePause();
-    pauseBtn.innerHTML = `<span class="w-5 h-5">${icon(paused ? 'play' : 'pause')}</span> ${paused ? 'Resume' : 'Pause'}`;
+    pauseBtn.innerHTML = `<span class="w-4 h-4">${icon(paused ? 'play' : 'pause')}</span> ${paused ? 'RESUME' : 'PAUSE'}`;
   });
 
-  // Mark Done
   doneBtn.addEventListener('click', () => {
     const state = getTimerState();
     if (state) {
@@ -78,13 +72,11 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
     hideTimerModal();
   });
 
-  // Close
   closeBtn.addEventListener('click', () => {
     stopTimer();
     hideTimerModal();
   });
 
-  // Show with animation
   _modalEl.classList.remove('hidden');
   requestAnimationFrame(() => {
     _modalEl.classList.add('opacity-100');
@@ -93,7 +85,6 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
   });
 }
 
-/** Hide the timer modal */
 export function hideTimerModal() {
   if (!_modalEl) return;
   _modalEl.classList.remove('opacity-100');
@@ -101,56 +92,52 @@ export function hideTimerModal() {
   setTimeout(() => {
     _modalEl.classList.add('hidden');
     if (_onClose) _onClose();
-  }, 300);
+  }, 150);
 }
 
-/** Create the modal DOM (once) */
 function createModalDOM() {
   if (_modalEl) return;
 
   _modalEl = document.createElement('div');
-  _modalEl.className = 'fixed inset-0 z-50 bg-black/30 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300';
+  _modalEl.className = 'fixed inset-0 z-50 bg-black/60 hidden opacity-0 transition-opacity duration-150 flex items-end justify-center';
   _modalEl.setAttribute('role', 'dialog');
   _modalEl.setAttribute('aria-modal', 'true');
-  _modalEl.setAttribute('aria-label', 'Domino countdown timer');
+  _modalEl.setAttribute('aria-label', 'Active domino countdown timer');
 
   _modalEl.innerHTML = `
-    <div class="timer-panel absolute bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 rounded-t-3xl shadow-2xl p-6 pb-8 translate-y-full transition-transform duration-300 ease-out max-w-lg mx-auto">
-      <!-- Handle -->
-      <div class="w-10 h-1 bg-gray-200 dark:bg-zinc-700 rounded-full mx-auto mb-5"></div>
-
-      <!-- Header -->
-      <div class="flex items-center justify-between mb-6">
+    <div class="timer-panel w-full max-w-xl bg-[var(--surface)] border-t border-[var(--border)] p-6 translate-y-full transition-transform duration-200 ease-out">
+      <!-- Instrument Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-[var(--rule)]">
         <div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500" id="timerBadge">DOMINO 1</span>
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-0.5" id="timerTitle">Timer</h3>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--muted)]" id="timerBadge">DOMINO</span>
+          <h3 class="text-base font-bold text-[var(--text)] mt-0.5" id="timerTitle">Instrument Timer</h3>
         </div>
-        <button id="timerCloseBtn" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-400 dark:text-zinc-500 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors" aria-label="Close timer">
-          <span class="w-4 h-4">${icon('close')}</span>
+        <button id="timerCloseBtn" class="w-7 h-7 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] flex items-center justify-center text-[var(--muted)] hover:text-[var(--text)] transition-colors" aria-label="Abort timer">
+          <span class="w-3.5 h-3.5">${icon('close')}</span>
         </button>
       </div>
 
-      <!-- Timer Display -->
-      <div class="text-center mb-6">
-        <div id="timerDigits" class="text-6xl font-mono font-black tracking-wider text-gray-900 dark:text-white tabular-nums">
+      <!-- High Precision Time Display -->
+      <div class="my-6 text-center">
+        <div id="timerDigits" class="text-6xl font-mono font-bold tracking-tight text-[var(--text)] tabular-nums">
           00:00:00
         </div>
       </div>
 
-      <!-- Progress Bar -->
-      <div class="w-full h-2 rounded-full bg-gray-100 dark:bg-zinc-800 mb-6 overflow-hidden">
-        <div id="timerProgress" class="h-full rounded-full bg-blue-500 transition-all duration-1000 ease-linear" style="width: 0%"></div>
+      <!-- Progress Track -->
+      <div class="w-full h-1.5 bg-[var(--border)] rounded-[1px] mb-6 overflow-hidden">
+        <div id="timerProgress" class="h-full bg-[var(--chart-accent)] transition-[width] duration-1000 ease-linear" style="width: 0%"></div>
       </div>
 
-      <!-- Buttons -->
-      <div class="flex gap-3">
-        <button id="timerPauseBtn" class="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-2xl bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white font-semibold text-sm hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors touch-manipulation active:scale-[0.98]">
-          <span class="w-5 h-5">${icon('pause')}</span>
-          Pause
+      <!-- Command Controls -->
+      <div class="flex gap-2.5 font-mono text-xs">
+        <button id="timerPauseBtn" class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] font-bold hover:bg-[var(--border)] transition-colors touch-manipulation active:scale-[0.99]">
+          <span class="w-4 h-4">${icon('pause')}</span>
+          PAUSE
         </button>
-        <button id="timerDoneBtn" class="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-2xl bg-green-500 text-white font-semibold text-sm hover:bg-green-600 transition-colors touch-manipulation active:scale-[0.98]">
-          <span class="w-5 h-5">${icon('check')}</span>
-          Done
+        <button id="timerDoneBtn" class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-[2px] bg-[var(--text)] text-[var(--surface)] font-bold hover:opacity-90 transition-opacity touch-manipulation active:scale-[0.99]">
+          <span class="w-4 h-4">${icon('check')}</span>
+          COMPLETE NOW
         </button>
       </div>
     </div>
@@ -159,7 +146,6 @@ function createModalDOM() {
   document.body.appendChild(_modalEl);
 }
 
-/** Try to resume a persisted timer on page load */
 export function tryResumeTimer(dateStr) {
   const state = getTimerState();
   if (!state) return false;
@@ -182,8 +168,8 @@ export function tryResumeTimer(dateStr) {
     onComplete: () => {
       displayEl.textContent = '00:00:00';
       progressEl.style.width = '100%';
-      showNotification(`${state.dominoTitle} Timer Complete!`, {
-        body: 'Great work!',
+      showNotification(`${state.dominoTitle} Timer Complete`, {
+        body: 'Mark domino complete.',
       });
     },
   });

@@ -1,11 +1,11 @@
 /**
- * Dashboard View — main screen with domino cards, header, emergency toggle, and heatmap.
+ * Dashboard View — Industrial Brutalist Master Console.
  */
 import { getState, ensureDayRecord } from '../core/state.js';
 import { getDominos } from '../core/dominos.js';
 import { toggleEmergencyMode } from '../core/streak.js';
 import { icon } from '../icons/index.js';
-import { getCurrentDateStr, getDayIndex } from '../utils/dates.js';
+import { getCurrentDateStr } from '../utils/dates.js';
 import { renderHeader, showToast } from '../components/header.js';
 import { renderDominoCard } from '../components/domino-card.js';
 import { renderHeatmap } from './heatmap.js';
@@ -15,57 +15,49 @@ import { requestNotificationPermission } from '../core/notifications.js';
 let _currentDateStr = null;
 let _container = null;
 
-/** Render the full dashboard */
 export function renderDashboard(container, onNavigateSettings) {
   _container = container;
   _currentDateStr = _currentDateStr || getCurrentDateStr();
 
   container.innerHTML = `
     <div id="headerContainer"></div>
-    <main class="max-w-lg mx-auto px-4 pt-4 space-y-3 pb-24" role="main">
-      <!-- Date & Emergency Toggle -->
-      <div id="dateBar" class="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 p-3.5 flex items-center justify-between transition-colors"></div>
+    <main class="max-w-xl mx-auto px-4 pt-4 space-y-3 pb-24" role="main">
+      <!-- Active Date Ledger & Emergency Switch -->
+      <div id="dateBar" class="ledger-card p-3 flex items-center justify-between"></div>
 
-      <!-- Domino Cards -->
-      <div id="dominoList" class="space-y-3" role="list" aria-label="Domino blocks"></div>
+      <!-- Domino Tasks Stream -->
+      <div id="dominoList" class="space-y-2.5" role="list" aria-label="Domino pillars"></div>
 
-      <!-- Heatmap -->
+      <!-- 87-Day Momentum Grid -->
       <div id="heatmapContainer"></div>
 
-      <!-- Footer -->
-      <footer class="text-center py-4">
-        <button id="settingsBtn" class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors touch-manipulation" aria-label="Open settings">
-          <span class="w-4 h-4">${icon('settings')}</span>
-          Settings
+      <!-- Console Footer -->
+      <footer class="text-center py-5 border-t border-[var(--rule)]">
+        <button id="settingsBtn" class="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-[var(--muted)] hover:text-[var(--text)] transition-colors touch-manipulation" aria-label="Open system settings">
+          <span class="w-3.5 h-3.5">${icon('settings')}</span>
+          SYSTEM SETTINGS & CONFIG
         </button>
       </footer>
     </main>
   `;
 
-  // Render sub-sections
   renderHeaderSection();
   renderDateBar();
   renderDominoCards();
   renderHeatmapSection();
 
-  // Try to resume any persisted timer
   tryResumeTimer(_currentDateStr);
-
-  // Ask for notification permission on first visit
   requestNotificationPermission();
 
-  // Bind settings button
   container.querySelector('#settingsBtn').addEventListener('click', () => {
     if (onNavigateSettings) onNavigateSettings();
   });
 
-  // Update wake clock every 15 seconds
   setInterval(() => {
     renderHeaderSection();
   }, 15000);
 }
 
-/** Re-render the header */
 function renderHeaderSection() {
   const headerContainer = _container.querySelector('#headerContainer');
   if (headerContainer) {
@@ -73,7 +65,6 @@ function renderHeaderSection() {
   }
 }
 
-/** Render date bar with date picker and emergency toggle */
 function renderDateBar() {
   const dateBar = _container.querySelector('#dateBar');
   const state = getState();
@@ -81,32 +72,30 @@ function renderDateBar() {
 
   dateBar.innerHTML = `
     <div>
-      <label for="datePicker" class="text-[10px] uppercase tracking-wider text-gray-400 dark:text-zinc-500 font-bold block">Active Date</label>
+      <label for="datePicker" class="text-[10px] font-mono uppercase tracking-wider text-[var(--muted)] font-bold block">ACTIVE DATE</label>
       <input type="date" id="datePicker" value="${_currentDateStr}"
         min="${state.settings.startDate}" max="${state.settings.endDate}"
-        class="bg-transparent text-sm font-semibold text-gray-900 dark:text-white focus:outline-none mt-0.5 cursor-pointer" />
+        class="bg-transparent text-sm font-mono font-bold text-[var(--text)] focus:outline-none mt-0.5 cursor-pointer" />
     </div>
     <button id="emergencyBtn"
-      class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all touch-manipulation active:scale-95 ${
+      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[2px] text-xs font-mono font-semibold border transition-colors touch-manipulation active:scale-95 ${
         day.emergency
-          ? 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400'
-          : 'bg-gray-50 dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 text-gray-500 dark:text-zinc-400'
+          ? 'bg-[var(--surface)] border-[var(--negative)] text-[var(--negative)]'
+          : 'bg-[var(--raised)] border-[var(--border)] text-[var(--muted)] hover:border-[var(--control)] hover:text-[var(--text)]'
       }"
-      aria-label="${day.emergency ? 'Disable emergency mode' : 'Enable emergency mode'}"
+      aria-label="${day.emergency ? 'Disable emergency minimum floor' : 'Activate 3h 15m emergency minimum floor'}"
       aria-pressed="${day.emergency}"
     >
-      <span class="w-3.5 h-3.5">${icon('warning')}</span>
-      <span>${day.emergency ? 'Bad Day: ON' : 'Bad Day: OFF'}</span>
+      <span class="w-3.5 h-3.5 ${day.emergency ? 'text-[var(--negative)]' : 'text-[var(--muted)]'}">${icon('warning')}</span>
+      <span>${day.emergency ? 'BAD DAY FLOOR: ON (3h 15m)' : 'EMERGENCY MODE: OFF'}</span>
     </button>
   `;
 
-  // Bind date picker
   dateBar.querySelector('#datePicker').addEventListener('change', (e) => {
     _currentDateStr = e.target.value;
     refreshDashboard();
   });
 
-  // Bind emergency toggle
   dateBar.querySelector('#emergencyBtn').addEventListener('click', () => {
     const result = toggleEmergencyMode(_currentDateStr);
     if (!result.success) {
@@ -117,7 +106,6 @@ function renderDateBar() {
   });
 }
 
-/** Render domino cards */
 function renderDominoCards() {
   const list = _container.querySelector('#dominoList');
   list.innerHTML = '';
@@ -134,7 +122,6 @@ function renderDominoCards() {
   });
 }
 
-/** Render heatmap section */
 function renderHeatmapSection() {
   const heatmapContainer = _container.querySelector('#heatmapContainer');
   renderHeatmap(heatmapContainer, _currentDateStr, (dateStr) => {
@@ -143,7 +130,6 @@ function renderHeatmapSection() {
   });
 }
 
-/** Refresh the entire dashboard (called after state changes) */
 function refreshDashboard() {
   renderHeaderSection();
   renderDateBar();
@@ -151,7 +137,6 @@ function refreshDashboard() {
   renderHeatmapSection();
 }
 
-/** Listen for state changes to auto-refresh */
 document.addEventListener('state-changed', () => {
   if (_container && _container.querySelector('#dominoList')) {
     refreshDashboard();
