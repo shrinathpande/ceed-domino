@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CEED 87-Day Domino Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #09090b; color: #fafafa; font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .glass { background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(63, 63, 70, 0.5); }
+    .domino-done { border-color: #10b981 !important; background: rgba(16, 185, 129, 0.08) !important; }
+    .emergency-active { border-color: #ef4444 !important; background: rgba(239, 68, 68, 0.1) !important; }
+  </style>
+</head>
+<body class="min-h-screen pb-24 select-none">
+
+  <!-- TOP STICKY GAMIFICATION BAR -->
+  <header class="sticky top-0 z-30 glass px-4 py-3 border-b border-zinc-800">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30" id="dayBadge">DAY 1 / 87</span>
+          <span class="text-xs text-zinc-400" id="phaseLabel">Phase 1: Endurance</span>
+        </div>
+        <h1 class="text-lg font-extrabold tracking-tight mt-0.5">Domino Daily Flow</h1>
+      </div>
+
+      <!-- Streak & Shields -->
+      <div class="flex items-center gap-2">
+        <button onclick="useStreakShield()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400 text-xs font-bold" title="Tap to use a Streak Shield if you missed yesterday">
+          🛡️ <span id="shieldCount">2</span>
+        </button>
+        <div class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-orange-500/15 border border-orange-500/30 text-orange-400 text-sm font-extrabold">
+          🔥 <span id="streakCount">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- XP & Wake Offset Bar -->
+    <div class="max-w-md mx-auto mt-2.5 flex items-center justify-between text-xs text-zinc-400">
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-emerald-400" id="xpDisplay">⚡ 0 XP (Lvl 1)</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="wakeClock" class="font-mono text-zinc-300 bg-zinc-800 px-2 py-0.5 rounded">Not Awake Yet</span>
+        <button onclick="triggerWakeUp()" id="wakeBtn" class="px-2.5 py-0.5 rounded bg-emerald-600 text-white font-bold hover:bg-emerald-500">Start Day (0:00)</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-md mx-auto px-4 pt-4 space-y-4">
+
+    <!-- DATE SELECTOR & EMERGENCY MODE TOGGLE -->
+    <div class="glass rounded-2xl p-3.5 flex items-center justify-between">
+      <div>
+        <label class="text-[11px] uppercase tracking-wider text-zinc-400 font-bold block">Active Date</label>
+        <input type="date" id="datePicker" min="2026-10-22" max="2027-01-17" onchange="changeDate(this.value)"
+          class="bg-transparent text-sm font-bold text-white focus:outline-none mt-0.5" />
+      </div>
+
+      <button id="emergencyBtn" onclick="toggleEmergencyMode()"
+        class="px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-800/80 text-xs font-bold flex items-center gap-1.5 transition">
+        <span>⚠️</span> <span id="emergencyBtnText">Bad Day Mode: OFF</span>
+      </button>
+    </div>
+
+    <!-- ACTIVE COUNTDOWN TIMER WIDGET -->
+    <div id="timerCard" class="glass rounded-2xl p-4 border border-indigo-500/40 bg-indigo-950/20 hidden">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-[11px] uppercase tracking-wider text-indigo-400 font-bold">Active Domino Timer</span>
+          <h3 id="activeTimerTitle" class="text-sm font-bold text-white mt-0.5">Domino 1: Morning Walk</h3>
+        </div>
+        <button onclick="closeTimer()" class="text-xs text-zinc-400 hover:text-white px-2 py-1">✕ Close</button>
+      </div>
+      <div class="my-3 text-center">
+        <div id="timerDisplay" class="text-4xl font-mono font-black tracking-wider text-indigo-300">02:00:00</div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="pauseResumeTimer()" id="pauseResumeBtn" class="flex-1 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs">Pause</button>
+        <button onclick="completeActiveTimerDomino()" class="flex-1 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs">✓ Mark Done Now</button>
+      </div>
+    </div>
+
+    <!-- DOMINO CARDS LIST -->
+    <div id="dominoList" class="space-y-3"></div>
+
+    <!-- 87-DAY VISUAL STREAK GRID -->
+    <section class="glass rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <div>
+          <h2 class="text-sm font-bold">87-Day Momentum Grid</h2>
+          <p class="text-[11px] text-zinc-400">Oct 22, 2026 → Jan 17, 2027 (Tap any square to jump)</p>
+        </div>
+        <div class="flex items-center gap-2 text-[10px] text-zinc-400">
+          <span class="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-500"></span> Full
+          <span class="inline-block w-2.5 h-2.5 rounded-sm bg-amber-500"></span> Emergency
+          <span class="inline-block w-2.5 h-2.5 rounded-sm bg-sky-500"></span> Shield
+        </div>
+      </div>
+      <div id="heatmapGrid" class="grid grid-cols-10 gap-1.5 mt-3"></div>
+    </section>
+
+    <!-- BACKUP & STREAK SAVER CONTROLS -->
+    <section class="glass rounded-2xl p-4 space-y-2">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Save & Restore Streak Data</h2>
+      <p class="text-xs text-zinc-400">Your streak is saved automatically on this device. Export a backup anytime or earn +1 🛡️ Shield every 7 streak days.</p>
+      <div class="flex gap-2 pt-1">
+        <button onclick="exportData()" class="flex-1 py-2 rounded-xl bg-zinc-800 border border-zinc-700 text-xs font-bold hover:bg-zinc-700">⬇ Export Backup</button>
+        <label class="flex-1 py-2 rounded-xl bg-zinc-800 border border-zinc-700 text-xs font-bold text-center cursor-pointer hover:bg-zinc-700">
+          ⬆ Import Backup
+          <input type="file" accept=".json" onchange="importData(event)" class="hidden" />
+        </label>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const START_DATE = new Date('2026-10-22T00:00:00');
+    const TOTAL_DAYS = 87;
+
+    const DOMINOS = [
+      {
+        id: 'launchpad',
+        badge: 'STEP 0',
+        title: 'Launchpad (No Phone)',
+        offset: 'Wake + 0:00',
+        normalMins: 15,
+        emergencyMins: 10,
+        desc: 'Water + pinch of salt, shoes on immediately. Zero social media.',
+        xp: 50
+      },
+      {
+        id: 'd1',
+        badge: 'DOMINO 1',
+        title: 'Peaceful Walk / 1km Run',
+        offset: 'Wake + 0:15',
+        normalMins: 120,
+        emergencyMins: 45,
+        desc: '8–10 km quiet morning walk + 1 km run. Outdoor sunlight locks circadian rhythm.',
+        xp: 100
+      },
+      {
+        id: 'd2',
+        badge: 'DOMINO 2',
+        title: 'Sketching & Assignments',
+        offset: 'Wake + 3:00',
+        normalMins: 90,
+        emergencyMins: 30,
+        desc: 'Perspective grids, human figures, foreshortening & assignment drills (Ceiling: 2.5h).',
+        xp: 100
+      },
+      {
+        id: 'd3',
+        badge: 'DOMINO 3',
+        title: 'CEED Full Paper (Part A + B)',
+        offset: 'Wake + 4:30',
+        normalMins: 180,
+        emergencyMins: 60,
+        desc: '2h 45m timed paper (35 Part A + 5 Part B on A4 booklet) + 15m Error Log.',
+        xp: 150
+      },
+      {
+        id: 'siesta',
+        badge: 'SIESTA',
+        title: '90-Min Biphasic Nap Reset',
+        offset: 'Wake + 8:00',
+        normalMins: 95,
+        emergencyMins: 25,
+        desc: '1 full 90-min sleep cycle (+5m fall asleep) to wipe out afternoon crash.',
+        xp: 75
+      },
+      {
+        id: 'd4',
+        badge: 'DOMINO 4',
+        title: 'Blender, Design & Frameworks',
+        offset: 'Wake + 10:00',
+        normalMins: 120,
+        emergencyMins: 60,
+        desc: '100% guilt-free deep creative work. Open ceiling (push to 3–4+ hrs in flow).',
+        xp: 125
+      },
+      {
+        id: 'sleep',
+        badge: 'NIGHT',
+        title: 'Core Night Sleep (4 Cycles)',
+        offset: 'Wake + 18:00',
+        normalMins: 360,
+        emergencyMins: 360,
+        desc: 'Save Blender files 45m before bed. 6h night + 1.5h Siesta = 7.5h recovery.',
+        xp: 100
+      }
+    ];
+
+    let state = JSON.parse(localStorage.getItem('ceed_domino_state_v1')) || {
+      shields: 2,
+      xp: 0,
+      days: {}
+    };
+
+    let currentDateStr = getTodayFormatted();
+    let timerInterval = null;
+    let timerSecondsLeft = 0;
+    let timerPaused = false;
+    let activeDominoId = null;
+
+    function getTodayFormatted() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const formatted = `${yyyy}-${mm}-${dd}`;
+      if (formatted < '2026-10-22') return '2026-10-22';
+      if (formatted > '2027-01-17') return '2027-01-17';
+      return formatted;
+    }
+
+    function ensureDayRecord(dateStr) {
+      if (!state.days[dateStr]) {
+        state.days[dateStr] = {
+          completed: {},
+          emergency: false,
+          shieldUsed: false,
+          wakeTimestamp: null
+        };
+      }
+      return state.days[dateStr];
+    }
+
+    function saveState() {
+      localStorage.setItem('ceed_domino_state_v1', JSON.stringify(state));
+      renderAll();
+    }
+
+    function getDateStrFromOffset(dayIndex) {
+      const d = new Date(START_DATE);
+      d.setDate(d.getDate() + dayIndex);
+      return d.toISOString().split('T')[0];
+    }
+
+    function isDayComplete(dayRecord) {
+      if (!dayRecord) return false;
+      if (dayRecord.shieldUsed) return true;
+      const coreIds = ['d1', 'd2', 'd3', 'd4'];
+      return coreIds.every(id => dayRecord.completed && dayRecord.completed[id]);
+    }
+
+    function calculateStreak() {
+      let streak = 0;
+      const allDates = [];
+      for (let i = 0; i < TOTAL_DAYS; i++) {
+        allDates.push(getDateStrFromOffset(i));
+      }
+      const upToIndex = allDates.indexOf(currentDateStr);
+      for (let i = upToIndex; i >= 0; i--) {
+        const rec = state.days[allDates[i]];
+        if (isDayComplete(rec)) {
+          streak++;
+        } else if (i === upToIndex) {
+          continue;
+        } else {
+          break;
+        }
+      }
+      return streak;
+    }
+
+    function toggleDomino(id) {
+      const day = ensureDayRecord(currentDateStr);
+      const dom = DOMINOS.find(d => d.id === id);
+      if (day.completed[id]) {
+        delete day.completed[id];
+        state.xp = Math.max(0, state.xp - dom.xp);
+      } else {
+        day.completed[id] = true;
+        state.xp += dom.xp;
+      }
+      saveState();
+    }
+
+    function toggleEmergencyMode() {
+      const day = ensureDayRecord(currentDateStr);
+      if (!day.emergency) {
+        const prevDate = new Date(currentDateStr + 'T00:00:00');
+        prevDate.setDate(prevDate.getDate() - 1);
+        const prevStr = prevDate.toISOString().split('T')[0];
+        if (state.days[prevStr] && state.days[prevStr].emergency) {
+          alert('⚠️ Golden Rule Violation: Never allow two Emergency Days in a row! You used Emergency Mode yesterday—push for the standard floor today.');
+          return;
+        }
+      }
+      day.emergency = !day.emergency;
+      saveState();
+    }
+
+    function useStreakShield() {
+      const day = ensureDayRecord(currentDateStr);
+      if (day.shieldUsed) {
+        alert('🛡️ A Streak Shield is already active on this date.');
+        return;
+      }
+      if (state.shields <= 0) {
+        alert('No Streak Shields left! Complete 7 full days in a row to earn +1 Shield.');
+        return;
+      }
+      if (confirm(`Use 1 🛡️ Streak Shield to protect your streak on ${currentDateStr}? (${state.shields} remaining)`)) {
+        state.shields--;
+        day.shieldUsed = true;
+        saveState();
+      }
+    }
+
+    function triggerWakeUp() {
+      const day = ensureDayRecord(currentDateStr);
+      day.wakeTimestamp = Date.now();
+      saveState();
+    }
+
+    function updateWakeClock() {
+      const day = ensureDayRecord(currentDateStr);
+      const el = document.getElementById('wakeClock');
+      if (!day.wakeTimestamp) {
+        el.textContent = 'Wake + 00:00';
+        return;
+      }
+      const diffMins = Math.floor((Date.now() - day.wakeTimestamp) / 60000);
+      const hrs = String(Math.floor(diffMins / 60)).padStart(2, '0');
+      const mins = String(diffMins % 60).padStart(2, '0');
+      el.textContent = `Wake + ${hrs}:${mins}`;
+    }
+
+    function startDominoTimer(id) {
+      const day = ensureDayRecord(currentDateStr);
+      const dom = DOMINOS.find(d => d.id === id);
+      const mins = day.emergency ? dom.emergencyMins : dom.normalMins;
+      activeDominoId = id;
+      timerSecondsLeft = mins * 60;
+      timerPaused = false;
+      document.getElementById('timerCard').classList.remove('hidden');
+      document.getElementById('activeTimerTitle').textContent = `${dom.badge}: ${dom.title}`;
+      document.getElementById('pauseResumeBtn').textContent = 'Pause';
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (!timerPaused && timerSecondsLeft > 0) {
+          timerSecondsLeft--;
+          renderTimerDigits();
+          if (timerSecondsLeft === 0) {
+            clearInterval(timerInterval);
+            alert(`🎉 Timer Complete for ${dom.title}!`);
+            if (!day.completed[id]) toggleDomino(id);
+          }
+        }
+      }, 1000);
+      renderTimerDigits();
+    }
+
+    function renderTimerDigits() {
+      const h = String(Math.floor(timerSecondsLeft / 3600)).padStart(2, '0');
+      const m = String(Math.floor((timerSecondsLeft % 3600) / 60)).padStart(2, '0');
+      const s = String(timerSecondsLeft % 60).padStart(2, '0');
+      document.getElementById('timerDisplay').textContent = `${h}:${m}:${s}`;
+    }
+
+    function pauseResumeTimer() {
+      timerPaused = !timerPaused;
+      document.getElementById('pauseResumeBtn').textContent = timerPaused ? 'Resume' : 'Pause';
+    }
+
+    function completeActiveTimerDomino() {
+      if (activeDominoId) {
+        const day = ensureDayRecord(currentDateStr);
+        if (!day.completed[activeDominoId]) toggleDomino(activeDominoId);
+      }
+      closeTimer();
+    }
+
+    function closeTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      document.getElementById('timerCard').classList.add('hidden');
+    }
+
+    function changeDate(val) {
+      currentDateStr = val;
+      renderAll();
+    }
+
+    function formatMins(m) {
+      const h = Math.floor(m / 60);
+      const rem = m % 60;
+      if (h === 0) return `${m}m`;
+      if (rem === 0) return `${h}h 00m`;
+      return `${h}h ${rem}m`;
+    }
+
+    function renderAll() {
+      document.getElementById('datePicker').value = currentDateStr;
+      const day = ensureDayRecord(currentDateStr);
+
+      // Day number & phase
+      const dayIndex = Math.max(0, Math.min(86, Math.round((new Date(currentDateStr + 'T00:00:00') - START_DATE) / 86400000)));
+      document.getElementById('dayBadge').textContent = `DAY ${dayIndex + 1} / 87`;
+      const phaseEl = document.getElementById('phaseLabel');
+      if (dayIndex < 30) phaseEl.textContent = 'Phase 1: Endurance & Accuracy';
+      else if (dayIndex < 65) phaseEl.textContent = 'Phase 2: Speed & Storytelling';
+      else phaseEl.textContent = 'Phase 3: Exam-Clock Lock-In';
+
+      // Streak, Shields, XP
+      const streak = calculateStreak();
+      document.getElementById('streakCount').textContent = streak;
+      document.getElementById('shieldCount').textContent = state.shields;
+      const lvl = Math.floor(state.xp / 500) + 1;
+      document.getElementById('xpDisplay').textContent = `⚡ ${state.xp} XP (Lvl ${lvl})`;
+
+      // Emergency button state
+      const emBtn = document.getElementById('emergencyBtn');
+      const emText = document.getElementById('emergencyBtnText');
+      if (day.emergency) {
+        emBtn.classList.add('emergency-active');
+        emText.textContent = 'Bad Day Floor: ON (3h 15m)';
+      } else {
+        emBtn.classList.remove('emergency-active');
+        emText.textContent = 'Bad Day Mode: OFF';
+      }
+
+      // Render Dominos
+      const list = document.getElementById('dominoList');
+      list.innerHTML = '';
+      DOMINOS.forEach(dom => {
+        const done = !!day.completed[dom.id];
+        const mins = day.emergency ? dom.emergencyMins : dom.normalMins;
+        const card = document.createElement('div');
+        card.className = `glass rounded-2xl p-4 transition ${done ? 'domino-done' : ''}`;
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-zinc-800 text-zinc-200 border border-zinc-700">${dom.badge}</span>
+                <span class="text-xs font-mono text-zinc-400">${dom.offset}</span>
+                <span class="text-xs font-bold text-amber-400">⏱ ${formatMins(mins)}</span>
+              </div>
+              <h3 class="text-base font-bold mt-1 ${done ? 'line-through text-emerald-300' : 'text-white'}">${dom.title}</h3>
+              <p class="text-xs text-zinc-400 mt-1 leading-relaxed">${dom.desc}</p>
+            </div>
+            <button onclick="toggleDomino('${dom.id}')"
+              class="w-11 h-11 rounded-2xl flex items-center justify-center font-black text-lg border transition shrink-0 ${
+                done ? 'bg-emerald-500 border-emerald-400 text-black' : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500'
+              }">
+              ✓
+            </button>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-zinc-800/80 flex items-center justify-between">
+            <span class="text-[11px] text-emerald-400 font-semibold">+${dom.xp} XP</span>
+            <button onclick="startDominoTimer('${dom.id}')" class="text-xs font-bold px-3 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-indigo-300 border border-zinc-700">
+              ▶ Start ${formatMins(mins)} Timer
+            </button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      // Render 87-Day Heatmap
+      const grid = document.getElementById('heatmapGrid');
+      grid.innerHTML = '';
+      for (let i = 0; i < TOTAL_DAYS; i++) {
+        const dStr = getDateStrFromOffset(i);
+        const rec = state.days[dStr];
+        const complete = isDayComplete(rec);
+        let bg = 'bg-zinc-800/90 text-zinc-400';
+        if (rec && rec.shieldUsed) bg = 'bg-sky-500 text-black font-black';
+        else if (complete && rec.emergency) bg = 'bg-amber-500 text-black font-black';
+        else if (complete) bg = 'bg-emerald-500 text-black font-black';
+
+        const isSelected = dStr === currentDateStr ? 'ring-2 ring-white' : '';
+        const cell = document.createElement('button');
+        cell.className = `h-7 rounded-md text-[10px] flex items-center justify-center transition ${bg} ${isSelected}`;
+        cell.textContent = i + 1;
+        cell.onclick = () => changeDate(dStr);
+        grid.appendChild(cell);
+      }
+
+      updateWakeClock();
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `ceed-domino-streak-backup-${currentDateStr}.json`;
+      a.click();
+    }
+
+    function importData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          state = JSON.parse(evt.target.result);
+          saveState();
+          alert('✅ Streak backup restored!');
+        } catch (err) {
+          alert('Invalid backup file.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    setInterval(updateWakeClock, 15000);
+    renderAll();
+  </script>
+</body>
+</html>
