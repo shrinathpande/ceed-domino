@@ -45,17 +45,29 @@ export function renderDashboard(container, onNavigateSettings) {
   renderDateBar();
   renderDominoCards();
   renderHeatmapSection();
+  applyEmergencyUIState();
 
   tryResumeTimer(_currentDateStr);
   requestNotificationPermission();
 
   container.querySelector('#settingsBtn').addEventListener('click', () => {
+    // Ensure emergency class doesn't leak into settings unless on dashboard
+    document.body.classList.remove('emergency-active-theme');
     if (onNavigateSettings) onNavigateSettings();
   });
 
   setInterval(() => {
     renderHeaderSection();
   }, 15000);
+}
+
+function applyEmergencyUIState() {
+  const day = ensureDayRecord(_currentDateStr);
+  if (day.emergency) {
+    document.body.classList.add('emergency-active-theme');
+  } else {
+    document.body.classList.remove('emergency-active-theme');
+  }
 }
 
 function renderHeaderSection() {
@@ -80,7 +92,7 @@ function renderDateBar() {
     <button id="emergencyBtn"
       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[2px] text-xs font-mono font-semibold border transition-colors touch-manipulation active:scale-95 ${
         day.emergency
-          ? 'bg-[var(--surface)] border-[var(--negative)] text-[var(--negative)]'
+          ? 'bg-[var(--surface)] border-[var(--negative)] text-[var(--negative)] font-bold'
           : 'bg-[var(--raised)] border-[var(--border)] text-[var(--muted)] hover:border-[var(--control)] hover:text-[var(--text)]'
       }"
       aria-label="${day.emergency ? 'Disable emergency minimum floor' : 'Activate 3h 15m emergency minimum floor'}"
@@ -131,6 +143,7 @@ function renderHeatmapSection() {
 }
 
 function refreshDashboard() {
+  applyEmergencyUIState();
   renderHeaderSection();
   renderDateBar();
   renderDominoCards();
