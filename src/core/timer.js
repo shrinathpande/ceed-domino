@@ -1,6 +1,7 @@
 /**
- * Timer Engine — countdown timer with background persistence.
- * Stores timer state in LocalStorage so page refresh doesn't lose progress.
+ * Timer Engine — countdown timer with high-precision timestamp delta math.
+ * Calculates exact remaining time from wall-clock timestamps so pause/resume,
+ * background tabs, and browser sleeps never skew elapsed time.
  */
 import { playDing } from '../utils/sound.js';
 
@@ -10,7 +11,6 @@ let _interval = null;
 let _onTick = null;
 let _onComplete = null;
 
-/** Get persisted timer state */
 export function getTimerState() {
   try {
     const raw = localStorage.getItem(TIMER_KEY);
@@ -20,7 +20,6 @@ export function getTimerState() {
   }
 }
 
-/** Save timer state */
 function saveTimerState(state) {
   if (state) {
     localStorage.setItem(TIMER_KEY, JSON.stringify(state));
@@ -29,7 +28,26 @@ function saveTimerState(state) {
   }
 }
 
-/** Start a new countdown timer */
+/**
+ * Calculate accurate remaining seconds.
+ * If paused: remaining = totalSeconds - pausedElapsed.
+ * If running: remaining = totalSeconds - (currentWallClock - startedAt - accumulatedPausedDuration).
+ */
+export function calcRemaining(state) {
+  if (!state) return 0;
+  
+  if (state.pausedAt) {
+    // When paused, pausedElapsed holds total active seconds spent before pause
+    return Math.max(0, state.totalSeconds - (state.pausedElapsed || 0));
+  }
+
+  const now = Date.now();
+  // Total real wall clock seconds elapsed since startedAt minus accumulated pause pauses
+  const activeElapsed = Math.floor((now - state.startedAt - (state.accumulatedPauseMs || 0)) / 1000);
+  return Math.max(0, state.totalSeconds - activeElapsed);
+}
+
+/** Start a new timer */
 export function startTimer({ dominoId, dominoTitle, totalSeconds, onTick, onComplete }) {
   stopTimer();
 
@@ -40,17 +58,21 @@ export function startTimer({ dominoId, dominoTitle, totalSeconds, onTick, onComp
     startedAt: Date.now(),
     pausedAt: null,
     pausedElapsed: 0,
+    accumulatedPauseMs: 0,
   };
 
   saveTimerState(timerState);
   _onTick = onTick;
   _onComplete = onComplete;
 
+  // Immediate first tick
+  tick();
+
+  if (_interval) clearInterval(_interval);
   _interval = setInterval(() => tick(), 1000);
-  tick(); // immediate first tick
 }
 
-/** Resume a persisted timer (after page reload) */
+/** Resume an active or paused timer from LocalStorage */
 export function resumePersistedTimer({ onTick, onComplete }) {
   const state = getTimerState();
   if (!state) return false;
@@ -58,30 +80,35 @@ export function resumePersistedTimer({ onTick, onComplete }) {
   _onTick = onTick;
   _onComplete = onComplete;
 
-  if (!state.pausedAt) {
-    _interval = setInterval(() => tick(), 1000);
-    tick();
-  } else {
-    // It was paused — just set callbacks, don't start interval
-    const remaining = calcRemaining(state);
-    if (_onTick) _onTick(remaining, state);
+  const remaining = calcRemaining(state);
+  if (remaining <= 0) {
+    stopTimer();
+    return false;
   }
+
+  if (state.pausedAt) {
+    if (_onTick) _onTick(remaining, state);
+  } else {
+    tick();
+    if (_interval) clearInterval(_interval);
+    _interval = setInterval(() => tick(), 1000);
+  }
+
   return true;
 }
 
-/** Calculate remaining seconds */
-function calcRemaining(state) {
-  if (!state) return 0;
-  const elapsed = state.pausedAt
-    ? state.pausedElapsed
-    : Math.floor((Date.now() - state.startedAt) / 1000) - state.pausedElapsed;
-  return Math.max(0, state.totalSeconds - elapsed);
-}
-
-/** Internal tick handler */
 function tick() {
   const state = getTimerState();
-  if (!state || state.pausedAt) return;
+  if (!state) {
+    stopTimer();
+    return;
+  }
+
+  if (state.pausedAt) {
+    const rem = calcRemaining(state);
+    if (_onTick) _onTick(rem, state);
+    return;
+  }
 
   const remaining = calcRemaining(state);
 
@@ -90,7 +117,6 @@ function tick() {
   if (remaining <= 0) {
     stopTimer();
     playDing();
-    // Vibrate if supported
     if (navigator.vibrate) {
       navigator.vibrate([200, 100, 200, 100, 300]);
     }
@@ -98,31 +124,41 @@ function tick() {
   }
 }
 
-/** Pause/resume toggle */
+/** Toggle pause / resume */
 export function togglePause() {
   const state = getTimerState();
   if (!state) return false;
 
+  const now = Date.now();
+
   if (state.pausedAt) {
-    // Resume
-    const pauseDuration = Date.now() - state.pausedAt;
-    state.pausedElapsed += Math.floor(pauseDuration / 1000);
+    // Resuming: add the duration of this pause to accumulatedPauseMs
+    const pauseDuration = now - state.pausedAt;
+    state.accumulatedPauseMs = (state.accumulatedPauseMs || 0) + pauseDuration;
     state.pausedAt = null;
     saveTimerState(state);
-    _interval = setInterval(() => tick(), 1000);
+
     tick();
-    return false; // not paused
+    if (_interval) clearInterval(_interval);
+    _interval = setInterval(() => tick(), 1000);
+    return false; // is running
   } else {
-    // Pause
-    state.pausedAt = Date.now();
+    // Pausing: record pausedAt and lock in how many seconds were actively consumed
+    const activeElapsed = Math.floor((now - state.startedAt - (state.accumulatedPauseMs || 0)) / 1000);
+    state.pausedElapsed = Math.min(state.totalSeconds, Math.max(0, activeElapsed));
+    state.pausedAt = now;
     saveTimerState(state);
-    clearInterval(_interval);
-    _interval = null;
+
+    if (_interval) {
+      clearInterval(_interval);
+      _interval = null;
+    }
+    const rem = calcRemaining(state);
+    if (_onTick) _onTick(rem, state);
     return true; // is paused
   }
 }
 
-/** Stop and clear timer */
 export function stopTimer() {
   if (_interval) {
     clearInterval(_interval);
@@ -133,24 +169,20 @@ export function stopTimer() {
   _onComplete = null;
 }
 
-/** Check if timer is currently running */
 export function isTimerActive() {
   return !!getTimerState();
 }
 
-/** Check if timer is paused */
 export function isTimerPaused() {
   const state = getTimerState();
   return state ? !!state.pausedAt : false;
 }
 
-/** Get remaining seconds for the active timer */
 export function getTimerRemaining() {
   const state = getTimerState();
   return state ? calcRemaining(state) : 0;
 }
 
-/** Format seconds to HH:MM:SS */
 export function formatTimer(totalSeconds) {
   const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
   const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');

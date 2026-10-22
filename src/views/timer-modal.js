@@ -1,10 +1,10 @@
 /**
  * Timer Modal — Industrial Brutalist Stopwatch Panel.
- * Includes Ambient Fullscreen Focus / Pomodoro Mode with large display and keyboard controls.
+ * Supports Ambient Fullscreen Focus Mode, keyboard shortcuts, and clean lifecycle management.
  */
 import { icon } from '../icons/index.js';
 import { ensureDayRecord } from '../core/state.js';
-import { startTimer, stopTimer, togglePause, isTimerActive, isTimerPaused, getTimerState, formatTimer, resumePersistedTimer } from '../core/timer.js';
+import { startTimer, stopTimer, togglePause, isTimerActive, isTimerPaused, getTimerState, formatTimer, resumePersistedTimer, calcRemaining } from '../core/timer.js';
 import { toggleDomino } from '../core/streak.js';
 import { showToast } from '../components/header.js';
 import { showNotification } from '../core/notifications.js';
@@ -12,9 +12,11 @@ import { showNotification } from '../core/notifications.js';
 let _modalEl = null;
 let _onClose = null;
 let _isAmbientFullscreen = false;
+let _activeDateStr = null;
 
 export function showTimerModal(domino, durationMins, dateStr, onClose) {
   _onClose = onClose;
+  _activeDateStr = dateStr;
   _isAmbientFullscreen = false;
   const totalSeconds = durationMins * 60;
 
@@ -34,17 +36,22 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
   badgeEl.textContent = domino.badge;
   if (ambientSubtitle) ambientSubtitle.textContent = domino.subtitle || domino.desc || 'Stay locked in.';
 
-  // Reset ambient mode layout
+  // Initial display setup
+  displayEl.textContent = formatTimer(totalSeconds);
+  progressEl.style.width = '0%';
+  pauseBtn.innerHTML = `<span class="w-4 h-4">${icon('pause')}</span> PAUSE`;
+  displayEl.classList.remove('text-[var(--negative)]');
+
   setAmbientMode(false);
 
   startTimer({
     dominoId: domino.id,
     dominoTitle: domino.title,
     totalSeconds,
-    onTick: (remaining, state) => {
+    onTick: (remaining) => {
       displayEl.textContent = formatTimer(remaining);
-      const progress = 1 - remaining / totalSeconds;
-      progressEl.style.width = `${progress * 100}%`;
+      const progress = totalSeconds > 0 ? (1 - remaining / totalSeconds) : 0;
+      progressEl.style.width = `${Math.min(100, progress * 100)}%`;
 
       if (remaining <= 60) {
         displayEl.classList.add('text-[var(--negative)]');
@@ -60,35 +67,42 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
       });
       showToast(`${domino.title} complete.`, 'success');
 
-      const day = ensureDayRecord(dateStr);
-      if (!day.completed[domino.id]) {
-        toggleDomino(domino.id, dateStr);
+      if (_activeDateStr) {
+        const day = ensureDayRecord(_activeDateStr);
+        if (!day.completed[domino.id]) {
+          toggleDomino(domino.id, _activeDateStr);
+        }
       }
     },
   });
 
-  pauseBtn.onclick = () => {
+  pauseBtn.onclick = (e) => {
+    e.stopPropagation();
     const paused = togglePause();
     pauseBtn.innerHTML = `<span class="w-4 h-4">${icon(paused ? 'play' : 'pause')}</span> ${paused ? 'RESUME' : 'PAUSE'}`;
   };
 
-  doneBtn.onclick = () => {
+  doneBtn.onclick = (e) => {
+    e.stopPropagation();
     const state = getTimerState();
-    if (state) {
-      const day = ensureDayRecord(dateStr);
+    if (state && _activeDateStr) {
+      const day = ensureDayRecord(_activeDateStr);
       if (!day.completed[state.dominoId]) {
-        toggleDomino(state.dominoId, dateStr);
+        toggleDomino(state.dominoId, _activeDateStr);
       }
     }
-    hideTimerModal();
-  };
-
-  closeBtn.onclick = () => {
     stopTimer();
     hideTimerModal();
   };
 
-  ambientBtn.onclick = () => {
+  closeBtn.onclick = (e) => {
+    e.stopPropagation();
+    stopTimer();
+    hideTimerModal();
+  };
+
+  ambientBtn.onclick = (e) => {
+    e.stopPropagation();
     setAmbientMode(!_isAmbientFullscreen);
   };
 
@@ -107,14 +121,10 @@ function setAmbientMode(enabled) {
   const panel = _modalEl.querySelector('.timer-panel');
   const ambientBtn = _modalEl.querySelector('#ambientToggleBtn');
   const ambientHeader = _modalEl.querySelector('#ambientHeader');
-  const normalHeader = _modalEl.querySelector('#normalHeader');
-  const ambientControls = _modalEl.querySelector('#ambientControls');
-  const normalControls = _modalEl.querySelector('#normalControls');
   const digits = _modalEl.querySelector('#timerDigits');
 
   if (enabled) {
-    // Expand to full-screen zen pomodoro console
-    panel.classList.remove('max-w-xl', 'border-t', 'items-end', 'p-6');
+    panel.classList.remove('max-w-xl', 'border-t', 'p-6');
     panel.classList.add('fixed', 'inset-0', 'max-w-none', 'h-full', 'w-full', 'flex', 'flex-col', 'justify-between', 'p-8', 'z-50', 'bg-[var(--ground)]');
     
     ambientBtn.innerHTML = `<span class="w-4 h-4">${icon('minimize')}</span>`;
@@ -125,9 +135,8 @@ function setAmbientMode(enabled) {
     
     if (ambientHeader) ambientHeader.classList.remove('hidden');
   } else {
-    // Normal bottom sheet drawer
     panel.classList.add('max-w-xl', 'border-t', 'p-6');
-    panel.classList.remove('fixed', 'inset-0', 'max-w-none', 'h-full', 'w-full', 'flex-col', 'justify-between', 'p-8', 'bg-[var(--ground)]');
+    panel.classList.remove('fixed', 'inset-0', 'max-w-none', 'h-full', 'w-full', 'flex', 'flex-col', 'justify-between', 'p-8', 'z-50', 'bg-[var(--ground)]');
     
     ambientBtn.innerHTML = `<span class="w-4 h-4">${icon('maximize')}</span>`;
     ambientBtn.setAttribute('title', 'Enter Fullscreen Ambient Focus');
@@ -168,18 +177,16 @@ function createModalDOM() {
           <h3 class="text-base font-bold text-[var(--text)] mt-0.5" id="timerTitle">Instrument Timer</h3>
         </div>
         <div class="flex items-center gap-1.5">
-          <!-- Fullscreen Ambient Trigger -->
           <button id="ambientToggleBtn" class="w-7 h-7 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] flex items-center justify-center text-[var(--muted)] hover:text-[var(--text)] transition-colors" title="Enter Fullscreen Ambient Focus">
             <span class="w-3.5 h-3.5">${icon('maximize')}</span>
           </button>
-          <!-- Close / Abort -->
           <button id="timerCloseBtn" class="w-7 h-7 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] flex items-center justify-center text-[var(--muted)] hover:text-[var(--text)] transition-colors" aria-label="Abort timer">
             <span class="w-3.5 h-3.5">${icon('close')}</span>
           </button>
         </div>
       </div>
 
-      <!-- Ambient Header (Visible only in Fullscreen Mode) -->
+      <!-- Ambient Header (Fullscreen Only) -->
       <div id="ambientHeader" class="hidden text-center pt-4">
         <span class="text-xs uppercase tracking-widest text-[var(--muted)] font-bold">AMBIENT FOCUS MODE</span>
         <p id="ambientSubtitle" class="text-xs text-[var(--text)] mt-1 font-sans"></p>
@@ -213,7 +220,6 @@ function createModalDOM() {
 
   document.body.appendChild(_modalEl);
 
-  // Global keyboard shortcut: Spacebar to pause/resume when timer is open
   window.addEventListener('keydown', (e) => {
     if (!_modalEl || _modalEl.classList.contains('hidden')) return;
     if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
@@ -221,8 +227,12 @@ function createModalDOM() {
       const pauseBtn = _modalEl.querySelector('#timerPauseBtn');
       if (pauseBtn) pauseBtn.click();
     } else if (e.code === 'Escape') {
-      const closeBtn = _modalEl.querySelector('#timerCloseBtn');
-      if (closeBtn) closeBtn.click();
+      if (_isAmbientFullscreen) {
+        setAmbientMode(false);
+      } else {
+        const closeBtn = _modalEl.querySelector('#timerCloseBtn');
+        if (closeBtn) closeBtn.click();
+      }
     }
   });
 }
@@ -231,20 +241,72 @@ export function tryResumeTimer(dateStr) {
   const state = getTimerState();
   if (!state) return false;
 
+  const remaining = calcRemaining(state);
+  if (remaining <= 0) {
+    stopTimer();
+    return false;
+  }
+
+  _activeDateStr = dateStr;
   createModalDOM();
   const titleEl = _modalEl.querySelector('#timerTitle');
   const badgeEl = _modalEl.querySelector('#timerBadge');
   const displayEl = _modalEl.querySelector('#timerDigits');
   const progressEl = _modalEl.querySelector('#timerProgress');
+  const pauseBtn = _modalEl.querySelector('#timerPauseBtn');
+  const doneBtn = _modalEl.querySelector('#timerDoneBtn');
+  const closeBtn = _modalEl.querySelector('#timerCloseBtn');
+  const ambientBtn = _modalEl.querySelector('#ambientToggleBtn');
 
   titleEl.textContent = state.dominoTitle;
-  badgeEl.textContent = 'RESUMED';
+  badgeEl.textContent = 'ACTIVE';
+  displayEl.textContent = formatTimer(remaining);
+  const progress = state.totalSeconds > 0 ? (1 - remaining / state.totalSeconds) : 0;
+  progressEl.style.width = `${Math.min(100, progress * 100)}%`;
+
+  const isPaused = isTimerPaused();
+  pauseBtn.innerHTML = `<span class="w-4 h-4">${icon(isPaused ? 'play' : 'pause')}</span> ${isPaused ? 'RESUME' : 'PAUSE'}`;
+
+  pauseBtn.onclick = (e) => {
+    e.stopPropagation();
+    const paused = togglePause();
+    pauseBtn.innerHTML = `<span class="w-4 h-4">${icon(paused ? 'play' : 'pause')}</span> ${paused ? 'RESUME' : 'PAUSE'}`;
+  };
+
+  doneBtn.onclick = (e) => {
+    e.stopPropagation();
+    const st = getTimerState();
+    if (st && _activeDateStr) {
+      const day = ensureDayRecord(_activeDateStr);
+      if (!day.completed[st.dominoId]) {
+        toggleDomino(st.dominoId, _activeDateStr);
+      }
+    }
+    stopTimer();
+    hideTimerModal();
+  };
+
+  closeBtn.onclick = (e) => {
+    e.stopPropagation();
+    stopTimer();
+    hideTimerModal();
+  };
+
+  ambientBtn.onclick = (e) => {
+    e.stopPropagation();
+    setAmbientMode(!_isAmbientFullscreen);
+  };
 
   const resumed = resumePersistedTimer({
-    onTick: (remaining) => {
-      displayEl.textContent = formatTimer(remaining);
-      const progress = 1 - remaining / state.totalSeconds;
-      progressEl.style.width = `${progress * 100}%`;
+    onTick: (rem) => {
+      displayEl.textContent = formatTimer(rem);
+      const prog = state.totalSeconds > 0 ? (1 - rem / state.totalSeconds) : 0;
+      progressEl.style.width = `${Math.min(100, prog * 100)}%`;
+      if (rem <= 60) {
+        displayEl.classList.add('text-[var(--negative)]');
+      } else {
+        displayEl.classList.remove('text-[var(--negative)]');
+      }
     },
     onComplete: () => {
       displayEl.textContent = '00:00:00';
@@ -252,6 +314,12 @@ export function tryResumeTimer(dateStr) {
       showNotification(`${state.dominoTitle} Timer Complete`, {
         body: 'Mark domino complete.',
       });
+      if (_activeDateStr) {
+        const day = ensureDayRecord(_activeDateStr);
+        if (!day.completed[state.dominoId]) {
+          toggleDomino(state.dominoId, _activeDateStr);
+        }
+      }
     },
   });
 
