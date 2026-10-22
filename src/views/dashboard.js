@@ -1,5 +1,6 @@
 /**
  * Dashboard View — Industrial Brutalist Master Console.
+ * Incorporates Domino Stream, 87-Day Heatmap, and Weekly Velocity & Burn-Down Chart.
  */
 import { getState, ensureDayRecord } from '../core/state.js';
 import { getDominos } from '../core/dominos.js';
@@ -9,6 +10,7 @@ import { getCurrentDateStr } from '../utils/dates.js';
 import { renderHeader, showToast } from '../components/header.js';
 import { renderDominoCard } from '../components/domino-card.js';
 import { renderHeatmap } from './heatmap.js';
+import { renderWeeklyVelocity } from '../components/weekly-velocity.js';
 import { showTimerModal, tryResumeTimer } from './timer-modal.js';
 import { requestNotificationPermission } from '../core/notifications.js';
 
@@ -28,6 +30,9 @@ export function renderDashboard(container, onNavigateSettings) {
       <!-- Domino Tasks Stream -->
       <div id="dominoList" class="space-y-2.5" role="list" aria-label="Domino pillars"></div>
 
+      <!-- Weekly Velocity & Burndown Metric Panel -->
+      <div id="velocityContainer"></div>
+
       <!-- 87-Day Momentum Grid -->
       <div id="heatmapContainer"></div>
 
@@ -44,6 +49,7 @@ export function renderDashboard(container, onNavigateSettings) {
   renderHeaderSection();
   renderDateBar();
   renderDominoCards();
+  renderVelocitySection();
   renderHeatmapSection();
   applyEmergencyUIState();
 
@@ -51,7 +57,6 @@ export function renderDashboard(container, onNavigateSettings) {
   requestNotificationPermission();
 
   container.querySelector('#settingsBtn').addEventListener('click', () => {
-    // Ensure emergency class doesn't leak into settings unless on dashboard
     document.body.classList.remove('emergency-active-theme');
     if (onNavigateSettings) onNavigateSettings();
   });
@@ -134,12 +139,21 @@ function renderDominoCards() {
   });
 }
 
+function renderVelocitySection() {
+  const velocityContainer = _container.querySelector('#velocityContainer');
+  if (velocityContainer) {
+    renderWeeklyVelocity(velocityContainer, _currentDateStr);
+  }
+}
+
 function renderHeatmapSection() {
   const heatmapContainer = _container.querySelector('#heatmapContainer');
-  renderHeatmap(heatmapContainer, _currentDateStr, (dateStr) => {
-    _currentDateStr = dateStr;
-    refreshDashboard();
-  });
+  if (heatmapContainer) {
+    renderHeatmap(heatmapContainer, _currentDateStr, (dateStr) => {
+      _currentDateStr = dateStr;
+      refreshDashboard();
+    });
+  }
 }
 
 function refreshDashboard() {
@@ -147,6 +161,7 @@ function refreshDashboard() {
   renderHeaderSection();
   renderDateBar();
   renderDominoCards();
+  renderVelocitySection();
   renderHeatmapSection();
 }
 
