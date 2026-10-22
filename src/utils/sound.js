@@ -1,6 +1,6 @@
 /**
- * Sound utility — Web Audio API synthesized chime + optional external audio.
- * Zero external audio file dependencies needed! Works across all mobile & desktop browsers.
+ * Sound utility — Web Audio API synthesized mechanical relay latch & tactile click.
+ * High-precision industrial feedback with zero external audio assets.
  */
 
 let _audioCtx = null;
@@ -19,7 +19,7 @@ function getAudioContext() {
   return _audioCtx;
 }
 
-/** Unlock audio on first user interaction */
+/** Unlock audio on first user gesture */
 export function unlockAudio() {
   if (_unlocked) return;
   const ctx = getAudioContext();
@@ -34,7 +34,10 @@ export function unlockAudio() {
   }
 }
 
-/** Play a crisp Apple-like affirmative bell/chime */
+/**
+ * Heavy mechanical relay "thud" / snap.
+ * Dual-stage transient: initial metal leaf contact snap followed by low-frequency damp body thud.
+ */
 export function playDing() {
   try {
     const ctx = getAudioContext();
@@ -42,32 +45,38 @@ export function playDing() {
 
     const now = ctx.currentTime;
 
-    // Dual-tone harmonic bell (high bell + undertone)
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const gainNode = ctx.createGain();
+    // Stage 1: Initial high mechanical contact click (sharp transient impulse)
+    const snapOsc = ctx.createOscillator();
+    const snapGain = ctx.createGain();
+    snapOsc.type = 'triangle';
+    snapOsc.frequency.setValueAtTime(1400, now);
+    snapOsc.frequency.exponentialRampToValueAtTime(120, now + 0.025);
 
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(880, now); // A5
-    osc1.frequency.exponentialRampToValueAtTime(1760, now + 0.08); // Slight pitch rise
+    snapGain.gain.setValueAtTime(0.001, now);
+    snapGain.gain.linearRampToValueAtTime(0.35, now + 0.002);
+    snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
 
-    osc2.type = 'triangle';
-    osc2.frequency.setValueAtTime(1320, now); // E6
+    snapOsc.connect(snapGain);
+    snapGain.connect(ctx.destination);
+    snapOsc.start(now);
+    snapOsc.stop(now + 0.035);
 
-    // Envelope
-    gainNode.gain.setValueAtTime(0.001, now);
-    gainNode.gain.exponentialRampToValueAtTime(0.3, now + 0.02);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+    // Stage 2: Heavy low-frequency body relay "thud"
+    const thudOsc = ctx.createOscillator();
+    const thudGain = ctx.createGain();
+    thudOsc.type = 'sine';
+    thudOsc.frequency.setValueAtTime(130, now);
+    thudOsc.frequency.exponentialRampToValueAtTime(45, now + 0.07);
 
-    osc1.connect(gainNode);
-    osc2.connect(gainNode);
-    gainNode.connect(ctx.destination);
+    thudGain.gain.setValueAtTime(0.001, now);
+    thudGain.gain.linearRampToValueAtTime(0.5, now + 0.004);
+    thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
-    osc1.start(now);
-    osc2.start(now);
-    osc1.stop(now + 0.65);
-    osc2.stop(now + 0.65);
+    thudOsc.connect(thudGain);
+    thudGain.connect(ctx.destination);
+    thudOsc.start(now);
+    thudOsc.stop(now + 0.085);
   } catch (err) {
-    console.warn('Web Audio playback error:', err);
+    console.warn('Audio playback error:', err);
   }
 }

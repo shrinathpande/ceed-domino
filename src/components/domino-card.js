@@ -6,7 +6,6 @@ import { icon } from '../icons/index.js';
 import { ensureDayRecord } from '../core/state.js';
 import { toggleDomino } from '../core/streak.js';
 import { formatMins } from '../utils/format.js';
-import { fireConfetti } from './confetti.js';
 import { playDing } from '../utils/sound.js';
 import { vibrateTap } from '../core/notifications.js';
 
@@ -81,9 +80,14 @@ export function renderDominoCard(domino, dateStr, onTimerStart) {
     toggleDomino(domino.id, dateStr);
 
     if (!wasComplete) {
-      fireConfetti();
+      // Trigger tactile relay sound & haptic vibration
       playDing();
       vibrateTap();
+
+      // Trigger high-contrast border ripple / pulse
+      card.classList.remove('border-pulse-active');
+      void card.offsetWidth; // Force DOM reflow to re-trigger animation
+      card.classList.add('border-pulse-active');
     }
   });
 
