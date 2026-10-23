@@ -78,3 +78,38 @@ export function getWakeOffset(wakeTimestamp) {
   const mins = String(diffMins % 60).padStart(2, '0');
   return `Wake + ${hrs}:${mins}`;
 }
+
+/** Get precise countdown until CEED Exam (Jan 17, 2027 at 09:00 AM IST) */
+export function getExamCountdown() {
+  const state = getState();
+  const endDateStr = state.settings.endDate || '2027-01-17';
+  // Target 09:00 AM on Exam Day
+  const target = new Date(`${endDateStr}T09:00:00`);
+  const now = new Date();
+  const diffMs = target - now;
+
+  if (diffMs <= 0) {
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      isExpired: true,
+      compact: 'EXAM',
+      detailed: 'Today is CEED Exam Day! Lock in and execute.',
+    };
+  }
+
+  const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+  return {
+    days,
+    hours,
+    minutes,
+    isExpired: false,
+    compact: `${days}d`,
+    detailed: `${days} days, ${hours} hours until CEED 2027 (Jan 17, 09:00 AM)`,
+  };
+}

@@ -4,7 +4,7 @@
  */
 import { getState, ensureDayRecord, getAllCompletedTasksCount, getGrandTotalLoggedMinutes, formatHours } from '../core/state.js';
 import { icon } from '../icons/index.js';
-import { getDayIndex, getPhaseLabel, getDaysRemaining, getWakeOffset } from '../utils/dates.js';
+import { getDayIndex, getPhaseLabel, getDaysRemaining, getWakeOffset, getExamCountdown } from '../utils/dates.js';
 import { calculateStreak, getLevel, getLevelProgress, triggerWakeUp, useStreakShield } from '../core/streak.js';
 
 export function renderHeader(container, currentDateStr) {
@@ -20,21 +20,31 @@ export function renderHeader(container, currentDateStr) {
   const grandTotalMins = getGrandTotalLoggedMinutes();
   const wakeOffset = getWakeOffset(day.wakeTimestamp);
   const isAwake = !!day.wakeTimestamp;
+  const examCountdown = getExamCountdown();
 
   container.innerHTML = `
     <header class="sticky top-0 z-30 bg-[var(--surface)]/95 backdrop-blur-md ledger-rule-b px-3 py-2 font-mono transition-colors" role="banner">
       <div class="max-w-xl mx-auto flex items-center justify-between gap-1.5">
-        <!-- Left: System Stamp & Day & Level -->
+        <!-- Left: System Stamp & Day & Level & Countdown Pill -->
         <div class="flex items-center gap-1.5 shrink-0">
           <div class="w-5 h-5 bg-[var(--accent)] text-[var(--surface)] text-[10px] font-bold flex items-center justify-center rounded-[2px]" aria-hidden="true">
             C87
           </div>
-          <span class="text-[11px] font-bold text-[var(--text)]">
+          <span class="text-[11px] font-bold text-[var(--text)]" title="Day ${dayIndex + 1} of 87">
             D${dayIndex + 1}
           </span>
           <span class="text-[10px] text-[var(--muted)] font-semibold bg-[var(--raised)] px-1 py-0.2 rounded-[1px]" title="Level ${level}">
             L${level}
           </span>
+          <button
+            id="examCountdownBtn"
+            class="inline-flex items-center gap-0.5 text-[10px] font-bold text-[var(--text)] bg-[var(--raised)] border border-[var(--border)] hover:border-[var(--control)] px-1.5 py-0.5 rounded-[2px] transition-colors touch-manipulation active:scale-95"
+            title="${examCountdown.detailed} (Tap for details)"
+            aria-label="${examCountdown.detailed}"
+          >
+            <span class="w-3 h-3 text-[var(--muted)]">${icon('timer')}</span>
+            <span class="tabular-nums">${examCountdown.compact}</span>
+          </button>
         </div>
 
         <!-- Center: Wake Clock -->
@@ -95,6 +105,14 @@ export function renderHeader(container, currentDateStr) {
   if (wakeBtn) {
     wakeBtn.addEventListener('click', () => {
       triggerWakeUp(currentDateStr);
+    });
+  }
+
+  const countdownBtn = container.querySelector('#examCountdownBtn');
+  if (countdownBtn) {
+    countdownBtn.addEventListener('click', () => {
+      const live = getExamCountdown();
+      showToast(`⏳ ${live.detailed}`, 'info');
     });
   }
 }
