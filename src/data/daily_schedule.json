@@ -1,0 +1,1584 @@
+[
+  {
+    "day": 1,
+    "date": "Wed, 21 Oct 2026",
+    "phase": "Phase I: Foundation & Perspective",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P01.Q01",
+      "P01.Q02",
+      "P01.Q03",
+      "P01.Q04"
+    ]
+  },
+  {
+    "day": 2,
+    "date": "Thu, 22 Oct 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P01.Q05",
+      "P01.Q06",
+      "P01.Q07",
+      "P01.Q08"
+    ]
+  },
+  {
+    "day": 3,
+    "date": "Fri, 23 Oct 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P01.Q09",
+      "P01.Q10",
+      "P01.Q11",
+      "P01.Q12"
+    ]
+  },
+  {
+    "day": 4,
+    "date": "Sat, 24 Oct 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P01.Q13",
+      "P01.Q14",
+      "P01.Q15",
+      "P01.Q16"
+    ]
+  },
+  {
+    "day": 5,
+    "date": "Sun, 25 Oct 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P01.Q17",
+      "P01.Q18",
+      "P01.Q19",
+      "P01.Q20"
+    ]
+  },
+  {
+    "day": 6,
+    "date": "Mon, 26 Oct 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P01.Q21",
+      "P01.Q22",
+      "P01.Q23",
+      "P01.Q24"
+    ]
+  },
+  {
+    "day": 7,
+    "date": "Tue, 27 Oct 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P01.Q25",
+      "P01.Q26",
+      "P01.Q27",
+      "P01.Q28"
+    ]
+  },
+  {
+    "day": 8,
+    "date": "Wed, 28 Oct 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P01.Q29",
+      "P01.Q30",
+      "P01.Q31",
+      "P01.Q32"
+    ]
+  },
+  {
+    "day": 9,
+    "date": "Thu, 29 Oct 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P01.Q33",
+      "P01.Q34",
+      "P01.Q35",
+      "P02.Q01"
+    ]
+  },
+  {
+    "day": 10,
+    "date": "Fri, 30 Oct 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P02.Q02",
+      "P02.Q03",
+      "P02.Q04",
+      "P02.Q05"
+    ]
+  },
+  {
+    "day": 11,
+    "date": "Sat, 31 Oct 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P02.Q06",
+      "P02.Q07",
+      "P02.Q08",
+      "P02.Q09"
+    ]
+  },
+  {
+    "day": 12,
+    "date": "Sun, 01 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P02.Q10",
+      "P02.Q11",
+      "P02.Q12",
+      "P02.Q13"
+    ]
+  },
+  {
+    "day": 13,
+    "date": "Mon, 02 Nov 2026",
+    "phase": "Phase I: Foundation",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P02.Q14",
+      "P02.Q15",
+      "P02.Q16",
+      "P02.Q17"
+    ]
+  },
+  {
+    "day": 14,
+    "date": "Tue, 03 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P02.Q18",
+      "P02.Q19",
+      "P02.Q20",
+      "P02.Q21"
+    ]
+  },
+  {
+    "day": 15,
+    "date": "Wed, 04 Nov 2026",
+    "phase": "Phase I: Foundation",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P02.Q22",
+      "P02.Q23",
+      "P02.Q24",
+      "P02.Q25"
+    ]
+  },
+  {
+    "day": 16,
+    "date": "Thu, 05 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P02.Q26",
+      "P02.Q27",
+      "P02.Q28",
+      "P02.Q29"
+    ]
+  },
+  {
+    "day": 17,
+    "date": "Fri, 06 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P02.Q30",
+      "P02.Q31",
+      "P02.Q32",
+      "P02.Q33"
+    ]
+  },
+  {
+    "day": 18,
+    "date": "Sat, 07 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P02.Q34",
+      "P02.Q35",
+      "P03.Q01",
+      "P03.Q02"
+    ]
+  },
+  {
+    "day": 19,
+    "date": "Sun, 08 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P03.Q03",
+      "P03.Q04",
+      "P03.Q05",
+      "P03.Q06"
+    ]
+  },
+  {
+    "day": 20,
+    "date": "Mon, 09 Nov 2026",
+    "phase": "Phase I: Foundation",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P03.Q07",
+      "P03.Q08",
+      "P03.Q09",
+      "P03.Q10"
+    ]
+  },
+  {
+    "day": 21,
+    "date": "Tue, 10 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P03.Q11",
+      "P03.Q12",
+      "P03.Q13",
+      "P03.Q14"
+    ]
+  },
+  {
+    "day": 22,
+    "date": "Wed, 11 Nov 2026",
+    "phase": "Phase I: Foundation",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P03.Q15",
+      "P03.Q16",
+      "P03.Q17",
+      "P03.Q18"
+    ]
+  },
+  {
+    "day": 23,
+    "date": "Thu, 12 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P03.Q19",
+      "P03.Q20",
+      "P03.Q21",
+      "P03.Q22"
+    ]
+  },
+  {
+    "day": 24,
+    "date": "Fri, 13 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P03.Q23",
+      "P03.Q24",
+      "P03.Q25",
+      "P03.Q26"
+    ]
+  },
+  {
+    "day": 25,
+    "date": "Sat, 14 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P03.Q27",
+      "P03.Q28",
+      "P03.Q29",
+      "P03.Q30"
+    ]
+  },
+  {
+    "day": 26,
+    "date": "Sun, 15 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P03.Q31",
+      "P03.Q32",
+      "P03.Q33",
+      "P03.Q34"
+    ]
+  },
+  {
+    "day": 27,
+    "date": "Mon, 16 Nov 2026",
+    "phase": "Phase I: Foundation",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P03.Q35",
+      "P04.Q01",
+      "P04.Q02",
+      "P04.Q03"
+    ]
+  },
+  {
+    "day": 28,
+    "date": "Tue, 17 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P04.Q04",
+      "P04.Q05",
+      "P04.Q06",
+      "P04.Q07"
+    ]
+  },
+  {
+    "day": 29,
+    "date": "Wed, 18 Nov 2026",
+    "phase": "Phase I: Foundation",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P04.Q08",
+      "P04.Q09",
+      "P04.Q10",
+      "P04.Q11"
+    ]
+  },
+  {
+    "day": 30,
+    "date": "Thu, 19 Nov 2026",
+    "phase": "Phase I: Foundation &",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P04.Q12",
+      "P04.Q13",
+      "P04.Q14",
+      "P04.Q15"
+    ]
+  },
+  {
+    "day": 31,
+    "date": "Fri, 20 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P04.Q16",
+      "P04.Q17",
+      "P04.Q18",
+      "P04.Q19"
+    ]
+  },
+  {
+    "day": 32,
+    "date": "Sat, 21 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P04.Q20",
+      "P04.Q21",
+      "P04.Q22",
+      "P04.Q23"
+    ]
+  },
+  {
+    "day": 33,
+    "date": "Sun, 22 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P04.Q24",
+      "P04.Q25",
+      "P04.Q26",
+      "P04.Q27"
+    ]
+  },
+  {
+    "day": 34,
+    "date": "Mon, 23 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P04.Q28",
+      "P04.Q29",
+      "P04.Q30",
+      "P04.Q31"
+    ]
+  },
+  {
+    "day": 35,
+    "date": "Tue, 24 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P04.Q32",
+      "P04.Q33",
+      "P04.Q34",
+      "P04.Q35"
+    ]
+  },
+  {
+    "day": 36,
+    "date": "Wed, 25 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P05.Q01",
+      "P05.Q02",
+      "P05.Q03",
+      "P05.Q04"
+    ]
+  },
+  {
+    "day": 37,
+    "date": "Thu, 26 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P05.Q05",
+      "P05.Q06",
+      "P05.Q07",
+      "P05.Q08"
+    ]
+  },
+  {
+    "day": 38,
+    "date": "Fri, 27 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P05.Q09",
+      "P05.Q10",
+      "P05.Q11",
+      "P05.Q12"
+    ]
+  },
+  {
+    "day": 39,
+    "date": "Sat, 28 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P05.Q13",
+      "P05.Q14",
+      "P05.Q15",
+      "P05.Q16"
+    ]
+  },
+  {
+    "day": 40,
+    "date": "Sun, 29 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P05.Q17",
+      "P05.Q18",
+      "P05.Q19",
+      "P05.Q20"
+    ]
+  },
+  {
+    "day": 41,
+    "date": "Mon, 30 Nov 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P05.Q21",
+      "P05.Q22",
+      "P05.Q23",
+      "P05.Q24"
+    ]
+  },
+  {
+    "day": 42,
+    "date": "Tue, 01 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P05.Q25",
+      "P05.Q26",
+      "P05.Q27",
+      "P05.Q28"
+    ]
+  },
+  {
+    "day": 43,
+    "date": "Wed, 02 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P05.Q29",
+      "P05.Q30",
+      "P05.Q31",
+      "P05.Q32"
+    ]
+  },
+  {
+    "day": 44,
+    "date": "Thu, 03 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P05.Q33",
+      "P05.Q34",
+      "P05.Q35",
+      "P06.Q01"
+    ]
+  },
+  {
+    "day": 45,
+    "date": "Fri, 04 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P06.Q02",
+      "P06.Q03",
+      "P06.Q04",
+      "P06.Q05"
+    ]
+  },
+  {
+    "day": 46,
+    "date": "Sat, 05 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P06.Q06",
+      "P06.Q07",
+      "P06.Q08",
+      "P06.Q09"
+    ]
+  },
+  {
+    "day": 47,
+    "date": "Sun, 06 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P06.Q10",
+      "P06.Q11",
+      "P06.Q12",
+      "P06.Q13"
+    ]
+  },
+  {
+    "day": 48,
+    "date": "Mon, 07 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P06.Q14",
+      "P06.Q15",
+      "P06.Q16",
+      "P06.Q17"
+    ]
+  },
+  {
+    "day": 49,
+    "date": "Tue, 08 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P06.Q18",
+      "P06.Q19",
+      "P06.Q20",
+      "P06.Q21"
+    ]
+  },
+  {
+    "day": 50,
+    "date": "Wed, 09 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P06.Q22",
+      "P06.Q23",
+      "P06.Q24",
+      "P06.Q25"
+    ]
+  },
+  {
+    "day": 51,
+    "date": "Thu, 10 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P06.Q26",
+      "P06.Q27",
+      "P06.Q28",
+      "P06.Q29"
+    ]
+  },
+  {
+    "day": 52,
+    "date": "Fri, 11 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P06.Q30",
+      "P06.Q31",
+      "P06.Q32",
+      "P06.Q33"
+    ]
+  },
+  {
+    "day": 53,
+    "date": "Sat, 12 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P06.Q34",
+      "P06.Q35",
+      "P07.Q01",
+      "P07.Q02"
+    ]
+  },
+  {
+    "day": 54,
+    "date": "Sun, 13 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P07.Q03",
+      "P07.Q04",
+      "P07.Q05",
+      "P07.Q06"
+    ]
+  },
+  {
+    "day": 55,
+    "date": "Mon, 14 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P07.Q07",
+      "P07.Q08",
+      "P07.Q09",
+      "P07.Q10"
+    ]
+  },
+  {
+    "day": 56,
+    "date": "Tue, 15 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P07.Q11",
+      "P07.Q12",
+      "P07.Q13",
+      "P07.Q14"
+    ]
+  },
+  {
+    "day": 57,
+    "date": "Wed, 16 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P07.Q15",
+      "P07.Q16",
+      "P07.Q17",
+      "P07.Q18"
+    ]
+  },
+  {
+    "day": 58,
+    "date": "Thu, 17 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P07.Q19",
+      "P07.Q20",
+      "P07.Q21",
+      "P07.Q22"
+    ]
+  },
+  {
+    "day": 59,
+    "date": "Fri, 18 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P07.Q23",
+      "P07.Q24",
+      "P07.Q25",
+      "P07.Q26"
+    ]
+  },
+  {
+    "day": 60,
+    "date": "Sat, 19 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P07.Q27",
+      "P07.Q28",
+      "P07.Q29",
+      "P07.Q30"
+    ]
+  },
+  {
+    "day": 61,
+    "date": "Sun, 20 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P07.Q31",
+      "P07.Q32",
+      "P07.Q33",
+      "P07.Q34"
+    ]
+  },
+  {
+    "day": 62,
+    "date": "Mon, 21 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P07.Q35",
+      "P08.Q01",
+      "P08.Q02",
+      "P08.Q03"
+    ]
+  },
+  {
+    "day": 63,
+    "date": "Tue, 22 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P08.Q04",
+      "P08.Q05",
+      "P08.Q06",
+      "P08.Q07"
+    ]
+  },
+  {
+    "day": 64,
+    "date": "Wed, 23 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P08.Q08",
+      "P08.Q09",
+      "P08.Q10",
+      "P08.Q11"
+    ]
+  },
+  {
+    "day": 65,
+    "date": "Thu, 24 Dec 2026",
+    "phase": "Phase II: Full 24-Min",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P08.Q12",
+      "P08.Q13",
+      "P08.Q14",
+      "P08.Q15"
+    ]
+  },
+  {
+    "day": 66,
+    "date": "Fri, 25 Dec 2026",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P08.Q16",
+      "P08.Q17",
+      "P08.Q18",
+      "P08.Q19"
+    ]
+  },
+  {
+    "day": 67,
+    "date": "Sat, 26 Dec 2026",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P08.Q20",
+      "P08.Q21",
+      "P08.Q22",
+      "P08.Q23"
+    ]
+  },
+  {
+    "day": 68,
+    "date": "Sun, 27 Dec 2026",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P08.Q24",
+      "P08.Q25",
+      "P08.Q26",
+      "P08.Q27"
+    ]
+  },
+  {
+    "day": 69,
+    "date": "Mon, 28 Dec 2026",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P08.Q28",
+      "P08.Q29",
+      "P08.Q30",
+      "P08.Q31"
+    ]
+  },
+  {
+    "day": 70,
+    "date": "Tue, 29 Dec 2026",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P08.Q32",
+      "P08.Q33",
+      "P08.Q34",
+      "P08.Q35"
+    ]
+  },
+  {
+    "day": 71,
+    "date": "Wed, 30 Dec 2026",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P09.Q01",
+      "P09.Q02",
+      "P09.Q03",
+      "P09.Q04"
+    ]
+  },
+  {
+    "day": 72,
+    "date": "Thu, 31 Dec 2026",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P09.Q05",
+      "P09.Q06",
+      "P09.Q07",
+      "P09.Q08"
+    ]
+  },
+  {
+    "day": 73,
+    "date": "Fri, 01 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P09.Q09",
+      "P09.Q10",
+      "P09.Q11",
+      "P09.Q12"
+    ]
+  },
+  {
+    "day": 74,
+    "date": "Sat, 02 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P09.Q13",
+      "P09.Q14",
+      "P09.Q15",
+      "P09.Q16"
+    ]
+  },
+  {
+    "day": 75,
+    "date": "Sun, 03 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P09.Q17",
+      "P09.Q18",
+      "P09.Q19",
+      "P09.Q20"
+    ]
+  },
+  {
+    "day": 76,
+    "date": "Mon, 04 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P09.Q21",
+      "P09.Q22",
+      "P09.Q23",
+      "P09.Q24"
+    ]
+  },
+  {
+    "day": 77,
+    "date": "Tue, 05 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P09.Q25",
+      "P09.Q26",
+      "P09.Q27",
+      "P09.Q28"
+    ]
+  },
+  {
+    "day": 78,
+    "date": "Wed, 06 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P09.Q29",
+      "P09.Q30",
+      "P09.Q31",
+      "P09.Q32"
+    ]
+  },
+  {
+    "day": 79,
+    "date": "Thu, 07 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P09.Q33",
+      "P09.Q34",
+      "P09.Q35",
+      "P10.Q01"
+    ]
+  },
+  {
+    "day": 80,
+    "date": "Fri, 08 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P10.Q02",
+      "P10.Q03",
+      "P10.Q04",
+      "P10.Q05"
+    ]
+  },
+  {
+    "day": 81,
+    "date": "Sat, 09 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P10.Q06",
+      "P10.Q07",
+      "P10.Q08",
+      "P10.Q09"
+    ]
+  },
+  {
+    "day": 82,
+    "date": "Sun, 10 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P10.Q10",
+      "P10.Q11",
+      "P10.Q12",
+      "P10.Q13"
+    ]
+  },
+  {
+    "day": 83,
+    "date": "Mon, 11 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P10.Q14",
+      "P10.Q15",
+      "P10.Q16",
+      "P10.Q17"
+    ]
+  },
+  {
+    "day": 84,
+    "date": "Tue, 12 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P10.Q18",
+      "P10.Q19",
+      "P10.Q20",
+      "P10.Q21"
+    ]
+  },
+  {
+    "day": 85,
+    "date": "Wed, 13 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P10.Q22",
+      "P10.Q23",
+      "P10.Q24",
+      "P10.Q25"
+    ]
+  },
+  {
+    "day": 86,
+    "date": "Thu, 14 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P10.Q26",
+      "P10.Q27",
+      "P10.Q28",
+      "P10.Q29"
+    ]
+  },
+  {
+    "day": 87,
+    "date": "Fri, 15 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P10.Q30",
+      "P10.Q31",
+      "P10.Q32",
+      "P10.Q33"
+    ]
+  },
+  {
+    "day": 88,
+    "date": "Sat, 16 Jan 2027",
+    "phase": "Phase III: Peak CEED",
+    "partBSlots": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "partAQuestions": [
+      "P10.Q34",
+      "P10.Q35"
+    ]
+  }
+]

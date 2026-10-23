@@ -58,9 +58,30 @@ export function ensureDayRecord(dateStr) {
       emergency: false,
       shieldUsed: false,
       wakeTimestamp: null,
+      examLog: null,
     };
+  } else if (state.days[dateStr].examLog === undefined) {
+    state.days[dateStr].examLog = null;
   }
   return state.days[dateStr];
+}
+
+/** Get exam session log for date */
+export function getExamLog(dateStr) {
+  const day = ensureDayRecord(dateStr);
+  return day.examLog;
+}
+
+/** Save exam session log for date */
+export function saveExamSession(dateStr, sessionData) {
+  const state = getState();
+  const day = ensureDayRecord(dateStr);
+  day.examLog = {
+    updatedAt: Date.now(),
+    ...sessionData,
+  };
+  saveState();
+  return day.examLog;
 }
 
 /** Export state as JSON blob for download */

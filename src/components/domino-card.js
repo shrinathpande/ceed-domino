@@ -9,10 +9,11 @@ import { formatMins } from '../utils/format.js';
 import { playDing } from '../utils/sound.js';
 import { vibrateTap } from '../core/notifications.js';
 
-export function renderDominoCard(domino, dateStr, onTimerStart) {
+export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
   const day = ensureDayRecord(dateStr);
   const done = !!day.completed[domino.id];
   const mins = day.emergency ? domino.emergencyMins : domino.normalMins;
+  const isPaperDomino = domino.id === 'd3';
 
   const card = document.createElement('article');
   card.className = `ledger-card p-4 transition-colors ${
@@ -63,13 +64,28 @@ export function renderDominoCard(domino, dateStr, onTimerStart) {
     <!-- Operational Ledger Footer: XP & Timer Launcher -->
     <div class="mt-3.5 pt-2.5 border-t border-[var(--rule)] flex items-center justify-between font-mono text-xs">
       <span class="text-[var(--muted)] tabular-nums">+${domino.xp} XP</span>
-      <button
-        class="timer-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[2px] bg-[var(--raised)] hover:bg-[var(--border)] text-[var(--text)] border border-[var(--border)] font-semibold transition-colors touch-manipulation active:scale-95"
-        aria-label="Start ${formatMins(mins)} timer for ${domino.title}"
-      >
-        <span class="w-3.5 h-3.5 text-[var(--chart-accent)]">${icon('play')}</span>
-        RUN ${formatMins(mins)}
-      </button>
+      <div class="flex items-center gap-1.5">
+        ${
+          isPaperDomino
+            ? `
+          <button
+            class="proctor-btn inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[2px] bg-[var(--surface)] hover:bg-[var(--raised)] text-[var(--text)] border border-[var(--border)] font-semibold transition-colors touch-manipulation active:scale-95"
+            aria-label="Open Studio Proctor HUD with today's questions"
+          >
+            <span class="w-3.5 h-3.5 text-[var(--chart-accent)]">${icon('book')}</span>
+            STUDIO PROCTOR
+          </button>
+        `
+            : ''
+        }
+        <button
+          class="timer-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[2px] bg-[var(--raised)] hover:bg-[var(--border)] text-[var(--text)] border border-[var(--border)] font-semibold transition-colors touch-manipulation active:scale-95"
+          aria-label="Start ${formatMins(mins)} timer for ${domino.title}"
+        >
+          <span class="w-3.5 h-3.5 text-[var(--chart-accent)]">${icon('play')}</span>
+          RUN ${formatMins(mins)}
+        </button>
+      </div>
     </div>
   `;
 
@@ -98,6 +114,20 @@ export function renderDominoCard(domino, dateStr, onTimerStart) {
       onTimerStart(domino, mins);
     }
   });
+
+  // Bind studio proctor trigger
+  if (isPaperDomino) {
+    const proctorBtn = card.querySelector('.proctor-btn');
+    if (proctorBtn) {
+      proctorBtn.addEventListener('click', () => {
+        if (onOpenStudio) {
+          onOpenStudio(dateStr);
+        } else {
+          window.location.hash = `#/studio?date=${dateStr}`;
+        }
+      });
+    }
+  }
 
   return card;
 }

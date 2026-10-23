@@ -3,6 +3,7 @@
  */
 import { renderDashboard } from './views/dashboard.js';
 import { renderSettings } from './views/settings.js';
+import { renderStudioProctor } from './views/studio-proctor.js';
 
 let _appContainer = null;
 
@@ -19,18 +20,24 @@ export function initApp(container) {
 function route() {
   const hash = window.location.hash || '#/';
 
-  switch (hash) {
-    case '#/settings':
-      renderSettings(_appContainer, () => {
+  if (hash.startsWith('#/studio')) {
+    // Extract date query parameter if present (e.g. #/studio?date=2026-10-22)
+    const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+    const dateParam = urlParams.get('date');
+    renderStudioProctor(
+      _appContainer,
+      () => {
         window.location.hash = '#/';
-      });
-      break;
-
-    case '#/':
-    default:
-      renderDashboard(_appContainer, () => {
-        window.location.hash = '#/settings';
-      });
-      break;
+      },
+      dateParam
+    );
+  } else if (hash === '#/settings') {
+    renderSettings(_appContainer, () => {
+      window.location.hash = '#/';
+    });
+  } else {
+    renderDashboard(_appContainer, () => {
+      window.location.hash = '#/settings';
+    });
   }
 }

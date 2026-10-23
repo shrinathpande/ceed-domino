@@ -129,11 +129,18 @@ function renderDominoCards() {
 
   const dominos = getDominos();
   dominos.forEach((domino) => {
-    const card = renderDominoCard(domino, _currentDateStr, (dom, mins) => {
-      showTimerModal(dom, mins, _currentDateStr, () => {
-        refreshDashboard();
-      });
-    });
+    const card = renderDominoCard(
+      domino,
+      _currentDateStr,
+      (dom, mins) => {
+        showTimerModal(dom, mins, _currentDateStr, () => {
+          refreshDashboard();
+        });
+      },
+      (dateStr) => {
+        window.location.hash = `#/studio?date=${dateStr}`;
+      }
+    );
     card.setAttribute('role', 'listitem');
     list.appendChild(card);
   });

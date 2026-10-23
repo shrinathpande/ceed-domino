@@ -1,0 +1,197 @@
+{
+  "NAT": {
+    "title": "Numerical Answer Type (NAT)",
+    "marks": "+4.0 / 0.0 (Zero Negative Marking)",
+    "evStrategy": "Deliberate Verification",
+    "rule": "NAT carries 32 risk-free marks (21.3% of Part A). Because inputs are numerical without multiple-choice anchors, off-by-one counting errors forfeit credit. Verify spatial counting and fold axes twice; never leave unattempted.",
+    "badge": "ZERO RISK · +4m"
+  },
+  "MSQ": {
+    "title": "Multiple Select Questions (MSQ)",
+    "marks": "+4 (all) / +3 (3 of 4) / +2 (2 of 3+) / +1 (1 of 2+) | −1.0 Wrong Penalty",
+    "evStrategy": "Conservative Partial Harvesting",
+    "rule": "Asymmetric Expected Value (EV): Selecting only verified options guarantees +1/+2/+3 marks with zero penalty risk. Speculating on a 50% subjective probability option yields EV = 0.5(+4) + 0.5(−1) = +1.5m — LOWER than guaranteed +2.0 partial score. Never speculate unless probability of correctness > 67%!",
+    "badge": "ASYMMETRIC EV · HARVEST CERTAIN ONLY"
+  },
+  "MCQ": {
+    "title": "Multiple Choice Questions (MCQ)",
+    "marks": "+3.0 / −0.5 Negative Marking (1:6 Penalty Ratio)",
+    "evStrategy": "Aggressive Two-Option Elimination",
+    "rule": "Because penalty ratio is only 1:6, eliminating 1 distractor turns random-guess EV to (1/3)(+3) + (2/3)(−0.5) = +0.67m. Eliminating 2 distractors sends 50/50 EV to +1.25m per question! Aggressively eliminate two implausible choices and commit.",
+    "badge": "1:6 RATIO · ELIMINATE 2 & COMMIT"
+  },
+  "PART_B_RUBRIC": {
+    "sketching": [
+      {
+        "criterion": "POV & Perspective",
+        "marks": 5,
+        "desc": "Adherence to specified camera POV, eye-level/worm's-eye/bird's-eye horizon line and vanishing points."
+      },
+      {
+        "criterion": "Character & Expressions",
+        "marks": 5,
+        "desc": "Anatomical proportion, lively gesture, foreshortening, and authentic facial emotion."
+      },
+      {
+        "criterion": "Line Quality & Shading",
+        "marks": 5,
+        "desc": "Line-weight hierarchy (bold foreground, medium midground, light background), tonal contrast & directional light."
+      },
+      {
+        "criterion": "Environment & Props",
+        "marks": 5,
+        "desc": "Contextual accuracy of surroundings, material textures, and credible spatial scale."
+      }
+    ],
+    "creativity": [
+      {
+        "criterion": "Originality & Divergence",
+        "marks": 5,
+        "desc": "Avoiding 1st-thought clichés; surprising lateral leap in narrative or concept."
+      },
+      {
+        "criterion": "Stimulus Integration",
+        "marks": 5,
+        "desc": "Seamless, organic integration of assigned symbol/fragment without geometric distortion."
+      },
+      {
+        "criterion": "Visual Storytelling",
+        "marks": 5,
+        "desc": "Clear narrative progression, humour, rhythm, and unexpected twist across frames."
+      },
+      {
+        "criterion": "Craft & Titles",
+        "marks": 5,
+        "desc": "High-contrast black-ink rendering, clean composition, and witty conceptual titling."
+      }
+    ],
+    "visual_sensitivity": [
+      {
+        "criterion": "Systemic Consistency",
+        "marks": 5,
+        "desc": "Uniform stroke weight, corner radius, and degree of abstraction across all 4 icons/glyphs."
+      },
+      {
+        "criterion": "Semantic Legibility",
+        "marks": 5,
+        "desc": "Instant readability of meaning at first glance with zero textual labels inside boundaries."
+      },
+      {
+        "criterion": "Figure-Ground Balance",
+        "marks": 5,
+        "desc": "Equilibrium between positive black ink and negative white space inside the bounding box."
+      },
+      {
+        "criterion": "Edge Crispness & Craft",
+        "marks": 5,
+        "desc": "Precision of edges, pristine geometric control, and uniform solid black fill."
+      }
+    ],
+    "form_sensitivity": [
+      {
+        "criterion": "Form DNA Retention",
+        "marks": 5,
+        "desc": "Preserving core geometric proportion, silhouette character, and formal integrity of the inspiration form."
+      },
+      {
+        "criterion": "Form-Function Synthesis",
+        "marks": 5,
+        "desc": "Harmonious integration of operational features (handles, nozzles, joints, controls) into the sculptural body."
+      },
+      {
+        "criterion": "3D Volume & Shading",
+        "marks": 5,
+        "desc": "Believable 3D volumetric rendering, highlight lines, core shadows, and surface texture."
+      },
+      {
+        "criterion": "Material & Detailing",
+        "marks": 5,
+        "desc": "Authentic depiction of parting lines, material transitions, and refined ergonomic touchpoints."
+      }
+    ],
+    "problem_id": [
+      {
+        "criterion": "Problem Depth & Empathy",
+        "marks": 5,
+        "desc": "Identification of subtle, high-friction, unarticulated stakeholder pain points rather than generic issues."
+      },
+      {
+        "criterion": "Analytical Rigour",
+        "marks": 5,
+        "desc": "Structured 'How Might We' framing with clear causality and socio-technical context."
+      },
+      {
+        "criterion": "Solution Ingenuity",
+        "marks": 5,
+        "desc": "Novel, feasible, and user-centric design interventions directly solving the stated problems."
+      },
+      {
+        "criterion": "Visual Explanatory Clarity",
+        "marks": 5,
+        "desc": "Clear annotated diagrams, exploded callouts, user-flow cues, and legible explanatory notes."
+      }
+    ]
+  },
+  "errorTaxonomy": [
+    {
+      "id": "calculation_slip",
+      "label": "Calculation / Arithmetic Slip",
+      "section": "NAT"
+    },
+    {
+      "id": "visual_miscount",
+      "label": "Visual / Surface Enumeration Error",
+      "section": "NAT"
+    },
+    {
+      "id": "spatial_fold_trap",
+      "label": "Fold / Net Orientation Confusion",
+      "section": "NAT / MCQ"
+    },
+    {
+      "id": "over_speculation",
+      "label": "Over-Speculation on Uncertain Option (Violated MSQ EV Rule)",
+      "section": "MSQ"
+    },
+    {
+      "id": "partial_miss",
+      "label": "Missed Verified Correct Option",
+      "section": "MSQ"
+    },
+    {
+      "id": "distractor_trap",
+      "label": "Fell for Plausible Distractor / Negative Mark",
+      "section": "MCQ"
+    },
+    {
+      "id": "pacing_rush",
+      "label": "Rushed Reading / Misread Question Stem",
+      "section": "ALL"
+    },
+    {
+      "id": "perspective_distortion",
+      "label": "Horizon Line / Vanishing Point Drift",
+      "section": "Part B Q1"
+    },
+    {
+      "id": "flat_line_weight",
+      "label": "Monotonous Line Weight (No Foreground Hierarchy)",
+      "section": "Part B Q1/Q4"
+    },
+    {
+      "id": "cliche_concept",
+      "label": "First-Thought Cliché (Low Originality)",
+      "section": "Part B Q2"
+    },
+    {
+      "id": "inconsistent_stroke",
+      "label": "Inconsistent Icon Corner / Stroke Language",
+      "section": "Part B Q3"
+    },
+    {
+      "id": "generic_problem",
+      "label": "Generic Problem Statement (Lacked Specificity)",
+      "section": "Part B Q5"
+    }
+  ]
+}
