@@ -35,29 +35,25 @@
   }
 
   .dark {
-    --ground: #0d0e11;
-    --surface: #141519;
-    --raised: #1d1f25;
-    --border: #282a32;
-    --rule: #202228;
-    --control: #383b45;
-    --text: #f0f0ee;
-    --muted: #8b8e98;
-    
-    /* User Custom Dark Palette: color-1 (#d4e0ff) & color-2 (#FFCFE5) */
-    --color-1: #d4e0ff;
-    --color-2: #FFCFE5;
+    /* Pure Pitch AMOLED Black (#000000) for OLED Displays / iPhone 12 */
+    --ground: #000000;
+    --surface: #0a0a0a;
+    --raised: #141414;
+    --border: #222222;
+    --rule: #1a1a1a;
+    --control: #2e2e2e;
+    --text: #ffffff;
+    --muted: #888888;
+    --accent: #ffffff;
+    --chart-accent: #ffffff; /* Clean high-contrast monochrome accent */
+    --domino-accent: #ffffff;
 
-    --accent: var(--color-1);
-    --chart-accent: var(--color-1); /* Replaces blue accent with color-1 (#d4e0ff) */
-    --domino-accent: var(--color-2); /* Distinct color-2 (#FFCFE5) for domino cards */
+    --positive: #22c55e;
+    --negative: #ef4444;
+    --warning: #f59e0b;
 
-    --positive: #2e7d32;
-    --negative: #c4242a;
-    --warning: #92400e;
-
-    /* GitHub Contribution Matrix Green Palette (Dark) */
-    --gh-l0: #161b22;
+    /* GitHub Contribution Matrix Green Palette (AMOLED Dark) */
+    --gh-l0: #121212;
     --gh-l1: #0e4429;
     --gh-l2: #006d32;
     --gh-l3: #26a641;
@@ -143,50 +139,4 @@
 
 .border-pulse-active {
   animation: borderPulse 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* User Custom Dark Theme: Domino Card Color-2 (#FFCFE5) */
-.dark .domino-card-mandatory {
-  border-left-color: var(--color-2) !important;
-}
-
-.dark .domino-card-mandatory h3:not(.line-through) {
-  color: var(--color-2);
-}
-
-.dark .domino-card-mandatory .domino-badge-mandatory {
-  background-color: rgba(255, 207, 229, 0.15) !important;
-  color: var(--color-2) !important;
-  border-color: rgba(255, 207, 229, 0.4) !important;
-}
-
-.dark .domino-card-mandatory .check-btn[aria-pressed="true"] {
-  background-color: var(--color-2) !important;
-  border-color: var(--color-2) !important;
-  color: #0d0e11 !important;
-}
-
-.dark .domino-card-mandatory .expand-icon {
-  color: var(--color-2);
-}
-
-.dark .domino-card-mandatory.domino-done-brutalist {
-  border-color: rgba(255, 207, 229, 0.35) !important;
-  border-left-color: var(--color-2) !important;
-}
-
-.dark .domino-card-mandatory.border-pulse-active {
-  animation: borderPulseDomino 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes borderPulseDomino {
-  0% {
-    box-shadow: 0 0 0 0 var(--color-2);
-  }
-  40% {
-    box-shadow: 0 0 0 3px var(--color-2);
-  }
-  100% {
-    box-shadow: 0 0 0 0 transparent;
-  }
 }
