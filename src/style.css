@@ -140,18 +140,16 @@
 }
 
 /* Domino Accent (#FF69AF) */
-.domino-card-mandatory {
-  border-left-color: var(--domino-accent) !important;
-}
-
 .domino-card-mandatory .domino-badge-mandatory {
   background-color: rgba(255, 105, 175, 0.15) !important;
   color: var(--domino-accent) !important;
   border-color: rgba(255, 105, 175, 0.35) !important;
 }
 
+/* Whole card border lights up with #FF69AF when completed */
 .domino-card-mandatory.domino-done-brutalist {
-  border-left-color: var(--domino-accent) !important;
+  border-color: var(--domino-accent) !important;
+  background-color: var(--surface) !important;
 }
 
 .domino-card-mandatory .check-btn[aria-pressed="true"] {

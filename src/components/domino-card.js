@@ -23,10 +23,10 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
   const isMandatory = isDominoTask(domino);
 
   const card = document.createElement('article');
-  card.className = `ledger-card p-3 transition-colors ${
+  card.className = `ledger-card p-3 transition-all ${
     isMandatory
-      ? 'domino-card-mandatory border-l-4 border-l-[var(--domino-accent,var(--text))]'
-      : 'domino-card-routine border-l-4 border-l-transparent opacity-90'
+      ? 'domino-card-mandatory'
+      : 'domino-card-routine opacity-90'
   } ${
     done ? 'domino-done-brutalist' : ''
   }`;
