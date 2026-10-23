@@ -90,6 +90,12 @@ export const DEFAULT_DOMINOS = [
   },
 ];
 
+/** Check if a block is a mandatory timed task based on its badge code */
+export function isDominoTask(domino) {
+  if (!domino || !domino.badge) return false;
+  return domino.badge.toUpperCase().includes('DOMINO');
+}
+
 /** Get active dominos (custom if set, otherwise defaults) */
 export function getDominos() {
   const state = getState();
@@ -99,10 +105,10 @@ export function getDominos() {
   return DEFAULT_DOMINOS;
 }
 
-/** Get core domino IDs (used for streak calculation — excludes launchpad, siesta, sleep) */
+/** Get core mandatory domino IDs (badge must contain 'DOMINO') */
 export function getCoreDominoIds() {
   return getDominos()
-    .filter((d) => !['launchpad', 'siesta', 'sleep'].includes(d.id))
+    .filter((d) => isDominoTask(d))
     .map((d) => d.id);
 }
 

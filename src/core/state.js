@@ -120,28 +120,32 @@ export function getCumulativeDominoMinutes(dominoId, dominosList = null) {
   return totalMinutes;
 }
 
-/** Calculate grand total logged minutes across all dominos across all days */
+/** Calculate grand total logged minutes across all MANDATORY DOMINO tasks across all days */
 export function getGrandTotalLoggedMinutes(dominosList = null) {
   const state = getState();
+  const dominos = dominosList || state.settings.customDominos || [
+    { id: 'd1', badge: 'DOMINO 1', normalMins: 120, emergencyMins: 45 },
+    { id: 'd2', badge: 'DOMINO 2', normalMins: 90, emergencyMins: 30 },
+    { id: 'd3', badge: 'DOMINO 3', normalMins: 120, emergencyMins: 60 },
+    { id: 'd4', badge: 'DOMINO 4', normalMins: 120, emergencyMins: 60 },
+  ];
+  const dominoMap = new Map();
+  dominos
+    .filter((d) => d.badge && d.badge.toUpperCase().includes('DOMINO'))
+    .forEach((d) => dominoMap.set(d.id, d));
+
   let totalMinutes = 0;
 
   for (const date in state.days) {
     const day = state.days[date];
     if (!day) continue;
 
-    if (day.durations) {
-      for (const id in day.durations) {
+    for (const [id, dom] of dominoMap.entries()) {
+      if (day.durations && day.durations[id] !== undefined) {
         totalMinutes += Number(day.durations[id]);
-      }
-    }
-    // Also include completed tasks without explicit durations
-    if (day.completed) {
-      for (const id in day.completed) {
-        if (!day.durations || day.durations[id] === undefined) {
-          const targetDom = dominosList ? dominosList.find((d) => d.id === id) : null;
-          const floorMins = targetDom ? (day.emergency ? targetDom.emergencyMins : targetDom.normalMins) : 0;
-          totalMinutes += floorMins;
-        }
+      } else if (day.completed && day.completed[id]) {
+        const floorMins = day.emergency ? dom.emergencyMins : dom.normalMins;
+        totalMinutes += floorMins;
       }
     }
   }
@@ -163,14 +167,30 @@ export function formatDetailedHours(totalMinutes) {
   return `${h}h ${m}m`;
 }
 
-/** Count total completed tasks across all historical days */
-export function getAllCompletedTasksCount() {
+/** Count total completed mandatory DOMINO tasks across all historical days */
+export function getAllCompletedTasksCount(dominosList = null) {
   const state = getState();
+  const dominos = dominosList || state.settings.customDominos || [
+    { id: 'd1', badge: 'DOMINO 1' },
+    { id: 'd2', badge: 'DOMINO 2' },
+    { id: 'd3', badge: 'DOMINO 3' },
+    { id: 'd4', badge: 'DOMINO 4' },
+  ];
+  const dominoIds = new Set(
+    dominos
+      .filter((d) => d.badge && d.badge.toUpperCase().includes('DOMINO'))
+      .map((d) => d.id)
+  );
+
   let count = 0;
   for (const date in state.days) {
     const day = state.days[date];
     if (day && day.completed) {
-      count += Object.keys(day.completed).length;
+      for (const id in day.completed) {
+        if (dominoIds.has(id)) {
+          count++;
+        }
+      }
     }
   }
   return count;

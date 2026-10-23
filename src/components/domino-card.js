@@ -5,6 +5,7 @@
 import { icon } from '../icons/index.js';
 import { ensureDayRecord, getDominoDuration, getCumulativeDominoMinutes, formatHours, formatDetailedHours } from '../core/state.js';
 import { toggleDomino } from '../core/streak.js';
+import { isDominoTask } from '../core/dominos.js';
 import { formatMins } from '../utils/format.js';
 import { playDing } from '../utils/sound.js';
 import { vibrateTap } from '../core/notifications.js';
@@ -19,9 +20,12 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
   const isUnderFloor = done && loggedMins < mins;
   const isOverFloor = done && loggedMins > mins;
   const isPaperDomino = domino.id === 'd3';
+  const isMandatory = isDominoTask(domino);
 
   const card = document.createElement('article');
   card.className = `ledger-card p-4 transition-colors ${
+    isMandatory ? 'border-l-4 border-l-[var(--text)]' : 'border-l-4 border-l-transparent opacity-90'
+  } ${
     done ? 'domino-done-brutalist' : ''
   }`;
   card.setAttribute('data-domino-id', domino.id);
@@ -35,14 +39,25 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
           <span class="font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] uppercase tracking-wider">
             ${domino.badge}
           </span>
+          ${
+            isMandatory
+              ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--text)] text-[var(--surface)] uppercase tracking-wider">MANDATORY</span>'
+              : '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--muted)] uppercase tracking-wider">ROUTINE</span>'
+          }
           <span class="text-[var(--muted)]">${domino.offset}</span>
           <span class="font-semibold text-[var(--text)] tabular-nums flex items-center gap-1" title="Minimum required floor">
             <span class="w-3 h-3 text-[var(--muted)]">${icon('timer')}</span>
             ${formatMins(mins)}
           </span>
-          <span class="text-[var(--chart-accent)] font-bold text-[10px] bg-[var(--surface)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)] tabular-nums ml-auto" title="Total hours logged across all days">
-            Σ ${formatHours(cumulativeMins)}
-          </span>
+          ${
+            isMandatory
+              ? `
+            <span class="text-[var(--chart-accent)] font-bold text-[10px] bg-[var(--surface)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)] tabular-nums ml-auto" title="Total hours logged across all days">
+              Σ ${formatHours(cumulativeMins)}
+            </span>
+          `
+              : ''
+          }
         </div>
 
         <!-- Title -->

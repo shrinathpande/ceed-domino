@@ -120,14 +120,14 @@ export function triggerWakeUp(dateStr) {
   saveState();
 }
 
-/** Get current Task-Completion Level (Every 7 Tasks = 1 Level) */
+/** Get current Domino-Completion Level (Every 4 Mandatory Dominos = 1 Full Level) */
 export function getLevel() {
   const tasks = getAllCompletedTasksCount();
-  return Math.floor(tasks / 7) + 1;
+  return Math.floor(tasks / 4) + 1;
 }
 
 /** Get Level progress (0 to 1) towards the next Level */
 export function getLevelProgress() {
   const tasks = getAllCompletedTasksCount();
-  return (tasks % 7) / 7;
+  return (tasks % 4) / 4;
 }

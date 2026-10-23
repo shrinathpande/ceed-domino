@@ -3,7 +3,7 @@
  * Full Domino Block editing, reordering, custom additions, date ranges, and appearance.
  */
 import { getState, updateSettings, resetState } from '../core/state.js';
-import { DEFAULT_DOMINOS, getDominos } from '../core/dominos.js';
+import { DEFAULT_DOMINOS, getDominos, isDominoTask } from '../core/dominos.js';
 import { icon } from '../icons/index.js';
 import { applyTheme } from '../components/theme-toggle.js';
 import { renderBackupControls } from '../components/backup-controls.js';
@@ -161,6 +161,7 @@ function renderDominoEditorItems(container, dominos, onBack) {
   dominoList.innerHTML = '';
 
   dominos.forEach((d, index) => {
+    const isMandatory = isDominoTask(d);
     const item = document.createElement('div');
     item.className = 'flex items-center gap-2 p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]';
     
@@ -177,8 +178,11 @@ function renderDominoEditorItems(container, dominos, onBack) {
 
       <!-- Domino Details -->
       <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 flex-wrap">
           <span class="text-[10px] font-bold px-1 py-0.5 bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] rounded-[1px]">${d.badge}</span>
+          <span class="text-[9px] font-bold px-1 py-0.2 rounded-[1px] ${isMandatory ? 'bg-[var(--text)] text-[var(--surface)]' : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--muted)]'} uppercase tracking-wider">
+            ${isMandatory ? 'MANDATORY TIMED' : 'ROUTINE'}
+          </span>
           <p class="text-xs font-bold text-[var(--text)] truncate">${d.title}</p>
         </div>
         <p class="text-[10px] text-[var(--muted)] mt-0.5 font-sans">${formatMins(d.normalMins)} standard · ${d.emergencyMins}m emergency floor</p>
@@ -286,6 +290,7 @@ function showEditDominoModal(existing, onSave) {
             <label class="block text-[11px] text-[var(--muted)] mb-1">BADGE CODE</label>
             <input type="text" id="editBadgeInput" value="${initial.badge}" placeholder="DOMINO 1"
               class="w-full px-2.5 py-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] focus:outline-none focus:border-[var(--text)]" />
+            <p class="text-[9px] text-[var(--muted)] mt-1 font-sans">Include "DOMINO" (e.g. DOMINO 5) for mandatory timed task.</p>
           </div>
           <div>
             <label class="block text-[11px] text-[var(--muted)] mb-1">TIME OFFSET</label>
