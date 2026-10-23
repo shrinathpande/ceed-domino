@@ -1,7 +1,7 @@
 /**
- * Streak Engine — streak calculation, shields, quality-weighted level system.
+ * Streak Engine — streak calculation, shields, task-completion level system.
  */
-import { getState, ensureDayRecord, saveState, getQualityScore, removeDominoRating } from './state.js';
+import { getState, ensureDayRecord, saveState, getAllCompletedTasksCount } from './state.js';
 import { getCoreDominoIds, getDominoById } from './dominos.js';
 import { getTotalDays, getDateStrFromOffset, getCurrentDateStr } from '../utils/dates.js';
 
@@ -50,7 +50,6 @@ export function toggleDomino(id, dateStr) {
 
   if (day.completed[id]) {
     delete day.completed[id];
-    removeDominoRating(id, dateStr);
   } else {
     day.completed[id] = true;
   }
@@ -114,14 +113,14 @@ export function triggerWakeUp(dateStr) {
   saveState();
 }
 
-/** Get current Quality-Weighted Level (Every 25 Quality Points = 1 Level) */
+/** Get current Task-Completion Level (Every 7 Tasks = 1 Level) */
 export function getLevel() {
-  const quality = getQualityScore();
-  return Math.floor(quality / 25) + 1;
+  const tasks = getAllCompletedTasksCount();
+  return Math.floor(tasks / 7) + 1;
 }
 
 /** Get Level progress (0 to 1) towards the next Level */
 export function getLevelProgress() {
-  const quality = getQualityScore();
-  return (quality % 25) / 25;
+  const tasks = getAllCompletedTasksCount();
+  return (tasks % 7) / 7;
 }

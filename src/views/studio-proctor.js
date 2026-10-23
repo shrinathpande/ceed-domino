@@ -4,7 +4,7 @@
  * 1. 120-Minute Master Proctor Timer with automated 24-minute slot transitions & audio cues
  * 2. 5 Mandatory Studio Prompts (Q1-Q5, 20m each) with official evaluation criteria checklists
  * 3. Game Theory Reference Drawer (Marking Scheme & Time Split Analysis)
- * 4. Direct integration with "Be Honest" quality rating on completion
+ * 4. Direct session completion and momentum logging
  */
 import partBData from '../data/part_b_questions.json';
 import { ensureDayRecord } from '../core/state.js';
@@ -14,8 +14,6 @@ import { icon } from '../icons/index.js';
 import { playDing } from '../utils/sound.js';
 import { vibrateTap, vibrateCompletion, showNotification } from '../core/notifications.js';
 import { showToast } from '../components/header.js';
-import { showHonestModal } from '../components/honest-modal.js';
-import { getDominoById } from '../core/dominos.js';
 
 let _activeDate = null;
 let _currentTab = 'partB'; // 'partB' | 'gameTheory'
@@ -259,7 +257,7 @@ function renderPartBTab(container, dayInfo, isD3Done) {
       <!-- Complete Session Action Button -->
       <button id="completeStudioBtn" class="w-full py-3.5 rounded-[2px] bg-[var(--text)] hover:opacity-90 text-[var(--surface)] font-mono text-xs font-bold tracking-wider uppercase transition-transform active:scale-[0.99] touch-manipulation flex items-center justify-center gap-2">
         <span class="w-4 h-4">${icon('check')}</span>
-        ${isD3Done ? 'UPDATE BE HONEST RATING' : 'COMPLETE STUDIO SESSION & BE HONEST'}
+        ${isD3Done ? 'DOMINO 3 COMPLETED' : 'COMPLETE 120m STUDIO SESSION'}
       </button>
     </div>
   `;
@@ -328,12 +326,10 @@ function renderPartBTab(container, dayInfo, isD3Done) {
       }
       playDing();
       vibrateCompletion();
-
-      const d3Domino = getDominoById('d3');
-      showHonestModal(d3Domino, _activeDate, () => {
-        showToast('Domino 3 Completed & Quality Logged!', 'success');
+      showToast('Domino 3 (Part B Studio) Completed!', 'success');
+      setTimeout(() => {
         if (_onBack) _onBack();
-      });
+      }, 500);
     });
   }
 }
@@ -452,11 +448,13 @@ function startProctorClock() {
       playDing();
       vibrateCompletion();
       showNotification('120-Minute Studio Session Finished!', {
-        body: 'Time to rate your performance in Be Honest.',
+        body: 'Studio time complete. Great work.',
       });
       showToast('120-Minute Studio Time Expired!', 'info');
-      const d3Domino = getDominoById('d3');
-      showHonestModal(d3Domino, _activeDate);
+      const day = ensureDayRecord(_activeDate);
+      if (!day.completed['d3']) {
+        toggleDomino('d3', _activeDate);
+      }
     }
   }, 1000);
 }

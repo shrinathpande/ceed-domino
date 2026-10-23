@@ -2,7 +2,7 @@
  * Header Component — Industrial Brutalist Instrument Header.
  * Precision ledger metrics: Day count, streak count, shields, XP ledger, and relative wake offset.
  */
-import { getState, ensureDayRecord, getAverageHonestyRating, getAllCompletedTasksCount } from '../core/state.js';
+import { getState, ensureDayRecord, getAllCompletedTasksCount } from '../core/state.js';
 import { icon } from '../icons/index.js';
 import { getDayIndex, getPhaseLabel, getDaysRemaining, getWakeOffset } from '../utils/dates.js';
 import { calculateStreak, getLevel, getLevelProgress, triggerWakeUp, useStreakShield } from '../core/streak.js';
@@ -16,7 +16,6 @@ export function renderHeader(container, currentDateStr) {
   const daysLeft = getDaysRemaining();
   const level = getLevel();
   const levelProgress = getLevelProgress();
-  const avgHonesty = getAverageHonestyRating();
   const totalTasks = getAllCompletedTasksCount();
   const wakeOffset = getWakeOffset(day.wakeTimestamp);
   const isAwake = !!day.wakeTimestamp;
@@ -64,7 +63,7 @@ export function renderHeader(container, currentDateStr) {
           </div>
         </div>
 
-        <!-- Metric Ledger Row: Level, Quality progress, Be Honest Average, and Wake Offset Engine -->
+        <!-- Metric Ledger Row: Level, Progress Rail, Completed Tasks, and Wake Offset Engine -->
         <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-[var(--rule)] text-xs font-mono">
           <div class="flex items-center gap-2.5">
             <span class="text-[var(--text)] font-semibold flex items-center gap-1">
@@ -72,16 +71,15 @@ export function renderHeader(container, currentDateStr) {
               <span>LVL ${level}</span>
             </span>
 
-            <!-- Quality Progress Rail -->
-            <div class="w-12 h-1.5 bg-[var(--border)] rounded-[1px] overflow-hidden" role="progressbar" aria-valuenow="${Math.round(levelProgress * 100)}" aria-valuemin="0" aria-valuemax="100" title="Progress to Level ${level + 1}">
+            <!-- Progress Rail -->
+            <div class="w-14 h-1.5 bg-[var(--border)] rounded-[1px] overflow-hidden" role="progressbar" aria-valuenow="${Math.round(levelProgress * 100)}" aria-valuemin="0" aria-valuemax="100" title="Progress to Level ${level + 1}">
               <div class="h-full bg-[var(--chart-accent)]" style="width: ${levelProgress * 100}%"></div>
             </div>
 
-            <!-- Be Honest Average Metric -->
-            <span class="text-[var(--text)] font-bold flex items-center gap-1 text-[11px] bg-[var(--raised)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)]">
-              <span class="text-[var(--chart-accent)]">★</span>
-              <span>${avgHonesty.toFixed(1)}/5.0</span>
-              <span class="text-[9px] uppercase tracking-wider text-[var(--muted)]">HONEST</span>
+            <!-- Total Tasks Completed Badge -->
+            <span class="text-[var(--text)] font-semibold flex items-center gap-1 text-[11px] bg-[var(--raised)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)]">
+              <span class="tabular-nums font-bold">${totalTasks}</span>
+              <span class="text-[9px] uppercase tracking-wider text-[var(--muted)]">TASKS</span>
             </span>
 
             <span class="text-[var(--muted)] tabular-nums hidden sm:inline">

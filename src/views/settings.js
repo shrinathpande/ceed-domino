@@ -148,7 +148,7 @@ export function renderSettings(container, onBack) {
   });
 
   container.querySelector('#resetAllBtn').addEventListener('click', () => {
-    if (confirm('CRITICAL ACTION: Reset all tracking logs, Be Honest ratings, and custom domino settings?')) {
+    if (confirm('CRITICAL ACTION: Reset all tracking logs, streaks, and custom domino settings?')) {
       resetState();
       showToast('All state data purged.', 'info');
       if (onBack) onBack();
