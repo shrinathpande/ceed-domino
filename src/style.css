@@ -19,9 +19,7 @@
     --warning: #b45309;
     --chart-accent: #0f4c81; /* Raw industrial blueprint cobalt */
     
-    --color-1: #d4e0ff;
-    --color-2: #FFCFE5;
-    --domino-accent: #0e0e0e;
+    --domino-accent: #FF69AF;
 
     --radius-card: 2px;
     --radius-control: 2px;
@@ -46,7 +44,7 @@
     --muted: #888888;
     --accent: #ffffff;
     --chart-accent: #ffffff; /* Clean high-contrast monochrome accent */
-    --domino-accent: #ffffff;
+    --domino-accent: #FF69AF; /* Vibrant Domino Accent */
 
     --positive: #22c55e;
     --negative: #ef4444;
@@ -139,4 +137,41 @@
 
 .border-pulse-active {
   animation: borderPulse 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Domino Accent (#FF69AF) */
+.domino-card-mandatory {
+  border-left-color: var(--domino-accent) !important;
+}
+
+.domino-card-mandatory .domino-badge-mandatory {
+  background-color: rgba(255, 105, 175, 0.15) !important;
+  color: var(--domino-accent) !important;
+  border-color: rgba(255, 105, 175, 0.35) !important;
+}
+
+.domino-card-mandatory.domino-done-brutalist {
+  border-left-color: var(--domino-accent) !important;
+}
+
+.domino-card-mandatory .check-btn[aria-pressed="true"] {
+  background-color: var(--domino-accent) !important;
+  border-color: var(--domino-accent) !important;
+  color: #000000 !important;
+}
+
+.domino-card-mandatory.border-pulse-active {
+  animation: borderPulseDomino 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes borderPulseDomino {
+  0% {
+    box-shadow: 0 0 0 0 var(--domino-accent);
+  }
+  40% {
+    box-shadow: 0 0 0 3px var(--domino-accent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
 }
