@@ -3,15 +3,17 @@
  * High-legibility typography, crisp border tokens, exact time budgets, and tactile feedback.
  */
 import { icon } from '../icons/index.js';
-import { ensureDayRecord } from '../core/state.js';
+import { ensureDayRecord, getDominoRating } from '../core/state.js';
 import { toggleDomino } from '../core/streak.js';
 import { formatMins } from '../utils/format.js';
 import { playDing } from '../utils/sound.js';
 import { vibrateTap } from '../core/notifications.js';
+import { showHonestModal } from './honest-modal.js';
 
 export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
   const day = ensureDayRecord(dateStr);
   const done = !!day.completed[domino.id];
+  const rating = getDominoRating(domino.id, dateStr);
   const mins = day.emergency ? domino.emergencyMins : domino.normalMins;
   const isPaperDomino = domino.id === 'd3';
 
@@ -61,9 +63,22 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
       </button>
     </div>
 
-    <!-- Operational Ledger Footer: XP & Timer Launcher -->
+    <!-- Operational Ledger Footer: Be Honest Score & Timer Launcher -->
     <div class="mt-3.5 pt-2.5 border-t border-[var(--rule)] flex items-center justify-between font-mono text-xs">
-      <span class="text-[var(--muted)] tabular-nums">+${domino.xp} XP</span>
+      <div>
+        ${
+          done
+            ? `
+          <button class="rating-badge-btn inline-flex items-center gap-1 px-2 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] font-mono text-[11px] font-bold hover:border-[var(--control)] touch-manipulation active:scale-95" title="Tap to change Be Honest rating">
+            <span class="text-[var(--chart-accent)]">★ ${rating || 5}/5</span>
+            <span class="text-[9px] uppercase tracking-wider text-[var(--muted)]">HONEST</span>
+          </button>
+        `
+            : `
+          <span class="text-[var(--muted)] uppercase text-[10px] tracking-wider">FLOOR: ${formatMins(mins)}</span>
+        `
+        }
+      </div>
       <div class="flex items-center gap-1.5">
         ${
           isPaperDomino
@@ -104,8 +119,19 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
       card.classList.remove('border-pulse-active');
       void card.offsetWidth; // Force DOM reflow to re-trigger animation
       card.classList.add('border-pulse-active');
+
+      // Prompt Be Honest quality rating immediately
+      showHonestModal(domino, dateStr);
     }
   });
+
+  // Bind rating badge click to re-rate
+  const ratingBtn = card.querySelector('.rating-badge-btn');
+  if (ratingBtn) {
+    ratingBtn.addEventListener('click', () => {
+      showHonestModal(domino, dateStr);
+    });
+  }
 
   // Bind timer trigger
   const timerBtn = card.querySelector('.timer-btn');

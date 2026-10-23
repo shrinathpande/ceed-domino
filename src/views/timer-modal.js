@@ -8,6 +8,7 @@ import { startTimer, stopTimer, togglePause, isTimerActive, isTimerPaused, getTi
 import { toggleDomino } from '../core/streak.js';
 import { showToast } from '../components/header.js';
 import { showNotification } from '../core/notifications.js';
+import { showHonestModal } from '../components/honest-modal.js';
 
 let _modalEl = null;
 let _onClose = null;
@@ -63,7 +64,7 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
       displayEl.textContent = '00:00:00';
       progressEl.style.width = '100%';
       showNotification(`${domino.title} Timer Complete`, {
-        body: 'Mark domino complete.',
+        body: 'Time to rate your performance in Be Honest.',
       });
       showToast(`${domino.title} complete.`, 'success');
 
@@ -72,6 +73,7 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
         if (!day.completed[domino.id]) {
           toggleDomino(domino.id, _activeDateStr);
         }
+        showHonestModal(domino, _activeDateStr);
       }
     },
   });
@@ -93,6 +95,9 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
     }
     stopTimer();
     hideTimerModal();
+    if (_activeDateStr) {
+      showHonestModal(domino, _activeDateStr);
+    }
   };
 
   closeBtn.onclick = (e) => {

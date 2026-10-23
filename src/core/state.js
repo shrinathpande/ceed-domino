@@ -7,7 +7,6 @@ const STORAGE_KEY = 'ceed_domino_state_v2';
 
 const DEFAULT_STATE = {
   shields: 2,
-  xp: 0,
   days: {},
   settings: {
     startDate: '2026-10-22',
@@ -55,15 +54,81 @@ export function ensureDayRecord(dateStr) {
   if (!state.days[dateStr]) {
     state.days[dateStr] = {
       completed: {},
+      ratings: {}, // 'd1': 5, etc.
       emergency: false,
       shieldUsed: false,
       wakeTimestamp: null,
       examLog: null,
     };
-  } else if (state.days[dateStr].examLog === undefined) {
-    state.days[dateStr].examLog = null;
+  } else {
+    if (state.days[dateStr].ratings === undefined) {
+      state.days[dateStr].ratings = {};
+    }
+    if (state.days[dateStr].examLog === undefined) {
+      state.days[dateStr].examLog = null;
+    }
   }
   return state.days[dateStr];
+}
+
+/** Get Be Honest rating for a domino on a specific date */
+export function getDominoRating(dominoId, dateStr) {
+  const day = ensureDayRecord(dateStr);
+  return day.ratings ? day.ratings[dominoId] || null : null;
+}
+
+/** Set Be Honest rating for a domino on a specific date */
+export function setDominoRating(dominoId, dateStr, rating) {
+  const day = ensureDayRecord(dateStr);
+  day.ratings = day.ratings || {};
+  day.ratings[dominoId] = Math.max(1, Math.min(5, Number(rating)));
+  saveState();
+}
+
+/** Remove Be Honest rating for a domino */
+export function removeDominoRating(dominoId, dateStr) {
+  const day = ensureDayRecord(dateStr);
+  if (day.ratings && day.ratings[dominoId]) {
+    delete day.ratings[dominoId];
+    saveState();
+  }
+}
+
+/** Count total completed tasks across all historical days */
+export function getAllCompletedTasksCount() {
+  const state = getState();
+  let count = 0;
+  for (const date in state.days) {
+    const day = state.days[date];
+    if (day && day.completed) {
+      count += Object.keys(day.completed).length;
+    }
+  }
+  return count;
+}
+
+/** Get overall average Be Honest rating across all rated tasks */
+export function getAverageHonestyRating() {
+  const state = getState();
+  let sum = 0;
+  let count = 0;
+  for (const date in state.days) {
+    const day = state.days[date];
+    if (day && day.ratings) {
+      for (const id in day.ratings) {
+        sum += day.ratings[id];
+        count++;
+      }
+    }
+  }
+  return count > 0 ? sum / count : 5.0; // Default to 5.0 if no ratings yet
+}
+
+/** Get Quality Score = Total Completed Tasks * Average Honesty Rating */
+export function getQualityScore() {
+  const totalTasks = getAllCompletedTasksCount();
+  const avgRating = getAverageHonestyRating();
+  return Math.round(totalTasks * avgRating);
 }
 
 /** Get exam session log for date */

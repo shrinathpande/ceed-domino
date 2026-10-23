@@ -89,7 +89,7 @@ export function renderSettings(container, onBack) {
       <!-- Section: System Wipe -->
       <section class="ledger-card p-4 border-[var(--negative)]">
         <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--negative)] mb-1">DATA RESET TERMINAL</h2>
-        <p class="text-xs text-[var(--muted)] mb-3 font-sans">Purges all local historical logs, active streak records, and level XP back to factory reset.</p>
+        <p class="text-xs text-[var(--muted)] mb-3 font-sans">Purges all local historical logs, active streak records, and quality scores back to factory reset.</p>
         <button id="resetAllBtn" class="w-full py-2 rounded-[2px] bg-[var(--raised)] border border-[var(--negative)] text-[var(--negative)] text-xs font-bold hover:bg-[var(--negative)] hover:text-white transition-colors touch-manipulation active:scale-[0.99]">
           PURGE ALL TRACKER DATA
         </button>
@@ -148,7 +148,7 @@ export function renderSettings(container, onBack) {
   });
 
   container.querySelector('#resetAllBtn').addEventListener('click', () => {
-    if (confirm('CRITICAL ACTION: Reset all tracking logs, XP metrics, and custom domino settings?')) {
+    if (confirm('CRITICAL ACTION: Reset all tracking logs, Be Honest ratings, and custom domino settings?')) {
       resetState();
       showToast('All state data purged.', 'info');
       if (onBack) onBack();
@@ -259,7 +259,6 @@ function showEditDominoModal(existing, onSave) {
     normalMins: 60,
     emergencyMins: 30,
     desc: '',
-    xp: 100,
     icon: 'document',
     color: 'blue'
   };
@@ -358,7 +357,6 @@ function showEditDominoModal(existing, onSave) {
       emergencyMins: parseInt(modal.querySelector('#editEmergencyMinsInput').value, 10) || 30,
       subtitle: modal.querySelector('#editSubtitleInput').value.trim(),
       desc: modal.querySelector('#editDescInput').value.trim(),
-      xp: initial.xp || 100,
       icon: initial.icon || 'document',
       color: initial.color || 'blue'
     };

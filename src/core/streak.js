@@ -1,7 +1,7 @@
 /**
- * Streak Engine — streak calculation, XP, shields, level system.
+ * Streak Engine — streak calculation, shields, quality-weighted level system.
  */
-import { getState, ensureDayRecord, saveState } from './state.js';
+import { getState, ensureDayRecord, saveState, getQualityScore, removeDominoRating } from './state.js';
 import { getCoreDominoIds, getDominoById } from './dominos.js';
 import { getTotalDays, getDateStrFromOffset, getCurrentDateStr } from '../utils/dates.js';
 
@@ -44,23 +44,15 @@ export function calculateStreak() {
 
 /** Toggle a domino completion for a given date */
 export function toggleDomino(id, dateStr) {
-  const state = getState();
   const day = ensureDayRecord(dateStr);
   const dom = getDominoById(id);
   if (!dom) return;
 
   if (day.completed[id]) {
     delete day.completed[id];
-    state.xp = Math.max(0, state.xp - dom.xp);
+    removeDominoRating(id, dateStr);
   } else {
     day.completed[id] = true;
-    state.xp += dom.xp;
-
-    // Bonus XP: +150 if all core dominos are now done
-    const coreIds = getCoreDominoIds();
-    if (coreIds.every((cid) => day.completed[cid])) {
-      state.xp += 150;
-    }
   }
 
   // Check if streak just hit a 7-day multiple → earn shield
@@ -122,14 +114,14 @@ export function triggerWakeUp(dateStr) {
   saveState();
 }
 
-/** Get current XP level */
+/** Get current Quality-Weighted Level (Every 25 Quality Points = 1 Level) */
 export function getLevel() {
-  const state = getState();
-  return Math.floor(state.xp / 500) + 1;
+  const quality = getQualityScore();
+  return Math.floor(quality / 25) + 1;
 }
 
-/** Get XP progress within current level (0-1) */
+/** Get Level progress (0 to 1) towards the next Level */
 export function getLevelProgress() {
-  const state = getState();
-  return (state.xp % 500) / 500;
+  const quality = getQualityScore();
+  return (quality % 25) / 25;
 }
