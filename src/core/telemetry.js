@@ -264,3 +264,83 @@ export function getTelemetryStats() {
     },
   };
 }
+
+/**
+ * Export daily telemetry and per-domino focus breakdown as a downloadable CSV spreadsheet
+ */
+export function exportTelemetryCSV() {
+  const state = getState();
+  const totalDays = getTotalDays();
+  const dominos = getDominos();
+  const mandatoryDominos = dominos.filter((d) => isDominoTask(d));
+
+  const headers = [
+    'Day_Index',
+    'Date',
+    'Total_Focus_Hours',
+    'Total_Focus_Minutes',
+    'Daily_Status',
+    'Emergency_Mode',
+    'Shield_Applied',
+    ...mandatoryDominos.map((d) => `${d.badge.replace(/\s+/g, '_')}_${d.title.replace(/[^a-zA-Z0-9]/g, '_')}_Mins`),
+  ];
+  const rows = [headers.join(',')];
+
+  for (let i = 0; i < totalDays; i++) {
+    const dateStr = getDateStrFromOffset(i);
+    const day = state.days[dateStr];
+    const mins = getDayFocusMinutes(dateStr);
+    const hours = (mins / 60).toFixed(2);
+    const complete = isDayComplete(day);
+    const emergency = day?.emergency ? 'YES' : 'NO';
+    const shield = day?.shieldUsed ? 'YES' : 'NO';
+    const status = complete
+      ? day?.emergency
+        ? 'BAD_DAY_FLOOR'
+        : 'STANDARD_FLOOR'
+      : mins > 0
+      ? 'PARTIAL'
+      : 'NO_LOG';
+
+    const domColValues = mandatoryDominos.map((dom) => {
+      if (!day) return 0;
+      if (day.durations && day.durations[dom.id] !== undefined) return day.durations[dom.id];
+      if (day.completed && day.completed[dom.id]) return day.emergency ? dom.emergencyMins : dom.normalMins;
+      return 0;
+    });
+
+    rows.push([i + 1, dateStr, hours, mins, status, emergency, shield, ...domColValues].join(','));
+  }
+
+  const csvContent = rows.join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ceed-domino-telemetry-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Export complete structured telemetry report and full state backup as downloadable JSON
+ */
+export function exportTelemetryJSON() {
+  const stats = getTelemetryStats();
+  const state = getState();
+  const report = {
+    appName: 'CEED 87-Day Domino Tracker',
+    version: '2.0.0',
+    exportedAt: new Date().toISOString(),
+    telemetry: stats,
+    rawState: state,
+  };
+
+  const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ceed-telemetry-report-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}

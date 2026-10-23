@@ -3,11 +3,12 @@
  * High-precision metrics: Personal Records (PRs), Per-Domino Splits, Rolling Pacing,
  * 500-Hour Mastery Forecast, and the GitHub Green Contribution Matrix.
  */
-import { getTelemetryStats } from '../core/telemetry.js';
+import { getTelemetryStats, exportTelemetryCSV, exportTelemetryJSON } from '../core/telemetry.js';
 import { renderHeatmap } from './heatmap.js';
 import { icon } from '../icons/index.js';
 import { formatMins } from '../utils/format.js';
 import { getCurrentDateStr } from '../utils/dates.js';
+import { showToast } from '../components/header.js';
 
 export function renderStats(container, onBack, onDateSelect) {
   const stats = getTelemetryStats();
@@ -261,7 +262,29 @@ export function renderStats(container, onBack, onDateSelect) {
       </div>
     </section>
 
-    <!-- Section 6: Full Interactive GitHub Matrix -->
+    <!-- Section 6: Export & Download Telemetry Data -->
+    <section class="ledger-card p-4" aria-label="Download stats and telemetry">
+      <div class="flex items-center justify-between border-b border-[var(--rule)] pb-2 mb-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--text)] flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 text-[var(--chart-accent)]">${icon('download')}</span>
+          DOWNLOAD STATS & LOGS
+        </h2>
+        <span class="text-[10px] text-[var(--muted)]">CSV & JSON EXPORT</span>
+      </div>
+      <p class="text-[11px] text-[var(--muted)] font-sans mb-3">Download complete daily study logs, per-domino hours, and pacing telemetry for spreadsheet analysis or backup.</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="downloadCsvBtn" class="inline-flex items-center justify-center gap-1.5 py-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-xs font-bold text-[var(--text)] hover:border-[var(--control)] hover:bg-[var(--surface)] transition-colors touch-manipulation active:scale-[0.98]">
+          <span class="w-3.5 h-3.5 text-[var(--chart-accent)]">${icon('download')}</span>
+          EXPORT CSV SPREADSHEET
+        </button>
+        <button id="downloadJsonBtn" class="inline-flex items-center justify-center gap-1.5 py-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-xs font-bold text-[var(--text)] hover:border-[var(--control)] hover:bg-[var(--surface)] transition-colors touch-manipulation active:scale-[0.98]">
+          <span class="w-3.5 h-3.5 text-[var(--chart-accent)]">${icon('download')}</span>
+          EXPORT TELEMETRY JSON
+        </button>
+      </div>
+    </section>
+
+    <!-- Section 7: Full Interactive GitHub Matrix -->
     <div id="statsMatrixContainer"></div>
   `;
 
@@ -274,6 +297,17 @@ export function renderStats(container, onBack, onDateSelect) {
       }
     });
   }
+
+  // Wire Download Buttons
+  section.querySelector('#downloadCsvBtn').addEventListener('click', () => {
+    exportTelemetryCSV();
+    showToast('CSV spreadsheet downloaded!', 'success');
+  });
+
+  section.querySelector('#downloadJsonBtn').addEventListener('click', () => {
+    exportTelemetryJSON();
+    showToast('Telemetry JSON report downloaded!', 'success');
+  });
 
   // Wire back button
   section.querySelector('#statsBackBtn').addEventListener('click', () => {
