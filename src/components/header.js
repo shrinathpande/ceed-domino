@@ -77,17 +77,17 @@ export function renderHeader(container, currentDateStr) {
               <div class="h-full bg-[var(--chart-accent)]" style="width: ${levelProgress * 100}%"></div>
             </div>
 
-            <!-- Grand Total Logged Hours Badge -->
-            <span class="text-[var(--text)] font-bold flex items-center gap-1 text-[11px] bg-[var(--raised)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)]" title="Total hours logged across all dominos">
+            <!-- Grand Total Logged Hours Badge (Clickable link to Stats) -->
+            <a href="#/stats" class="text-[var(--text)] font-bold flex items-center gap-1 text-[11px] bg-[var(--raised)] hover:bg-[var(--surface)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)] transition-colors" title="Tap to open Athletic Telemetry & Stats">
               <span class="text-[var(--chart-accent)]">Σ</span>
               <span class="tabular-nums">${formatHours(grandTotalMins)}</span>
-            </span>
+            </a>
 
-            <!-- Total Tasks Completed Badge -->
-            <span class="text-[var(--text)] font-semibold flex items-center gap-1 text-[11px] bg-[var(--raised)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)]">
+            <!-- Total Tasks Completed Badge (Clickable link to Stats) -->
+            <a href="#/stats" class="text-[var(--text)] font-semibold flex items-center gap-1 text-[11px] bg-[var(--raised)] hover:bg-[var(--surface)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)] transition-colors" title="Tap to open Athletic Telemetry & Stats">
               <span class="tabular-nums font-bold">${totalTasks}</span>
               <span class="text-[9px] uppercase tracking-wider text-[var(--muted)]">TASKS</span>
-            </span>
+            </a>
 
             <span class="text-[var(--muted)] tabular-nums hidden sm:inline">
               ${daysLeft}d left

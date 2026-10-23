@@ -1,9 +1,11 @@
 /**
- * App Shell — handles SPA routing and view switching.
+ * App Shell — handles SPA routing, bottom navigation dock, and view switching.
  */
 import { renderDashboard } from './views/dashboard.js';
 import { renderSettings } from './views/settings.js';
 import { renderStudioProctor } from './views/studio-proctor.js';
+import { renderStats } from './views/stats.js';
+import { renderBottomNav } from './components/navigation.js';
 
 let _appContainer = null;
 
@@ -19,6 +21,7 @@ export function initApp(container) {
 /** Route to the correct view based on hash */
 function route() {
   const hash = window.location.hash || '#/';
+  renderBottomNav(hash);
 
   if (hash.startsWith('#/studio')) {
     // Extract date query parameter if present (e.g. #/studio?date=2026-10-22)
@@ -31,13 +34,30 @@ function route() {
       },
       dateParam
     );
-  } else if (hash === '#/settings') {
+  } else if (hash.startsWith('#/stats')) {
+    renderStats(
+      _appContainer,
+      () => {
+        window.location.hash = '#/';
+      },
+      (selectedDate) => {
+        window.location.hash = `#/dashboard?date=${selectedDate}`;
+      }
+    );
+  } else if (hash.startsWith('#/settings')) {
     renderSettings(_appContainer, () => {
       window.location.hash = '#/';
     });
   } else {
-    renderDashboard(_appContainer, () => {
-      window.location.hash = '#/settings';
-    });
+    // Dashboard (either '#/' or '#/dashboard' or query params like '#/?date=...')
+    const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+    const targetDate = urlParams.get('date');
+    renderDashboard(
+      _appContainer,
+      () => {
+        window.location.hash = '#/settings';
+      },
+      targetDate
+    );
   }
 }

@@ -21,6 +21,13 @@
     
     --radius-card: 2px;
     --radius-control: 2px;
+
+    /* GitHub Contribution Matrix Green Palette (Light) */
+    --gh-l0: #ebedf0;
+    --gh-l1: #9be9a8;
+    --gh-l2: #40c463;
+    --gh-l3: #30a14e;
+    --gh-l4: #216e39;
   }
 
   .dark {
@@ -38,6 +45,13 @@
     --negative: #c4242a;
     --warning: #92400e;
     --chart-accent: #38bdf8;
+
+    /* GitHub Contribution Matrix Green Palette (Dark) */
+    --gh-l0: #161b22;
+    --gh-l1: #0e4429;
+    --gh-l2: #006d32;
+    --gh-l3: #26a641;
+    --gh-l4: #39d353;
   }
 
   /* Full Emergency Mode: Red industrial alert shift */

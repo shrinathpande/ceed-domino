@@ -17,13 +17,17 @@ import { requestNotificationPermission } from '../core/notifications.js';
 let _currentDateStr = null;
 let _container = null;
 
-export function renderDashboard(container, onNavigateSettings) {
+export function renderDashboard(container, onNavigateSettings, targetDateStr = null) {
   _container = container;
-  _currentDateStr = _currentDateStr || getCurrentDateStr();
+  if (targetDateStr) {
+    _currentDateStr = targetDateStr;
+  } else {
+    _currentDateStr = _currentDateStr || getCurrentDateStr();
+  }
 
   container.innerHTML = `
     <div id="headerContainer"></div>
-    <main class="max-w-xl mx-auto px-4 pt-4 space-y-3 pb-24" role="main">
+    <main class="max-w-xl mx-auto px-4 pt-4 space-y-3 pb-28" role="main">
       <!-- Active Date Ledger & Emergency Switch -->
       <div id="dateBar" class="ledger-card p-3 flex items-center justify-between"></div>
 
