@@ -5,6 +5,7 @@
  */
 import { getTelemetryStats, exportTelemetryCSV, exportTelemetryJSON } from '../core/telemetry.js';
 import { renderHeatmap } from './heatmap.js';
+import { renderWeeklyVelocity } from '../components/weekly-velocity.js';
 import { icon } from '../icons/index.js';
 import { formatMins } from '../utils/format.js';
 import { getCurrentDateStr } from '../utils/dates.js';
@@ -284,9 +285,18 @@ export function renderStats(container, onBack, onDateSelect) {
       </div>
     </section>
 
-    <!-- Section 7: Full Interactive GitHub Matrix -->
+    <!-- Section 7: Weekly Velocity & Burndown Metric Panel -->
+    <div id="statsVelocityContainer"></div>
+
+    <!-- Section 8: Full Interactive GitHub Matrix -->
     <div id="statsMatrixContainer"></div>
   `;
+
+  // Render Velocity Chart
+  const velocityContainer = section.querySelector('#statsVelocityContainer');
+  if (velocityContainer) {
+    renderWeeklyVelocity(velocityContainer, currentDateStr);
+  }
 
   // Render the Matrix
   const matrixContainer = section.querySelector('#statsMatrixContainer');

@@ -23,7 +23,7 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
   const isMandatory = isDominoTask(domino);
 
   const card = document.createElement('article');
-  card.className = `ledger-card p-4 transition-colors ${
+  card.className = `ledger-card p-3 transition-colors ${
     isMandatory ? 'border-l-4 border-l-[var(--text)]' : 'border-l-4 border-l-transparent opacity-90'
   } ${
     done ? 'domino-done-brutalist' : ''
@@ -32,27 +32,22 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
   card.setAttribute('data-state', done ? 'completed' : 'pending');
 
   card.innerHTML = `
-    <div class="flex items-start justify-between gap-3">
+    <div class="flex items-start justify-between gap-2.5">
       <div class="flex-1 min-w-0">
         <!-- Step Code & Time Specifications -->
-        <div class="flex items-center gap-2 flex-wrap font-mono text-[11px]">
+        <div class="flex items-center gap-1.5 flex-wrap font-mono text-[10px]">
           <span class="font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] uppercase tracking-wider">
             ${domino.badge}
           </span>
-          ${
-            isMandatory
-              ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--text)] text-[var(--surface)] uppercase tracking-wider">MANDATORY</span>'
-              : '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--muted)] uppercase tracking-wider">ROUTINE</span>'
-          }
           <span class="text-[var(--muted)]">${domino.offset}</span>
-          <span class="font-semibold text-[var(--text)] tabular-nums flex items-center gap-1" title="Minimum required floor">
+          <span class="font-semibold text-[var(--text)] tabular-nums flex items-center gap-0.5" title="Minimum required floor">
             <span class="w-3 h-3 text-[var(--muted)]">${icon('timer')}</span>
             ${formatMins(mins)}
           </span>
           ${
             isMandatory
               ? `
-            <span class="text-[var(--chart-accent)] font-bold text-[10px] bg-[var(--surface)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)] tabular-nums ml-auto" title="Total hours logged across all days">
+            <span class="text-[var(--chart-accent)] font-bold text-[10px] bg-[var(--surface)] px-1 py-0.5 rounded-[2px] border border-[var(--border)] tabular-nums ml-auto" title="Total hours logged across all days">
               Σ ${formatHours(cumulativeMins)}
             </span>
           `
@@ -60,19 +55,32 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
           }
         </div>
 
-        <!-- Title -->
-        <h3 class="text-[15px] font-semibold mt-2 ${
-          done ? 'line-through text-[var(--muted)]' : 'text-[var(--text)]'
-        }">${domino.title}</h3>
+        <!-- Title & Expand Trigger -->
+        <div class="flex items-center justify-between gap-1.5 mt-1.5">
+          <h3 class="text-sm font-semibold truncate ${
+            done ? 'line-through text-[var(--muted)]' : 'text-[var(--text)]'
+          }">${domino.title}</h3>
+          ${
+            domino.desc
+              ? `
+            <button class="expand-desc-btn text-[10px] font-mono text-[var(--muted)] hover:text-[var(--text)] px-1 py-0.5 rounded touch-manipulation shrink-0" aria-label="Toggle details">
+              <span class="expand-icon inline-block transition-transform duration-200">▼</span>
+            </button>
+          `
+              : ''
+          }
+        </div>
 
-        <!-- Subtitle & Technical Instructions -->
-        ${domino.subtitle ? `<p class="text-xs font-mono text-[var(--muted)] mt-0.5">${domino.subtitle}</p>` : ''}
-        <p class="text-xs text-[var(--muted)] mt-1.5 leading-relaxed">${domino.desc}</p>
+        <!-- Collapsible Description (hidden by default on mobile) -->
+        <div class="card-desc-body hidden mt-1.5 pt-1.5 border-t border-[var(--rule)] text-xs text-[var(--muted)] font-sans">
+          ${domino.subtitle ? `<p class="font-mono text-[11px] font-medium text-[var(--text)] mb-0.5">${domino.subtitle}</p>` : ''}
+          <p class="leading-relaxed">${domino.desc}</p>
+        </div>
       </div>
 
       <!-- Tactile Check Trigger -->
       <button
-        class="check-btn w-10 h-10 rounded-[2px] flex items-center justify-center border transition-colors shrink-0 touch-manipulation active:scale-95 ${
+        class="check-btn w-9 h-9 rounded-[2px] flex items-center justify-center border transition-colors shrink-0 touch-manipulation active:scale-95 ${
           done
             ? 'bg-[var(--text)] border-[var(--text)] text-[var(--surface)]'
             : 'bg-[var(--surface)] border-[var(--border)] text-[var(--control)] hover:border-[var(--text)] hover:text-[var(--text)]'
@@ -80,21 +88,21 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
         aria-label="${done ? 'Mark incomplete' : 'Mark complete'}: ${domino.title}"
         aria-pressed="${done}"
       >
-        <span class="w-5 h-5">${icon('check')}</span>
+        <span class="w-4 h-4">${icon('check')}</span>
       </button>
     </div>
 
     <!-- Operational Ledger Footer: Floor Specification & Timer Launcher -->
-    <div class="mt-3.5 pt-2.5 border-t border-[var(--rule)] flex items-center justify-between font-mono text-xs">
+    <div class="mt-2.5 pt-2 border-t border-[var(--rule)] flex items-center justify-between font-mono text-xs">
       <div>
         ${
           done
             ? `
-          <button class="duration-btn inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] font-mono text-[11px] font-bold hover:border-[var(--control)] touch-manipulation active:scale-95" title="Tap to adjust logged time">
+          <button class="duration-btn inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] font-mono text-[10px] font-bold hover:border-[var(--control)] touch-manipulation active:scale-95" title="Tap to adjust logged time">
             <span class="w-3 h-3 text-[var(--chart-accent)]">${icon('timer')}</span>
             <span>${formatDetailedHours(loggedMins)}</span>
-            ${isUnderFloor ? '<span class="text-[var(--warning)] text-[9px] font-bold">UNDER</span>' : ''}
-            ${isOverFloor ? '<span class="text-[var(--chart-accent)] text-[9px] font-bold">+EXTRA</span>' : ''}
+            ${isUnderFloor ? '<span class="text-[var(--warning)] text-[8px] font-bold">UNDER</span>' : ''}
+            ${isOverFloor ? '<span class="text-[var(--chart-accent)] text-[8px] font-bold">+EXTRA</span>' : ''}
           </button>
         `
             : `
@@ -109,25 +117,45 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
           isPaperDomino
             ? `
           <button
-            class="proctor-btn inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[2px] bg-[var(--surface)] hover:bg-[var(--raised)] text-[var(--text)] border border-[var(--border)] font-semibold transition-colors touch-manipulation active:scale-95"
+            class="proctor-btn inline-flex items-center gap-1 px-2 py-1 rounded-[2px] bg-[var(--surface)] hover:bg-[var(--raised)] text-[var(--text)] border border-[var(--border)] text-[11px] font-bold transition-colors touch-manipulation active:scale-95"
             aria-label="Open Studio Proctor HUD with today's questions"
           >
-            <span class="w-3.5 h-3.5 text-[var(--chart-accent)]">${icon('book')}</span>
-            STUDIO PROCTOR
+            <span class="w-3 h-3 text-[var(--chart-accent)]">${icon('book')}</span>
+            PROCTOR
           </button>
         `
             : ''
         }
         <button
-          class="timer-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[2px] bg-[var(--raised)] hover:bg-[var(--border)] text-[var(--text)] border border-[var(--border)] font-semibold transition-colors touch-manipulation active:scale-95"
+          class="timer-btn inline-flex items-center gap-1 px-2.5 py-1 rounded-[2px] bg-[var(--raised)] hover:bg-[var(--border)] text-[var(--text)] border border-[var(--border)] text-[11px] font-bold transition-colors touch-manipulation active:scale-95"
           aria-label="Start ${formatMins(mins)} timer for ${domino.title}"
         >
-          <span class="w-3.5 h-3.5 text-[var(--chart-accent)]">${icon('play')}</span>
-          RUN ${formatMins(mins)}
+          <span class="w-3 h-3 text-[var(--chart-accent)]">${icon('play')}</span>
+          ${formatMins(mins)}
         </button>
       </div>
     </div>
   `;
+
+  // Bind expandable description toggle
+  const expandBtn = card.querySelector('.expand-desc-btn');
+  if (expandBtn) {
+    expandBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const descBody = card.querySelector('.card-desc-body');
+      const expandIcon = card.querySelector('.expand-icon');
+      if (descBody) {
+        const isHidden = descBody.classList.contains('hidden');
+        if (isHidden) {
+          descBody.classList.remove('hidden');
+          if (expandIcon) expandIcon.style.transform = 'rotate(180deg)';
+        } else {
+          descBody.classList.add('hidden');
+          if (expandIcon) expandIcon.style.transform = 'rotate(0deg)';
+        }
+      }
+    });
+  }
 
   // Bind check button
   const checkBtn = card.querySelector('.check-btn');

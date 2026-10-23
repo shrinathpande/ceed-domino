@@ -44,7 +44,7 @@ export function renderBottomNav(activeRoute = '#/') {
   ];
 
   navEl.innerHTML = `
-    <div class="max-w-xl mx-auto px-3 py-1.5 flex items-center justify-between">
+    <div class="max-w-xl mx-auto px-3 pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom,0px))] flex items-center justify-between">
       ${items
         .map(
           (item) => `

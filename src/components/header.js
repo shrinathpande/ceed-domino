@@ -22,93 +22,58 @@ export function renderHeader(container, currentDateStr) {
   const isAwake = !!day.wakeTimestamp;
 
   container.innerHTML = `
-    <header class="sticky top-0 z-30 bg-[var(--surface)] ledger-rule-b px-4 py-3" role="banner">
-      <div class="max-w-xl mx-auto">
-        <!-- Top Status Bar: System Mark + Stage + Instrumentation Counters -->
-        <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <!-- Brutalist Monogram Stamp -->
-            <div class="w-6 h-6 bg-[var(--accent)] text-[var(--surface)] font-mono text-xs font-bold flex items-center justify-center rounded-[2px]" aria-hidden="true">
-              C87
-            </div>
-            <div>
-              <div class="flex items-center gap-1.5">
-                <span class="text-[12px] font-mono font-bold text-[var(--text)]">
-                  DAY ${dayIndex + 1} of 87
-                </span>
-                <span class="text-[11px] text-[var(--muted)] border-l border-[var(--border)] pl-1.5 font-medium">
-                  ${phase}
-                </span>
-              </div>
-            </div>
+    <header class="sticky top-0 z-30 bg-[var(--surface)]/95 backdrop-blur-md ledger-rule-b px-3 py-2 font-mono transition-colors" role="banner">
+      <div class="max-w-xl mx-auto flex items-center justify-between gap-1.5">
+        <!-- Left: System Stamp & Day & Level -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          <div class="w-5 h-5 bg-[var(--accent)] text-[var(--surface)] text-[10px] font-bold flex items-center justify-center rounded-[2px]" aria-hidden="true">
+            C87
           </div>
-
-          <!-- Shield & Streak Indicators -->
-          <div class="flex items-center gap-1.5 font-mono">
-            <!-- Shield Trigger -->
-            <button
-              id="shieldBtn"
-              class="flex items-center gap-1 px-2 py-1 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] text-xs font-semibold hover:border-[var(--control)] transition-colors active:scale-95"
-              aria-label="Use streak shield. ${state.shields} remaining"
-              title="Use streak shield to preserve momentum"
-            >
-              <span class="w-3.5 h-3.5 text-[var(--muted)]">${icon('shield')}</span>
-              <span class="tabular-nums">${state.shields}</span>
-            </button>
-
-            <!-- Streak Counter -->
-            <div class="flex items-center gap-1 px-2.5 py-1 rounded-[2px] bg-[var(--text)] text-[var(--surface)] text-xs font-bold" aria-label="Current streak: ${streak} days">
-              <span class="w-3.5 h-3.5">${icon('fire')}</span>
-              <span class="tabular-nums">${streak}D</span>
-            </div>
-          </div>
+          <span class="text-[11px] font-bold text-[var(--text)]">
+            D${dayIndex + 1}
+          </span>
+          <span class="text-[10px] text-[var(--muted)] font-semibold bg-[var(--raised)] px-1 py-0.2 rounded-[1px]" title="Level ${level}">
+            L${level}
+          </span>
         </div>
 
-        <!-- Metric Ledger Row: Level, Progress Rail, Total Hours, Completed Tasks, and Wake Offset Engine -->
-        <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-[var(--rule)] text-xs font-mono">
-          <div class="flex items-center gap-2">
-            <span class="text-[var(--text)] font-semibold flex items-center gap-1">
-              <span class="w-3 h-3 text-[var(--chart-accent)]">${icon('bolt')}</span>
-              <span>LVL ${level}</span>
-            </span>
+        <!-- Center: Wake Clock -->
+        <div class="flex items-center gap-1">
+          <span id="wakeClock" class="text-[10px] font-mono font-bold text-[var(--text)] bg-[var(--raised)] border border-[var(--border)] px-1.5 py-0.5 rounded-[2px] tabular-nums" aria-live="polite">
+            ${isAwake ? wakeOffset.replace('Wake + ', '+') : '+00:00'}
+          </span>
+          ${!isAwake ? `
+            <button
+              id="wakeBtn"
+              class="text-[10px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--text)] text-[var(--surface)] hover:opacity-90 active:scale-95 transition-opacity"
+              aria-label="Initialize day start at Wake 0:00"
+            >
+              START
+            </button>
+          ` : ''}
+        </div>
 
-            <!-- Progress Rail -->
-            <div class="w-10 h-1.5 bg-[var(--border)] rounded-[1px] overflow-hidden" role="progressbar" aria-valuenow="${Math.round(levelProgress * 100)}" aria-valuemin="0" aria-valuemax="100" title="Progress to Level ${level + 1}">
-              <div class="h-full bg-[var(--chart-accent)]" style="width: ${levelProgress * 100}%"></div>
-            </div>
+        <!-- Right: Shield, Streak, Sigma Hours Link -->
+        <div class="flex items-center gap-1 shrink-0">
+          <button
+            id="shieldBtn"
+            class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] text-[10px] font-bold hover:border-[var(--control)] transition-colors active:scale-95"
+            aria-label="Use streak shield. ${state.shields} remaining"
+            title="Use streak shield to preserve momentum"
+          >
+            <span class="w-3 h-3 text-[var(--muted)]">${icon('shield')}</span>
+            <span class="tabular-nums">${state.shields}</span>
+          </button>
 
-            <!-- Grand Total Logged Hours Badge (Clickable link to Stats) -->
-            <a href="#/stats" class="text-[var(--text)] font-bold flex items-center gap-1 text-[11px] bg-[var(--raised)] hover:bg-[var(--surface)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)] transition-colors" title="Tap to open Athletic Telemetry & Stats">
-              <span class="text-[var(--chart-accent)]">Σ</span>
-              <span class="tabular-nums">${formatHours(grandTotalMins)}</span>
-            </a>
-
-            <!-- Total Tasks Completed Badge (Clickable link to Stats) -->
-            <a href="#/stats" class="text-[var(--text)] font-semibold flex items-center gap-1 text-[11px] bg-[var(--raised)] hover:bg-[var(--surface)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)] transition-colors" title="Tap to open Athletic Telemetry & Stats">
-              <span class="tabular-nums font-bold">${totalTasks}</span>
-              <span class="text-[9px] uppercase tracking-wider text-[var(--muted)]">TASKS</span>
-            </a>
-
-            <span class="text-[var(--muted)] tabular-nums hidden sm:inline">
-              ${daysLeft}d left
-            </span>
+          <div class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-[2px] bg-[var(--text)] text-[var(--surface)] text-[10px] font-bold" aria-label="Current streak: ${streak} days">
+            <span class="w-3 h-3">${icon('fire')}</span>
+            <span class="tabular-nums">${streak}D</span>
           </div>
 
-          <!-- Wake Offset Engine -->
-          <div class="flex items-center gap-1.5">
-            <span id="wakeClock" class="text-[11px] font-mono text-[var(--text)] bg-[var(--raised)] border border-[var(--border)] px-1.5 py-0.5 rounded-[2px] tabular-nums" aria-live="polite">
-              ${isAwake ? wakeOffset : 'Wake + 00:00'}
-            </span>
-            ${!isAwake ? `
-              <button
-                id="wakeBtn"
-                class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-[2px] bg-[var(--text)] text-[var(--surface)] hover:opacity-90 active:scale-95 transition-opacity"
-                aria-label="Initialize day start at Wake 0:00"
-              >
-                START
-              </button>
-            ` : ''}
-          </div>
+          <a href="#/stats" class="text-[var(--text)] font-bold flex items-center gap-0.5 text-[10px] bg-[var(--raised)] hover:bg-[var(--surface)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)] transition-colors" title="Tap to open Stats">
+            <span class="text-[var(--chart-accent)] font-bold">Σ</span>
+            <span class="tabular-nums">${formatHours(grandTotalMins)}</span>
+          </a>
         </div>
       </div>
     </header>

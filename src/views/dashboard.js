@@ -1,6 +1,6 @@
 /**
  * Dashboard View — Industrial Brutalist Master Console.
- * Incorporates Domino Stream, 87-Day Heatmap, and Weekly Velocity & Burn-Down Chart.
+ * Focused directly on Today's Action: Active Date, Dominos Stream, and Timer triggers.
  */
 import { getState, ensureDayRecord } from '../core/state.js';
 import { getDominos } from '../core/dominos.js';
@@ -9,8 +9,6 @@ import { icon } from '../icons/index.js';
 import { getCurrentDateStr } from '../utils/dates.js';
 import { renderHeader, showToast } from '../components/header.js';
 import { renderDominoCard } from '../components/domino-card.js';
-import { renderHeatmap } from './heatmap.js';
-import { renderWeeklyVelocity } from '../components/weekly-velocity.js';
 import { showTimerModal, tryResumeTimer } from './timer-modal.js';
 import { requestNotificationPermission } from '../core/notifications.js';
 
@@ -27,43 +25,36 @@ export function renderDashboard(container, onNavigateSettings, targetDateStr = n
 
   container.innerHTML = `
     <div id="headerContainer"></div>
-    <main class="max-w-xl mx-auto px-4 pt-4 space-y-3 pb-28" role="main">
+    <main class="max-w-xl mx-auto px-3 pt-3 space-y-2.5 pb-28" role="main">
       <!-- Active Date Ledger & Emergency Switch -->
-      <div id="dateBar" class="ledger-card p-3 flex items-center justify-between"></div>
+      <div id="dateBar" class="ledger-card p-2.5 flex items-center justify-between"></div>
 
       <!-- Domino Tasks Stream -->
-      <div id="dominoList" class="space-y-2.5" role="list" aria-label="Domino pillars"></div>
+      <div id="dominoList" class="space-y-2" role="list" aria-label="Domino pillars"></div>
 
-      <!-- Weekly Velocity & Burndown Metric Panel -->
-      <div id="velocityContainer"></div>
-
-      <!-- 87-Day Momentum Grid -->
-      <div id="heatmapContainer"></div>
-
-      <!-- Console Footer -->
-      <footer class="text-center py-5 border-t border-[var(--rule)]">
-        <button id="settingsBtn" class="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-[var(--muted)] hover:text-[var(--text)] transition-colors touch-manipulation" aria-label="Open system settings">
-          <span class="w-3.5 h-3.5">${icon('settings')}</span>
-          SYSTEM SETTINGS & CONFIG
-        </button>
-      </footer>
+      <!-- Quick Navigation to Athletic Telemetry -->
+      <div class="pt-2">
+        <a href="#/stats" class="ledger-card p-3 flex items-center justify-between hover:border-[var(--control)] transition-colors text-xs font-mono">
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 text-emerald-500">${icon('activity')}</span>
+            <div>
+              <span class="font-bold text-[var(--text)] block">VIEW PERFORMANCE TELEMETRY</span>
+              <span class="text-[10px] text-[var(--muted)] font-sans">GitHub Contribution Matrix, Velocity, and Splits</span>
+            </div>
+          </div>
+          <span class="text-[var(--muted)] text-sm">→</span>
+        </a>
+      </div>
     </main>
   `;
 
   renderHeaderSection();
   renderDateBar();
   renderDominoCards();
-  renderVelocitySection();
-  renderHeatmapSection();
   applyEmergencyUIState();
 
   tryResumeTimer(_currentDateStr);
   requestNotificationPermission();
-
-  container.querySelector('#settingsBtn').addEventListener('click', () => {
-    document.body.classList.remove('emergency-active-theme');
-    if (onNavigateSettings) onNavigateSettings();
-  });
 
   setInterval(() => {
     renderHeaderSection();
@@ -93,22 +84,22 @@ function renderDateBar() {
 
   dateBar.innerHTML = `
     <div>
-      <label for="datePicker" class="text-[10px] font-mono uppercase tracking-wider text-[var(--muted)] font-bold block">ACTIVE DATE</label>
+      <label for="datePicker" class="text-[9px] font-mono uppercase tracking-wider text-[var(--muted)] font-bold block">DATE</label>
       <input type="date" id="datePicker" value="${_currentDateStr}"
         min="${state.settings.startDate}" max="${state.settings.endDate}"
-        class="bg-transparent text-sm font-mono font-bold text-[var(--text)] focus:outline-none mt-0.5 cursor-pointer" />
+        class="bg-transparent text-xs font-mono font-bold text-[var(--text)] focus:outline-none cursor-pointer" />
     </div>
     <button id="emergencyBtn"
-      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[2px] text-xs font-mono font-semibold border transition-colors touch-manipulation active:scale-95 ${
+      class="inline-flex items-center gap-1 px-2 py-1 rounded-[2px] text-[11px] font-mono font-bold border transition-colors touch-manipulation active:scale-95 ${
         day.emergency
-          ? 'bg-[var(--surface)] border-[var(--negative)] text-[var(--negative)] font-bold'
+          ? 'bg-[var(--surface)] border-[var(--negative)] text-[var(--negative)]'
           : 'bg-[var(--raised)] border-[var(--border)] text-[var(--muted)] hover:border-[var(--control)] hover:text-[var(--text)]'
       }"
-      aria-label="${day.emergency ? 'Disable emergency minimum floor' : 'Activate 3h 15m emergency minimum floor'}"
+      aria-label="${day.emergency ? 'Disable emergency floor' : 'Activate bad-day floor'}"
       aria-pressed="${day.emergency}"
     >
-      <span class="w-3.5 h-3.5 ${day.emergency ? 'text-[var(--negative)]' : 'text-[var(--muted)]'}">${icon('warning')}</span>
-      <span>${day.emergency ? 'BAD DAY FLOOR: ON (3h 15m)' : 'EMERGENCY MODE: OFF'}</span>
+      <span class="w-3 h-3 ${day.emergency ? 'text-[var(--negative)]' : 'text-[var(--muted)]'}">${icon('warning')}</span>
+      <span>${day.emergency ? 'BAD-DAY: ON' : 'BAD-DAY: OFF'}</span>
     </button>
   `;
 
@@ -150,30 +141,11 @@ function renderDominoCards() {
   });
 }
 
-function renderVelocitySection() {
-  const velocityContainer = _container.querySelector('#velocityContainer');
-  if (velocityContainer) {
-    renderWeeklyVelocity(velocityContainer, _currentDateStr);
-  }
-}
-
-function renderHeatmapSection() {
-  const heatmapContainer = _container.querySelector('#heatmapContainer');
-  if (heatmapContainer) {
-    renderHeatmap(heatmapContainer, _currentDateStr, (dateStr) => {
-      _currentDateStr = dateStr;
-      refreshDashboard();
-    });
-  }
-}
-
 function refreshDashboard() {
   applyEmergencyUIState();
   renderHeaderSection();
   renderDateBar();
   renderDominoCards();
-  renderVelocitySection();
-  renderHeatmapSection();
 }
 
 document.addEventListener('state-changed', () => {
