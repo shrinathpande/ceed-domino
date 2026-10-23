@@ -24,7 +24,9 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
 
   const card = document.createElement('article');
   card.className = `ledger-card p-3 transition-colors ${
-    isMandatory ? 'border-l-4 border-l-[var(--text)]' : 'border-l-4 border-l-transparent opacity-90'
+    isMandatory
+      ? 'domino-card-mandatory border-l-4 border-l-[var(--domino-accent,var(--text))]'
+      : 'domino-card-routine border-l-4 border-l-transparent opacity-90'
   } ${
     done ? 'domino-done-brutalist' : ''
   }`;
@@ -36,9 +38,14 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
       <div class="flex-1 min-w-0">
         <!-- Step Code & Time Specifications -->
         <div class="flex items-center gap-1.5 flex-wrap font-mono text-[10px]">
-          <span class="font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] uppercase tracking-wider">
+          <span class="domino-code-badge font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] uppercase tracking-wider">
             ${domino.badge}
           </span>
+          ${
+            isMandatory
+              ? '<span class="domino-badge-mandatory text-[9px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--text)] text-[var(--surface)] uppercase tracking-wider">MANDATORY</span>'
+              : '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--muted)] uppercase tracking-wider">ROUTINE</span>'
+          }
           <span class="text-[var(--muted)]">${domino.offset}</span>
           <span class="font-semibold text-[var(--text)] tabular-nums flex items-center gap-0.5" title="Minimum required floor">
             <span class="w-3 h-3 text-[var(--muted)]">${icon('timer')}</span>

@@ -19,6 +19,10 @@
     --warning: #b45309;
     --chart-accent: #0f4c81; /* Raw industrial blueprint cobalt */
     
+    --color-1: #d4e0ff;
+    --color-2: #FFCFE5;
+    --domino-accent: #0e0e0e;
+
     --radius-card: 2px;
     --radius-control: 2px;
 
@@ -39,12 +43,18 @@
     --control: #383b45;
     --text: #f0f0ee;
     --muted: #8b8e98;
-    --accent: #f4f4f2;
     
+    /* User Custom Dark Palette: color-1 (#d4e0ff) & color-2 (#FFCFE5) */
+    --color-1: #d4e0ff;
+    --color-2: #FFCFE5;
+
+    --accent: var(--color-1);
+    --chart-accent: var(--color-1); /* Replaces blue accent with color-1 (#d4e0ff) */
+    --domino-accent: var(--color-2); /* Distinct color-2 (#FFCFE5) for domino cards */
+
     --positive: #2e7d32;
     --negative: #c4242a;
     --warning: #92400e;
-    --chart-accent: #38bdf8;
 
     /* GitHub Contribution Matrix Green Palette (Dark) */
     --gh-l0: #161b22;
@@ -133,4 +143,50 @@
 
 .border-pulse-active {
   animation: borderPulse 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* User Custom Dark Theme: Domino Card Color-2 (#FFCFE5) */
+.dark .domino-card-mandatory {
+  border-left-color: var(--color-2) !important;
+}
+
+.dark .domino-card-mandatory h3:not(.line-through) {
+  color: var(--color-2);
+}
+
+.dark .domino-card-mandatory .domino-badge-mandatory {
+  background-color: rgba(255, 207, 229, 0.15) !important;
+  color: var(--color-2) !important;
+  border-color: rgba(255, 207, 229, 0.4) !important;
+}
+
+.dark .domino-card-mandatory .check-btn[aria-pressed="true"] {
+  background-color: var(--color-2) !important;
+  border-color: var(--color-2) !important;
+  color: #0d0e11 !important;
+}
+
+.dark .domino-card-mandatory .expand-icon {
+  color: var(--color-2);
+}
+
+.dark .domino-card-mandatory.domino-done-brutalist {
+  border-color: rgba(255, 207, 229, 0.35) !important;
+  border-left-color: var(--color-2) !important;
+}
+
+.dark .domino-card-mandatory.border-pulse-active {
+  animation: borderPulseDomino 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes borderPulseDomino {
+  0% {
+    box-shadow: 0 0 0 0 var(--color-2);
+  }
+  40% {
+    box-shadow: 0 0 0 3px var(--color-2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
 }
