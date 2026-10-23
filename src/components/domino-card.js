@@ -32,7 +32,7 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
   card.setAttribute('data-state', done ? 'completed' : 'pending');
 
   card.innerHTML = `
-    <div class="flex items-start justify-between gap-2.5">
+    <div class="card-tap-zone flex items-start justify-between gap-2.5 cursor-pointer select-none touch-manipulation">
       <div class="flex-1 min-w-0">
         <!-- Step Code & Time Specifications -->
         <div class="flex items-center gap-1.5 flex-wrap font-mono text-[10px]">
@@ -55,32 +55,32 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
           }
         </div>
 
-        <!-- Title & Expand Trigger -->
-        <div class="flex items-center justify-between gap-1.5 mt-1.5">
+        <!-- Title & Visual Expand Indicator -->
+        <div class="flex items-center justify-between gap-2 mt-1.5">
           <h3 class="text-sm font-semibold truncate ${
             done ? 'line-through text-[var(--muted)]' : 'text-[var(--text)]'
           }">${domino.title}</h3>
           ${
             domino.desc
               ? `
-            <button class="expand-desc-btn text-[10px] font-mono text-[var(--muted)] hover:text-[var(--text)] px-1 py-0.5 rounded touch-manipulation shrink-0" aria-label="Toggle details">
+            <div class="w-5 h-5 flex items-center justify-center rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--muted)] text-[9px] shrink-0" title="Tap card to expand details">
               <span class="expand-icon inline-block transition-transform duration-200">▼</span>
-            </button>
+            </div>
           `
               : ''
           }
         </div>
 
-        <!-- Collapsible Description (hidden by default on mobile) -->
-        <div class="card-desc-body hidden mt-1.5 pt-1.5 border-t border-[var(--rule)] text-xs text-[var(--muted)] font-sans">
-          ${domino.subtitle ? `<p class="font-mono text-[11px] font-medium text-[var(--text)] mb-0.5">${domino.subtitle}</p>` : ''}
-          <p class="leading-relaxed">${domino.desc}</p>
+        <!-- Collapsible Description (hidden by default, expands on tap) -->
+        <div class="card-desc-body hidden mt-2 pt-2 border-t border-[var(--rule)] text-xs text-[var(--muted)] font-sans">
+          ${domino.subtitle ? `<p class="font-mono text-[11px] font-medium text-[var(--text)] mb-1">${domino.subtitle}</p>` : ''}
+          <p class="leading-relaxed text-[var(--text)]/85">${domino.desc}</p>
         </div>
       </div>
 
       <!-- Tactile Check Trigger -->
       <button
-        class="check-btn w-9 h-9 rounded-[2px] flex items-center justify-center border transition-colors shrink-0 touch-manipulation active:scale-95 ${
+        class="check-btn w-10 h-10 rounded-[2px] flex items-center justify-center border transition-colors shrink-0 touch-manipulation active:scale-95 ${
           done
             ? 'bg-[var(--text)] border-[var(--text)] text-[var(--surface)]'
             : 'bg-[var(--surface)] border-[var(--border)] text-[var(--control)] hover:border-[var(--text)] hover:text-[var(--text)]'
@@ -137,21 +137,26 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
     </div>
   `;
 
-  // Bind expandable description toggle
-  const expandBtn = card.querySelector('.expand-desc-btn');
-  if (expandBtn) {
-    expandBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
+  // Bind whole-card tap-to-expand
+  const tapZone = card.querySelector('.card-tap-zone');
+  if (tapZone) {
+    tapZone.addEventListener('click', (e) => {
+      // Ignore click if clicking the check button
+      if (e.target.closest('.check-btn')) return;
+
       const descBody = card.querySelector('.card-desc-body');
       const expandIcon = card.querySelector('.expand-icon');
-      if (descBody) {
+      if (descBody && domino.desc) {
         const isHidden = descBody.classList.contains('hidden');
+        vibrateTap();
         if (isHidden) {
           descBody.classList.remove('hidden');
           if (expandIcon) expandIcon.style.transform = 'rotate(180deg)';
+          card.classList.add('ring-1', 'ring-[var(--border)]');
         } else {
           descBody.classList.add('hidden');
           if (expandIcon) expandIcon.style.transform = 'rotate(0deg)';
+          card.classList.remove('ring-1', 'ring-[var(--border)]');
         }
       }
     });

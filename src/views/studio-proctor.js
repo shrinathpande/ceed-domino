@@ -1,10 +1,10 @@
 /**
  * Studio Proctor HUD — CEED 2027 Part B Studio Exam Terminal.
- * Features:
- * 1. 120-Minute Master Proctor Timer with automated 24-minute slot transitions & audio cues
- * 2. 5 Mandatory Studio Prompts (Q1-Q5, 20m each) with official evaluation criteria checklists
- * 3. Game Theory Reference Drawer (Marking Scheme & Time Split Analysis)
- * 4. Direct session completion and momentum logging
+ * Optimized for iPhone 12 & Mobile:
+ * 1. Sticky Focus HUD: 120m Proctor Timer & Segmented Q1-Q5 Pills
+ * 2. 5 Mandatory Studio Prompts with IIT Bombay evaluation criteria checklists
+ * 3. Game Theory Reference Guide & Scoring Matrix
+ * 4. Automated 24-minute slot transitions with synthesized audio and haptic feedback
  */
 import partBData from '../data/part_b_questions.json';
 import { ensureDayRecord, setDominoDuration } from '../core/state.js';
@@ -57,37 +57,37 @@ function drawView() {
   const isD3Done = !!day.completed['d3'];
 
   _container.innerHTML = `
-    <div class="max-w-2xl mx-auto px-4 py-4 space-y-4 pb-28 font-sans">
+    <div class="max-w-xl mx-auto px-3 pt-2 space-y-2.5 pb-28 font-sans">
       <!-- Top Navigation Bar -->
-      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 font-mono">
-        <button id="proctorBackBtn" class="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--chart-accent)] hover:underline touch-manipulation">
-          <span class="w-4 h-4">${icon('arrowLeft')}</span>
+      <div class="flex items-center justify-between border-b border-[var(--rule)] pb-2 font-mono text-xs">
+        <button id="proctorBackBtn" class="inline-flex items-center gap-1 font-bold text-[var(--chart-accent)] hover:opacity-80 touch-manipulation">
+          <span class="w-3.5 h-3.5">${icon('arrowLeft')}</span>
           DASHBOARD
         </button>
 
-        <div class="flex items-center gap-2">
-          <span class="text-[11px] font-bold px-2 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] uppercase tracking-wider">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] uppercase tracking-wider">
             DAY ${dayInfo.dayNumber} OF 87
           </span>
-          <span class="text-[11px] text-[var(--muted)] hidden sm:inline">${dayInfo.phase}</span>
+          <span class="text-[10px] text-[var(--muted)] hidden sm:inline">${dayInfo.phase}</span>
         </div>
       </div>
 
-      <!-- Mode Selector Tabs -->
-      <nav class="flex border-b border-[var(--border)] font-mono text-xs gap-1" role="tablist">
-        <button data-tab="partB" class="proctor-tab py-2.5 px-3.5 font-semibold border-b-2 transition-colors whitespace-nowrap touch-manipulation ${
+      <!-- Mode Selector Tabs (Compact for iPhone 12) -->
+      <nav class="flex border-b border-[var(--rule)] font-mono text-xs" role="tablist">
+        <button data-tab="partB" class="proctor-tab flex-1 py-2 px-2 text-center font-bold border-b-2 transition-colors touch-manipulation ${
           _currentTab === 'partB'
             ? 'border-[var(--chart-accent)] text-[var(--text)] bg-[var(--raised)]'
             : 'border-transparent text-[var(--muted)] hover:text-[var(--text)]'
         }">
-          PART B: 120m STUDIO HUD
+          STUDIO HUD
         </button>
-        <button data-tab="gameTheory" class="proctor-tab py-2.5 px-3.5 font-semibold border-b-2 transition-colors whitespace-nowrap touch-manipulation ${
+        <button data-tab="gameTheory" class="proctor-tab flex-1 py-2 px-2 text-center font-bold border-b-2 transition-colors touch-manipulation ${
           _currentTab === 'gameTheory'
             ? 'border-[var(--chart-accent)] text-[var(--text)] bg-[var(--raised)]'
             : 'border-transparent text-[var(--muted)] hover:text-[var(--text)]'
         }">
-          GAME THEORY BLUEPRINT
+          GAME THEORY
         </button>
       </nav>
 
@@ -118,7 +118,7 @@ function drawView() {
 }
 
 // ----------------------------------------------------------------------
-// TAB 1: PART B STUDIO HUD
+// TAB 1: PART B STUDIO HUD (FOCUS MODE)
 // ----------------------------------------------------------------------
 function renderPartBTab(container, dayInfo, isD3Done) {
   const questions = dayInfo.partB?.questions || [];
@@ -128,42 +128,36 @@ function renderPartBTab(container, dayInfo, isD3Done) {
   const currentSlotIndex = Math.min(5, Math.floor(currentElapsed / (24 * 60)) + 1);
 
   container.innerHTML = `
-    <div class="space-y-4">
-      <!-- 120-Minute Master Proctor Clock & Audio Gate -->
-      <section class="ledger-card p-4 space-y-3">
-        <div class="flex items-center justify-between font-mono">
-          <div>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] block">
-              120-MINUTE STUDIO PROCTOR
-            </span>
-            <div class="text-3xl sm:text-4xl font-bold text-[var(--text)] tabular-nums" id="proctorClock">
-              ${formatClock(_proctorRemainingSeconds)}
+    <div class="space-y-2.5">
+      <!-- Sticky Focus HUD: Proctor Clock & Slot Selector -->
+      <div class="sticky top-0 z-20 bg-[var(--ground)] pt-1 pb-2 space-y-2">
+        <!-- 120-Minute Master Proctor Clock Card -->
+        <section class="ledger-card p-3 font-mono shadow-sm">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <span class="text-[9px] font-bold uppercase tracking-wider text-[var(--muted)] block">
+                120-MINUTE PROCTOR
+              </span>
+              <div class="text-2xl sm:text-3xl font-black text-[var(--text)] tabular-nums tracking-wide" id="proctorClock">
+                ${formatClock(_proctorRemainingSeconds)}
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button id="toggleProctorBtn" class="px-3 py-1.5 rounded-[2px] font-mono text-xs font-bold border transition-colors touch-manipulation active:scale-95 ${
+                _isProctorRunning
+                  ? 'bg-[var(--raised)] border-[var(--border)] text-[var(--text)]'
+                  : 'bg-[var(--text)] border-[var(--text)] text-[var(--surface)]'
+              }">
+                ${_isProctorRunning ? 'PAUSE' : 'START 120m'}
+              </button>
+              <button id="resetProctorBtn" class="p-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)] transition-colors touch-manipulation active:scale-95" title="Reset proctor timer">
+                <span class="w-4 h-4">${icon('timer')}</span>
+              </button>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <button id="toggleProctorBtn" class="px-3.5 py-2 rounded-[2px] font-mono text-xs font-bold border transition-colors touch-manipulation active:scale-95 ${
-              _isProctorRunning
-                ? 'bg-[var(--raised)] border-[var(--border)] text-[var(--text)] hover:bg-[var(--border)]'
-                : 'bg-[var(--text)] border-[var(--text)] text-[var(--surface)] hover:opacity-90'
-            }">
-              ${_isProctorRunning ? 'PAUSE CLOCK' : 'START 120m STUDIO'}
-            </button>
-            <button id="resetProctorBtn" class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)] transition-colors touch-manipulation" title="Reset proctor timer">
-              <span class="w-4 h-4">${icon('timer')}</span>
-            </button>
-          </div>
-        </div>
 
-        <!-- 5-Slot Segmented Progress Ledger -->
-        <div class="space-y-1">
-          <div class="flex items-center justify-between font-mono text-[10px] text-[var(--muted)]">
-            <span>SLOT 1 (Q1)</span>
-            <span>SLOT 2 (Q2)</span>
-            <span>SLOT 3 (Q3)</span>
-            <span>SLOT 4 (Q4)</span>
-            <span>SLOT 5 (Q5)</span>
-          </div>
-          <div class="grid grid-cols-5 gap-1 h-2 bg-[var(--raised)] rounded-[1px] p-0.5 border border-[var(--border)]">
+          <!-- 5-Slot Segmented Progress Rail -->
+          <div class="grid grid-cols-5 gap-1 h-1.5 bg-[var(--raised)] rounded-[1px] p-0.5 border border-[var(--border)] mt-2">
             ${[1, 2, 3, 4, 5].map((s) => {
               const isPast = currentSlotIndex > s;
               const isCurrent = currentSlotIndex === s && _isProctorRunning;
@@ -176,86 +170,86 @@ function renderPartBTab(container, dayInfo, isD3Done) {
               }"></div>`;
             }).join('')}
           </div>
-          <p class="text-[11px] font-mono text-[var(--muted)] flex items-center gap-1.5 mt-1">
-            <span class="w-3.5 h-3.5 text-[var(--chart-accent)]">${icon('volume')}</span>
-            Tactile relay thud sound alert triggers automatically at every 24-minute slot switch.
-          </p>
-        </div>
-      </section>
+        </section>
 
-      <!-- Slot Navigation Buttons -->
-      <div class="grid grid-cols-5 gap-1.5 font-mono text-xs">
-        ${questions.map((q) => {
-          const isSelected = q.slot === _partBSlot;
-          return `
-            <button data-slot="${q.slot}" class="slot-select-btn py-2 px-1 text-center rounded-[2px] border transition-colors touch-manipulation ${
-              isSelected
-                ? 'bg-[var(--surface)] border-[var(--chart-accent)] text-[var(--text)] font-bold shadow-sm'
-                : 'bg-[var(--raised)] border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)]'
-            }">
-              <span class="block text-[10px] uppercase">Q.${q.slot}</span>
-              <span class="block text-[9px] truncate">${q.shortTitle || `Slot ${q.slot}`}</span>
-            </button>
-          `;
-        }).join('')}
+        <!-- Segmented Question Pills (Q1 to Q5) -->
+        <div class="grid grid-cols-5 gap-1 font-mono text-xs">
+          ${questions.map((q) => {
+            const isSelected = q.slot === _partBSlot;
+            const isCurrentSlot = currentSlotIndex === q.slot && _isProctorRunning;
+            return `
+              <button data-slot="${q.slot}" class="slot-select-btn py-1.5 px-0.5 text-center rounded-[2px] border transition-all touch-manipulation active:scale-95 ${
+                isSelected
+                  ? 'bg-[var(--text)] border-[var(--text)] text-[var(--surface)] font-bold shadow-sm'
+                  : isCurrentSlot
+                  ? 'bg-[var(--surface)] border-[var(--chart-accent)] text-[var(--chart-accent)] font-bold'
+                  : 'bg-[var(--surface)] border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)]'
+              }">
+                <span class="block text-[11px] font-bold">Q${q.slot}</span>
+                <span class="block text-[8px] opacity-75 uppercase tracking-tighter">24m</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
       </div>
 
       <!-- Active Question Prompt Card -->
       ${activeQ ? `
-        <article class="ledger-card p-5 space-y-4 border-l-4 border-l-[var(--chart-accent)]">
-          <div class="flex items-start justify-between gap-3 font-mono">
+        <article class="ledger-card p-3.5 space-y-3 border-l-4 border-l-[var(--chart-accent)]">
+          <!-- Header -->
+          <div class="flex items-start justify-between gap-2 font-mono">
             <div>
-              <span class="text-[11px] font-bold px-2 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] uppercase tracking-wider">
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] uppercase tracking-wider">
                 QUESTION ${activeQ.slot} · 20 MARKS
               </span>
-              <h3 class="text-base font-bold text-[var(--text)] mt-1.5">${activeQ.title}</h3>
+              <h3 class="text-sm font-bold text-[var(--text)] mt-1.5 leading-snug">${activeQ.title}</h3>
             </div>
-            <span class="text-xs font-semibold px-2 py-1 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--muted)] tabular-nums">
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--muted)] tabular-nums shrink-0">
               24 MINS
             </span>
           </div>
 
           <!-- Prompt Stem / Scenario / Task -->
-          <div class="text-sm text-[var(--text)] leading-relaxed whitespace-pre-line bg-[var(--surface)] p-4 rounded-[2px] border border-[var(--border)] font-sans">
+          <div class="text-xs sm:text-sm text-[var(--text)] leading-relaxed whitespace-pre-line bg-[var(--raised)] p-3 rounded-[2px] border border-[var(--border)] font-sans select-text">
             ${activeQ.prompt}
           </div>
 
           <!-- Official Evaluation Criteria (Checklist for candidate) -->
           ${activeQ.criteria && activeQ.criteria.length > 0 ? `
-            <div class="space-y-2 pt-2 border-t border-[var(--rule)]">
-              <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--muted)] block">
-                OFFICIAL IIT BOMBAY EVALUATION CRITERIA (5 MARKS EACH)
+            <div class="space-y-1.5 pt-2 border-t border-[var(--rule)]">
+              <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--muted)] block">
+                IIT BOMBAY EVALUATION CRITERIA (5 MARKS EACH)
               </span>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-sans text-xs">
+              <div class="space-y-1.5 font-sans text-xs">
                 ${activeQ.criteria.map((c) => `
-                  <div class="flex items-start gap-2 p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-                    <span class="w-4 h-4 text-[var(--chart-accent)] shrink-0 mt-0.5">${icon('check')}</span>
-                    <span class="text-[var(--text)]">${c}</span>
+                  <div class="flex items-start gap-2 p-2 rounded-[2px] bg-[var(--surface)] border border-[var(--border)]">
+                    <span class="w-3.5 h-3.5 text-[var(--chart-accent)] shrink-0 mt-0.5">${icon('check')}</span>
+                    <span class="text-[var(--text)] text-[11px] leading-relaxed">${c}</span>
                   </div>
                 `).join('')}
               </div>
             </div>
           ` : ''}
 
-          <!-- Slot Action Controls -->
+          <!-- Touch-friendly Prev / Next Slot Controls -->
           <div class="flex items-center justify-between pt-2 border-t border-[var(--rule)] font-mono text-xs">
-            <button id="prevSlotBtn" class="px-3 py-1.5 rounded-[2px] border border-[var(--border)] bg-[var(--raised)] text-[var(--muted)] hover:text-[var(--text)] ${
-              _partBSlot <= 1 ? 'opacity-40 pointer-events-none' : ''
+            <button id="prevSlotBtn" class="px-2.5 py-1.5 rounded-[2px] border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--raised)] active:scale-95 transition-all text-[11px] font-bold ${
+              _partBSlot <= 1 ? 'opacity-30 pointer-events-none' : ''
             }">
-              ← PREV QUESTION
+              ← PREV Q
             </button>
-            <span class="text-[var(--muted)]">SLOT ${_partBSlot} OF 5</span>
-            <button id="nextSlotBtn" class="px-3 py-1.5 rounded-[2px] border border-[var(--border)] bg-[var(--raised)] text-[var(--muted)] hover:text-[var(--text)] ${
-              _partBSlot >= 5 ? 'opacity-40 pointer-events-none' : ''
+            <span class="text-[10px] font-bold text-[var(--muted)]">SLOT ${_partBSlot} OF 5</span>
+            <button id="nextSlotBtn" class="px-2.5 py-1.5 rounded-[2px] border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--raised)] active:scale-95 transition-all text-[11px] font-bold ${
+              _partBSlot >= 5 ? 'opacity-30 pointer-events-none' : ''
             }">
-              NEXT QUESTION →
+              NEXT Q →
             </button>
           </div>
         </article>
       ` : ''}
 
       <!-- Complete Session Action Button -->
-      <button id="completeStudioBtn" class="w-full py-3.5 rounded-[2px] bg-[var(--text)] hover:opacity-90 text-[var(--surface)] font-mono text-xs font-bold tracking-wider uppercase transition-transform active:scale-[0.99] touch-manipulation flex items-center justify-center gap-2">
+      <button id="completeStudioBtn" class="w-full py-3 rounded-[2px] bg-[var(--text)] hover:opacity-90 text-[var(--surface)] font-mono text-xs font-bold tracking-wider uppercase transition-transform active:scale-[0.99] touch-manipulation flex items-center justify-center gap-2">
         <span class="w-4 h-4">${icon('check')}</span>
         ${isD3Done ? 'DOMINO 3 COMPLETED' : 'COMPLETE 120m STUDIO SESSION'}
       </button>
@@ -265,6 +259,7 @@ function renderPartBTab(container, dayInfo, isD3Done) {
   // Bind slot buttons
   container.querySelectorAll('.slot-select-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
+      vibrateTap();
       _partBSlot = parseInt(btn.dataset.slot, 10);
       drawView();
     });
@@ -274,6 +269,7 @@ function renderPartBTab(container, dayInfo, isD3Done) {
   if (prevBtn) {
     prevBtn.addEventListener('click', () => {
       if (_partBSlot > 1) {
+        vibrateTap();
         _partBSlot--;
         drawView();
       }
@@ -284,6 +280,7 @@ function renderPartBTab(container, dayInfo, isD3Done) {
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
       if (_partBSlot < 5) {
+        vibrateTap();
         _partBSlot++;
         drawView();
       }
@@ -294,6 +291,7 @@ function renderPartBTab(container, dayInfo, isD3Done) {
   const toggleBtn = container.querySelector('#toggleProctorBtn');
   if (toggleBtn) {
     toggleBtn.addEventListener('click', () => {
+      vibrateTap();
       if (_isProctorRunning) {
         stopProctorClock();
       } else {
@@ -338,75 +336,75 @@ function renderPartBTab(container, dayInfo, isD3Done) {
 }
 
 // ----------------------------------------------------------------------
-// TAB 2: GAME THEORY BLUEPRINT
+// TAB 2: GAME THEORY BLUEPRINT (COMPACT FOR MOBILE)
 // ----------------------------------------------------------------------
 function renderGameTheoryTab(container) {
   container.innerHTML = `
-    <div class="space-y-4 font-sans text-xs">
-      <article class="ledger-card p-5 space-y-3">
-        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--chart-accent)] block">
-          MATHEMATICAL BLUEPRINT: CEED STUDIO PROTOCOL
+    <div class="space-y-3 font-sans text-xs">
+      <article class="ledger-card p-3.5 space-y-2.5">
+        <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--chart-accent)] block">
+          MATHEMATICAL BLUEPRINT: 24m × 5 QUESTIONS
         </span>
-        <h3 class="text-base font-bold text-[var(--text)] font-mono">
-          Strict 24-Minute × 5 Question Execution Discipline
+        <h3 class="text-sm font-bold text-[var(--text)] font-mono">
+          Strict 24-Minute Execution Protocol
         </h3>
         <p class="text-[var(--muted)] leading-relaxed">
-          The official IIT Bombay Part B examination allocates exactly 100 marks across 5 mandatory questions. To maximize score yield, time discipline must be strictly enforced:
+          Part B carries 100 marks across 5 questions. Enforce strict 24-minute boundaries:
         </p>
 
-        <div class="space-y-2 pt-2 font-mono">
-          <div class="flex items-center justify-between p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <span class="text-[var(--muted)]">00:00–24:00 (24m)</span>
-            <span class="font-bold text-[var(--text)]">Q1: Sketching (POV, Proportion, Tone)</span>
+        <div class="space-y-1.5 pt-1 font-mono text-[11px]">
+          <div class="flex items-center justify-between p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
+            <span class="text-[var(--muted)]">00–24m</span>
+            <span class="font-bold text-[var(--text)]">Q1: Sketching (POV, Tone)</span>
             <span class="text-[var(--chart-accent)] font-bold">20m</span>
           </div>
-          <div class="flex items-center justify-between p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <span class="text-[var(--muted)]">24:00–48:00 (24m)</span>
-            <span class="font-bold text-[var(--text)]">Q2: Creativity (4-Frame Story & Symbol)</span>
+          <div class="flex items-center justify-between p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
+            <span class="text-[var(--muted)]">24–48m</span>
+            <span class="font-bold text-[var(--text)]">Q2: Creativity (4-Frames)</span>
             <span class="text-[var(--chart-accent)] font-bold">20m</span>
           </div>
-          <div class="flex items-center justify-between p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <span class="text-[var(--muted)]">48:00–72:00 (24m)</span>
-            <span class="font-bold text-[var(--text)]">Q3: Visual Sensitivity (4 B&W Icons)</span>
+          <div class="flex items-center justify-between p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
+            <span class="text-[var(--muted)]">48–72m</span>
+            <span class="font-bold text-[var(--text)]">Q3: Visual Icons (4 B&W)</span>
             <span class="text-[var(--chart-accent)] font-bold">20m</span>
           </div>
-          <div class="flex items-center justify-between p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <span class="text-[var(--muted)]">72:00–96:00 (24m)</span>
-            <span class="font-bold text-[var(--text)]">Q4: Form Sensitivity (3D Product Hero)</span>
+          <div class="flex items-center justify-between p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
+            <span class="text-[var(--muted)]">72–96m</span>
+            <span class="font-bold text-[var(--text)]">Q4: Form 3D Product</span>
             <span class="text-[var(--chart-accent)] font-bold">20m</span>
           </div>
-          <div class="flex items-center justify-between p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <span class="text-[var(--muted)]">96:00–120:00 (24m)</span>
-            <span class="font-bold text-[var(--text)]">Q5: Problem ID (HMW Lists + Solutions)</span>
+          <div class="flex items-center justify-between p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
+            <span class="text-[var(--muted)]">96–120m</span>
+            <span class="font-bold text-[var(--text)]">Q5: Problem ID & Solutions</span>
             <span class="text-[var(--chart-accent)] font-bold">20m</span>
           </div>
         </div>
       </article>
 
-      <article class="ledger-card p-5 space-y-3 font-mono">
-        <span class="text-[11px] font-bold uppercase tracking-wider text-[var(--muted)] block">
-          IIT BOMBAY EVALUATION CRITERIA CORE MATRIX
+      <article class="ledger-card p-3.5 space-y-2 font-mono">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] block">
+          IIT BOMBAY EVALUATION CRITERIA MATRIX
         </span>
-        <div class="space-y-2 text-xs">
-          <div class="p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <strong class="text-[var(--text)] block mb-1">Q1 Sketching:</strong>
-            <span class="text-[var(--muted)] text-[11px] font-sans">POV adherence (5m) · Anatomical proportions (5m) · Line-weight hierarchy (5m) · Context & directional light (5m)</span>
+        <div class="space-y-1.5 text-xs">
+          <div class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
+            <strong class="text-[var(--text)] block text-[11px] mb-0.5">Q1 Sketching (20m):</strong>
+            <span class="text-[var(--muted)] text-[10px] font-sans">POV adherence (5m) · Proportions (5m) · Line-weight (5m) · Lighting (5m)</span>
           </div>
-          <div class="p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <strong class="text-[var(--text)] block mb-1">Q2 Creativity:</strong>
-            <span class="text-[var(--muted)] text-[11px] font-sans">Statistical originality (5m) · Organic stimulus integration (5m) · Visual storytelling twist (5m) · Craft & witty titling (5m)</span>
+          <div class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
+            <strong class="text-[var(--text)] block text-[11px] mb-0.5">Q2 Creativity (20m):</strong>
+            <span class="text-[var(--muted)] text-[10px] font-sans">Originality (5m) · Stimulus twist (5m) · Narrative punch (5m) · Witty title (5m)</span>
           </div>
-          <div class="p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <strong class="text-[var(--text)] block mb-1">Q3 Visual Sensitivity:</strong>
-            <span class="text-[var(--muted)] text-[11px] font-sans">Systemic consistency (5m) · Semantic legibility without text (5m) · Figure-ground equilibrium (5m) · Edge precision (5m)</span>
+          <div class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
+            <strong class="text-[var(--text)] block text-[11px] mb-0.5">Q3 Visual Sensitivity (20m):</strong>
+            <span class="text-[var(--muted)] text-[10px] font-sans">System consistency (5m) · Semantic legibility (5m) · Figure-ground (5m) · Edges (5m)</span>
           </div>
-          <div class="p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <strong class="text-[var(--text)] block mb-1">Q4 Form Sensitivity:</strong>
-            <span class="text-[var(--muted)] text-[11px] font-sans">Form DNA retention (5m) · Form-function synthesis (5m) · Volumetric 3D shading (5m) · Parting lines & materials (5m)</span>
+          <div class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
+            <strong class="text-[var(--text)] block text-[11px] mb-0.5">Q4 Form Sensitivity (20m):</strong>
+            <span class="text-[var(--muted)] text-[10px] font-sans">Form DNA (5m) · Function synthesis (5m) · 3D shading (5m) · Parting lines (5m)</span>
           </div>
-          <div class="p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <strong class="text-[var(--text)] block mb-1">Q5 Problem ID:</strong>
-            <span class="text-[var(--muted)] text-[11px] font-sans">Depth & empathy (5m) · Analytical HMW framing (5m) · Solution ingenuity (5m) · Visual explanatory callouts (5m)</span>
+          <div class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
+            <strong class="text-[var(--text)] block text-[11px] mb-0.5">Q5 Problem ID (20m):</strong>
+            <span class="text-[var(--muted)] text-[10px] font-sans">Depth & empathy (5m) · HMW framing (5m) · Ingenuity (5m) · Visual callouts (5m)</span>
           </div>
         </div>
       </article>
