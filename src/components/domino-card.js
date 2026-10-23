@@ -3,16 +3,21 @@
  * High-legibility typography, crisp border tokens, exact time budgets, and tactile feedback.
  */
 import { icon } from '../icons/index.js';
-import { ensureDayRecord } from '../core/state.js';
+import { ensureDayRecord, getDominoDuration, getCumulativeDominoMinutes, formatHours, formatDetailedHours } from '../core/state.js';
 import { toggleDomino } from '../core/streak.js';
 import { formatMins } from '../utils/format.js';
 import { playDing } from '../utils/sound.js';
 import { vibrateTap } from '../core/notifications.js';
+import { showDurationModal } from './duration-modal.js';
 
 export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
   const day = ensureDayRecord(dateStr);
   const done = !!day.completed[domino.id];
   const mins = day.emergency ? domino.emergencyMins : domino.normalMins;
+  const loggedMins = getDominoDuration(domino.id, dateStr, mins);
+  const cumulativeMins = getCumulativeDominoMinutes(domino.id);
+  const isUnderFloor = done && loggedMins < mins;
+  const isOverFloor = done && loggedMins > mins;
   const isPaperDomino = domino.id === 'd3';
 
   const card = document.createElement('article');
@@ -31,9 +36,12 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
             ${domino.badge}
           </span>
           <span class="text-[var(--muted)]">${domino.offset}</span>
-          <span class="font-semibold text-[var(--text)] tabular-nums flex items-center gap-1">
+          <span class="font-semibold text-[var(--text)] tabular-nums flex items-center gap-1" title="Minimum required floor">
             <span class="w-3 h-3 text-[var(--muted)]">${icon('timer')}</span>
             ${formatMins(mins)}
+          </span>
+          <span class="text-[var(--chart-accent)] font-bold text-[10px] bg-[var(--surface)] px-1.5 py-0.5 rounded-[2px] border border-[var(--border)] tabular-nums ml-auto" title="Total hours logged across all days">
+            Σ ${formatHours(cumulativeMins)}
           </span>
         </div>
 
@@ -64,9 +72,22 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
     <!-- Operational Ledger Footer: Floor Specification & Timer Launcher -->
     <div class="mt-3.5 pt-2.5 border-t border-[var(--rule)] flex items-center justify-between font-mono text-xs">
       <div>
-        <span class="text-[var(--muted)] uppercase text-[10px] tracking-wider">
-          ${done ? 'COMPLETED' : `FLOOR: ${formatMins(mins)}`}
-        </span>
+        ${
+          done
+            ? `
+          <button class="duration-btn inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] font-mono text-[11px] font-bold hover:border-[var(--control)] touch-manipulation active:scale-95" title="Tap to adjust logged time">
+            <span class="w-3 h-3 text-[var(--chart-accent)]">${icon('timer')}</span>
+            <span>${formatDetailedHours(loggedMins)}</span>
+            ${isUnderFloor ? '<span class="text-[var(--warning)] text-[9px] font-bold">UNDER</span>' : ''}
+            ${isOverFloor ? '<span class="text-[var(--chart-accent)] text-[9px] font-bold">+EXTRA</span>' : ''}
+          </button>
+        `
+            : `
+          <button class="duration-btn text-[var(--muted)] hover:text-[var(--text)] uppercase text-[10px] tracking-wider font-mono hover:underline touch-manipulation" title="Tap to log time">
+            FLOOR: ${formatMins(mins)}
+          </button>
+        `
+        }
       </div>
       <div class="flex items-center gap-1.5">
         ${
@@ -110,6 +131,14 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
       card.classList.add('border-pulse-active');
     }
   });
+
+  // Bind duration button click to adjust logged duration
+  const durationBtn = card.querySelector('.duration-btn');
+  if (durationBtn) {
+    durationBtn.addEventListener('click', () => {
+      showDurationModal(domino, dateStr);
+    });
+  }
 
   // Bind timer trigger
   const timerBtn = card.querySelector('.timer-btn');

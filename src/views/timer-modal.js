@@ -3,7 +3,7 @@
  * Supports Ambient Fullscreen Focus Mode, keyboard shortcuts, and clean lifecycle management.
  */
 import { icon } from '../icons/index.js';
-import { ensureDayRecord } from '../core/state.js';
+import { ensureDayRecord, setDominoDuration } from '../core/state.js';
 import { startTimer, stopTimer, togglePause, isTimerActive, isTimerPaused, getTimerState, formatTimer, resumePersistedTimer, calcRemaining } from '../core/timer.js';
 import { toggleDomino } from '../core/streak.js';
 import { showToast } from '../components/header.js';
@@ -72,6 +72,7 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
         if (!day.completed[domino.id]) {
           toggleDomino(domino.id, _activeDateStr);
         }
+        setDominoDuration(domino.id, _activeDateStr, durationMins);
       }
     },
   });
@@ -90,6 +91,8 @@ export function showTimerModal(domino, durationMins, dateStr, onClose) {
       if (!day.completed[state.dominoId]) {
         toggleDomino(state.dominoId, _activeDateStr);
       }
+      const elapsedMins = Math.max(1, Math.round((state.totalSeconds - calcRemaining(state)) / 60));
+      setDominoDuration(state.dominoId, _activeDateStr, elapsedMins);
     }
     stopTimer();
     hideTimerModal();

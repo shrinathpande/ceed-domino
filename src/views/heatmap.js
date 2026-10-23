@@ -2,7 +2,7 @@
  * GitHub-Style Contribution Heatmap — 87-day streak visualization.
  * Industrial brutalist matrix: 7-row days by week columns with high-contrast indicator states.
  */
-import { getState, getAllCompletedTasksCount } from '../core/state.js';
+import { getState, getAllCompletedTasksCount, getGrandTotalLoggedMinutes, formatHours } from '../core/state.js';
 import { isDayComplete } from '../core/streak.js';
 import { getTotalDays, getDateStrFromOffset } from '../utils/dates.js';
 
@@ -175,8 +175,9 @@ export function renderHeatmap(container, currentDateStr, onDateSelect) {
   });
 
   const totalTasks = getAllCompletedTasksCount();
-  section.querySelector('#completedCount').textContent = `${completedCount} / ${totalDays} DAYS COMPLETE`;
-  section.querySelector('#tasksMetric').textContent = `${totalTasks} TASKS LOGGED`;
+  const grandTotalMins = getGrandTotalLoggedMinutes();
+  section.querySelector('#completedCount').textContent = `${completedCount} / ${totalDays} DAYS COMPLETE · ${totalTasks} TASKS`;
+  section.querySelector('#tasksMetric').textContent = `Σ ${formatHours(grandTotalMins)} TOTAL HOURS`;
 
   container.innerHTML = '';
   container.appendChild(section);

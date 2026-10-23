@@ -7,7 +7,7 @@
  * 4. Direct session completion and momentum logging
  */
 import partBData from '../data/part_b_questions.json';
-import { ensureDayRecord } from '../core/state.js';
+import { ensureDayRecord, setDominoDuration } from '../core/state.js';
 import { toggleDomino } from '../core/streak.js';
 import { getDayIndex, getPhaseLabel, getCurrentDateStr } from '../utils/dates.js';
 import { icon } from '../icons/index.js';
@@ -324,9 +324,12 @@ function renderPartBTab(container, dayInfo, isD3Done) {
       if (!day.completed['d3']) {
         toggleDomino('d3', _activeDate);
       }
+      const elapsedMins = Math.max(1, Math.round((_proctorTotalSeconds - _proctorRemainingSeconds) / 60));
+      const loggedMins = elapsedMins >= 10 ? elapsedMins : 120;
+      setDominoDuration('d3', _activeDate, loggedMins);
       playDing();
       vibrateCompletion();
-      showToast('Domino 3 (Part B Studio) Completed!', 'success');
+      showToast(`Domino 3 Completed! (${loggedMins}m logged)`, 'success');
       setTimeout(() => {
         if (_onBack) _onBack();
       }, 500);
@@ -455,6 +458,7 @@ function startProctorClock() {
       if (!day.completed['d3']) {
         toggleDomino('d3', _activeDate);
       }
+      setDominoDuration('d3', _activeDate, 120);
     }
   }, 1000);
 }

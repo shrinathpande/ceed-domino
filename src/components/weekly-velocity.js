@@ -51,8 +51,11 @@ export function renderWeeklyVelocity(container, currentDateStr) {
         categoryStats[catKey].target += standardMins;
         weekTargetMinutes += standardMins;
         if (isCompleted) {
-          categoryStats[catKey].logged += standardMins;
-          weekTotalMinutesLogged += standardMins;
+          const actualMins = (rec?.durations && rec.durations[dom.id] !== undefined)
+            ? Number(rec.durations[dom.id])
+            : standardMins;
+          categoryStats[catKey].logged += actualMins;
+          weekTotalMinutesLogged += actualMins;
         }
       }
     });

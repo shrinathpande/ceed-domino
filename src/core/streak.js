@@ -50,8 +50,15 @@ export function toggleDomino(id, dateStr) {
 
   if (day.completed[id]) {
     delete day.completed[id];
+    if (day.durations && day.durations[id] !== undefined) {
+      delete day.durations[id];
+    }
   } else {
     day.completed[id] = true;
+    day.durations = day.durations || {};
+    if (day.durations[id] === undefined) {
+      day.durations[id] = day.emergency ? dom.emergencyMins : dom.normalMins;
+    }
   }
 
   // Check if streak just hit a 7-day multiple → earn shield
