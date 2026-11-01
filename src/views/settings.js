@@ -8,18 +8,20 @@ import {
   isDominoTask,
   getAccentColor,
   setAccentColor,
+  getCardInfusionScope,
+  setCardInfusionScope,
   resetState
 } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
 import { icons } from '../components/icons.js';
 
-// The 6 Flat Soft Pastel Swatches (Zero Neons, Zero Glow)
+// The 6 Flat Soft Pastel Swatches (Defaulting to Soft Lavender #C4B5FD)
 const PASTEL_SWATCHES = [
-  { name: 'Soft Blush Rose', hex: '#FBCFE8' },
+  { name: 'Soft Lavender', hex: '#C4B5FD' },
   { name: 'Soft Periwinkle', hex: '#A5C4FF' },
   { name: 'Soft Sage Mint', hex: '#A7F3D0' },
   { name: 'Soft Peach Butter', hex: '#FDE6B8' },
-  { name: 'Soft Lavender', hex: '#C4B5FD' },
+  { name: 'Soft Blush Rose', hex: '#FBCFE8' },
   { name: 'Crisp Chalk White', hex: '#F4F4F6' }
 ];
 
@@ -27,11 +29,13 @@ export function renderSettingsView(container) {
   const blocks = getBlocks();
   const state = getState();
   const currentAccent = getAccentColor();
+  const currentScope = getCardInfusionScope();
+  const isCustomPreset = !PASTEL_SWATCHES.some(s => s.hex.toLowerCase() === currentAccent.toLowerCase());
 
   container.innerHTML = `
     <section class="w-full max-w-[390px] mx-auto px-3.5 pt-2 pb-6 select-none" aria-label="Configuration Terminal">
       
-      <!-- 1. Curated Soft Pastel Swatches (Zero Glow, Zero Toast Spam) -->
+      <!-- 1. Curated Soft Pastel Swatches + Custom Color Picker -->
       <div class="bento-card mb-3.5">
         <div class="flex items-center justify-between mb-3">
           <div>
@@ -44,14 +48,14 @@ export function renderSettingsView(container) {
           </div>
         </div>
 
-        <!-- 6 Flat Circular Swatches -->
-        <div class="flex items-center justify-between gap-2 pt-1">
+        <!-- Preset Swatches + Custom Color Swatch -->
+        <div class="grid grid-cols-7 gap-1.5 pt-1 items-center">
           ${PASTEL_SWATCHES.map(s => {
             const isSelected = s.hex.toLowerCase() === currentAccent.toLowerCase();
             return `
               <button
                 data-pastel-hex="${s.hex}"
-                class="w-10 h-10 rounded-full transition-all btn-tactile relative flex items-center justify-center ${
+                class="w-10 h-10 rounded-full transition-all btn-tactile relative flex items-center justify-center mx-auto ${
                   isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-105' : 'hover:opacity-90'
                 }"
                 style="background-color: ${s.hex}; border: 1px solid rgba(0,0,0,0.1);"
@@ -62,6 +66,90 @@ export function renderSettingsView(container) {
               </button>
             `;
           }).join('')}
+
+          <!-- 7th Slot: Interactive Custom Color Wheel Button -->
+          <div class="relative w-10 h-10 mx-auto">
+            <button
+              type="button"
+              id="btn-custom-picker-trigger"
+              class="w-10 h-10 rounded-full transition-all btn-tactile relative flex items-center justify-center ${
+                isCustomPreset ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-105' : 'hover:opacity-90'
+              }"
+              style="background: ${isCustomPreset ? currentAccent : 'conic-gradient(from 180deg, #F87171, #FBBF24, #34D399, #60A5FA, #C084FC, #F472B6, #F87171)'}; border: 1px solid rgba(255,255,255,0.2);"
+              title="Pick Custom Color"
+              aria-label="Pick Custom Color"
+            >
+              ${isCustomPreset ? `<span class="w-2 h-2 rounded-full bg-[#09090B]"></span>` : `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#09090B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/>
+                </svg>
+              `}
+            </button>
+            <input
+              type="color"
+              id="native-color-picker"
+              value="${currentAccent}"
+              class="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+              title="Custom Color Palette"
+            />
+          </div>
+        </div>
+
+        <!-- Custom Hex Input Row -->
+        <div class="mt-3.5 pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between gap-2">
+          <div class="text-[11.5px] font-medium text-[var(--text-muted)]">Custom Favorite Color</div>
+          <div class="flex items-center gap-1.5">
+            <div class="flex items-center bg-[#18181B] border border-[#27272A] rounded-full px-2.5 py-1">
+              <span class="text-xs text-[#71717A] font-mono mr-0.5">#</span>
+              <input
+                type="text"
+                id="input-custom-hex"
+                maxlength="7"
+                placeholder="C4B5FD"
+                value="${currentAccent.replace('#', '')}"
+                class="w-16 bg-transparent text-xs font-mono font-bold text-[#F4F4F6] uppercase focus:outline-none"
+              />
+            </div>
+            <button
+              type="button"
+              id="btn-apply-hex"
+              class="px-3 py-1 rounded-full text-xs font-bold bg-[var(--domino-accent)] text-[#09090B] btn-tactile shadow-sm"
+            >
+              Set
+            </button>
+          </div>
+        </div>
+
+        <!-- Card Pastel Infusion Scope Selector -->
+        <div class="mt-3 pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between">
+          <div>
+            <div class="text-[12px] font-semibold text-[#F4F4F6]">Pastel Glow Scope</div>
+            <div class="text-[10.5px] text-[#71717A]">Apply color to cards</div>
+          </div>
+          <div class="flex items-center gap-1 bg-[#18181B] p-1 rounded-full border border-[#27272A]">
+            <button
+              type="button"
+              data-set-scope="all"
+              class="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all btn-tactile ${
+                currentScope === 'all'
+                  ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
+                  : 'text-[#A1A1AA] hover:text-[#F4F4F6]'
+              }"
+            >
+              All Cards
+            </button>
+            <button
+              type="button"
+              data-set-scope="hero"
+              class="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all btn-tactile ${
+                currentScope === 'hero'
+                  ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
+                  : 'text-[#A1A1AA] hover:text-[#F4F4F6]'
+              }"
+            >
+              Hero Only
+            </button>
+          </div>
         </div>
       </div>
 
@@ -204,6 +292,47 @@ function bindSettingsEvents(container) {
     btn.addEventListener('click', () => {
       const hex = btn.getAttribute('data-pastel-hex');
       setAccentColor(hex);
+      playRelayClick();
+      renderSettingsView(container);
+    });
+  });
+
+  // Native Color Picker input & change
+  const nativePicker = container.querySelector('#native-color-picker');
+  nativePicker?.addEventListener('input', (e) => {
+    setAccentColor(e.target.value);
+  });
+  nativePicker?.addEventListener('change', (e) => {
+    setAccentColor(e.target.value);
+    playRelayClick();
+    renderSettingsView(container);
+  });
+
+  // Custom Hex Input & Set button
+  const handleApplyHex = () => {
+    const input = container.querySelector('#input-custom-hex');
+    if (!input) return;
+    let hex = input.value.trim();
+    if (!hex) return;
+    if (!hex.startsWith('#')) hex = '#' + hex;
+    if (/^#[0-9A-Fa-f]{6}$/.test(hex) || /^#[0-9A-Fa-f]{3}$/.test(hex)) {
+      setAccentColor(hex);
+      playRelayClick();
+      renderSettingsView(container);
+    } else {
+      alert('Please enter a valid 3- or 6-digit hex code (e.g. C4B5FD or #FF7A59)');
+    }
+  };
+  container.querySelector('#btn-apply-hex')?.addEventListener('click', handleApplyHex);
+  container.querySelector('#input-custom-hex')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleApplyHex();
+  });
+
+  // Card Infusion Scope selector (All Cards vs Hero Only)
+  container.querySelectorAll('[data-set-scope]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const scope = btn.dataset.setScope;
+      setCardInfusionScope(scope);
       playRelayClick();
       renderSettingsView(container);
     });

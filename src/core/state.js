@@ -24,7 +24,8 @@ const DEFAULT_SETTINGS = {
   startDate: '2026-10-22',
   endDate: '2027-01-17',
   theme: 'cyber',
-  accentColor: '#FBCFE8'
+  accentColor: '#C4B5FD',
+  cardInfusion: 'all'
 };
 
 // Core architectural invariant: any block with 'DOMINO' in badge is mandatory
@@ -436,11 +437,11 @@ export function getAccentColor() {
     const state = getState();
     if (state.settings && state.settings.accentColor) return state.settings.accentColor;
   } catch {}
-  return '#FBCFE8';
+  return '#C4B5FD';
 }
 
 export function setAccentColor(hex) {
-  let cleanHex = hex || '#FBCFE8';
+  let cleanHex = hex || '#C4B5FD';
   if (!cleanHex.startsWith('#')) cleanHex = '#' + cleanHex;
   document.documentElement.style.setProperty('--domino-accent', cleanHex);
   document.documentElement.style.setProperty('--accent', cleanHex);
@@ -450,6 +451,24 @@ export function setAccentColor(hex) {
   saveState(state);
   document.dispatchEvent(new CustomEvent('accent-changed', { detail: cleanHex }));
   return cleanHex;
+}
+
+export function getCardInfusionScope() {
+  try {
+    const state = getState();
+    if (state.settings && state.settings.cardInfusion) return state.settings.cardInfusion;
+  } catch {}
+  return 'all';
+}
+
+export function setCardInfusionScope(scope) {
+  const valid = scope === 'hero' ? 'hero' : 'all';
+  const state = getState();
+  state.settings = state.settings || {};
+  state.settings.cardInfusion = valid;
+  saveState(state);
+  document.dispatchEvent(new CustomEvent('accent-changed', { detail: valid }));
+  return valid;
 }
 
 // Helpers for backward-compatibility

@@ -5,7 +5,8 @@ import {
   getBlocks,
   isDominoTask,
   setDominoDuration,
-  toggleDominoComplete
+  toggleDominoComplete,
+  getCardInfusionScope
 } from '../core/state.js';
 import { getTodayStr, getCampaignDayNumber, getExamCountdown, formatDateLocal } from '../utils/dates.js';
 import { playRelayClick } from '../utils/sound.js';
@@ -67,6 +68,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   const dayNum = getCampaignDayNumber(activeDateStr);
   const countdown = getExamCountdown();
   const timerState = getActiveTimerState();
+  const isCardsInfused = getCardInfusionScope() === 'all';
 
   const mandatoryBlocks = blocks.filter(isDominoTask);
   const lockedCount = mandatoryBlocks.filter(b => rec.completed.includes(b.id)).length;
@@ -151,18 +153,18 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
         </div>
       </div>
 
-      <!-- Planning Hero Card - Harmonized Obsidian Surface (#121316) -->
+      <!-- Planning Hero Card - Full Soft Pastel Accent Infusion -->
       <section class="ron-top-sheet mb-4">
         <div class="flex items-start justify-between gap-4 mb-5">
-          <h1 class="text-[30px] font-medium tracking-tight text-[#F4F4F6] leading-none">
+          <h1 class="text-[30px] font-bold tracking-tight text-[#09090B] leading-none">
             Planning
           </h1>
-          <div class="pl-4 border-l border-white/[0.1] text-right">
-            <div class="text-[15px] font-semibold text-[var(--domino-accent)] leading-tight">CEED Campaign</div>
+          <div class="pl-4 border-l border-black/20 text-right">
+            <div class="text-[15px] font-bold text-[#09090B] leading-tight">CEED Campaign</div>
             <button
               type="button"
               id="btn-hero-countdown"
-              class="text-[12px] text-[#71717A] hover:text-[#F4F4F6] tabular-nums mt-0.5 transition-colors cursor-pointer text-right block ml-auto"
+              class="text-[12px] text-black/70 hover:text-black font-semibold tabular-nums mt-0.5 transition-colors cursor-pointer text-right block ml-auto"
               title="Tap for exact CEED exam timing & countdown"
             >
               Day ${dayNum} of 87 • ${countdown.days}d left
@@ -170,46 +172,46 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
           </div>
         </div>
 
-        <!-- 3-Part Chunky Pill Bar (Solid Accent + Barcode Hatch + Matte Slate) -->
+        <!-- 3-Part Chunky Pill Bar (Solid Ink + Dark Barcode Hatch + Translucent Ink Well) -->
         <div class="flex items-center gap-1.5 h-[36px] mb-4">
           <div
             style="flex: ${solidFlex}"
-            class="h-full bg-[var(--domino-accent)] rounded-[9px] transition-all duration-300 shadow-sm"
+            class="h-full bg-[#09090B] rounded-[9px] transition-all duration-300 shadow-sm"
             title="Completed Hours"
           ></div>
           <div
             style="flex: ${hatchFlex}"
-            class="h-full bg-barcode-hatch rounded-[9px] transition-all duration-300"
+            class="h-full bg-barcode-hatch-dark rounded-[9px] transition-all duration-300"
             title="In-Progress / Queued Hours"
           ></div>
           <div
             style="flex: ${slateFlex}"
-            class="h-full bg-[#27272A] rounded-[9px] transition-all duration-300"
+            class="h-full bg-black/15 rounded-[9px] transition-all duration-300"
             title="Remaining Target Floor"
           ></div>
         </div>
 
-        <!-- 3-Column Sub-Metrics with Micro-Glyph Prefixes -->
+        <!-- 3-Column Sub-Metrics with Deep Ink Typography -->
         <div class="grid grid-cols-3 gap-2 pt-1">
           <div>
-            <div class="text-[11px] text-[#71717A] mb-1">Study logged</div>
+            <div class="text-[11.5px] font-semibold text-black/70 mb-1">Study logged</div>
             <div class="flex items-start gap-1.5">
-              <span class="w-2.5 h-[3px] rounded-full bg-[var(--domino-accent)] mt-2"></span>
-              <span class="text-[20px] font-medium text-[#F4F4F6] tabular-nums leading-none">${studyHours.toFixed(1)}h</span>
+              <span class="w-2.5 h-[3px] rounded-full bg-[#09090B] mt-2"></span>
+              <span class="text-[20px] font-bold text-[#09090B] tabular-nums leading-none">${studyHours.toFixed(1)}h</span>
             </div>
           </div>
           <div>
-            <div class="text-[11px] text-[#71717A] mb-1">Work & fitness</div>
+            <div class="text-[11.5px] font-semibold text-black/70 mb-1">Work & fitness</div>
             <div class="flex items-start gap-1.5">
-              <span class="text-[11px] font-mono text-[var(--domino-accent)] font-bold leading-none mt-1">'''</span>
-              <span class="text-[20px] font-medium text-[#F4F4F6] tabular-nums leading-none">${workWalkHours.toFixed(1)}h</span>
+              <span class="text-[11px] font-mono text-black/70 font-bold leading-none mt-1">'''</span>
+              <span class="text-[20px] font-bold text-[#09090B] tabular-nums leading-none">${workWalkHours.toFixed(1)}h</span>
             </div>
           </div>
           <div>
-            <div class="text-[11px] text-[#71717A] mb-1">Dominos locked</div>
+            <div class="text-[11.5px] font-semibold text-black/70 mb-1">Dominos locked</div>
             <div class="flex items-start gap-1.5">
-              <span class="w-2.5 h-[3px] rounded-full bg-[var(--domino-accent)] mt-2"></span>
-              <span class="text-[20px] font-medium text-[#F4F4F6] tabular-nums leading-none">${lockedCount} / ${mandatoryBlocks.length}</span>
+              <span class="w-2.5 h-[3px] rounded-full bg-black/40 mt-2"></span>
+              <span class="text-[20px] font-bold text-[#09090B] tabular-nums leading-none">${lockedCount} / ${mandatoryBlocks.length}</span>
             </div>
           </div>
         </div>
@@ -241,20 +243,20 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                 data-card-id="${block.id}"
                 role="button"
                 tabindex="0"
-                class="bento-card cursor-pointer transition-all ${isCompleted ? 'border-white/[0.18]' : ''} ${isRunningThis ? 'ring-1 ring-emerald-500/50' : ''}"
+                class="bento-card ${isCardsInfused ? 'card-infused' : ''} cursor-pointer transition-all ${isCompleted ? (isCardsInfused ? 'border-black/25' : 'border-white/[0.18]') : ''} ${isRunningThis ? (isCardsInfused ? 'ring-2 ring-black/40' : 'ring-1 ring-emerald-500/50') : ''}"
               >
                 <!-- Card Face Header: Title First, Status Below -->
                 <div class="flex items-center justify-between gap-3">
                   <div class="min-w-0 flex-1">
                     <!-- Title First! -->
-                    <h2 class="text-[16.5px] font-semibold text-[#F4F4F6] truncate">
+                    <h2 class="text-[16.5px] font-bold ${isCardsInfused ? 'text-[#09090B]' : 'text-[#F4F4F6]'} truncate">
                       ${index + 1}. ${block.name || block.title}
                     </h2>
 
                     <!-- Status Pill and Category Shoved BELOW Text! -->
                     <div class="flex items-center gap-2 mt-2">
                       ${renderStatusPill(pillState, true)}
-                      <span class="text-[10px] font-semibold tracking-wider uppercase text-[#71717A]">
+                      <span class="text-[10px] font-bold tracking-wider uppercase ${isCardsInfused ? 'text-black/70' : 'text-[#71717A]'}">
                         ${block.category || 'STUDY'}
                       </span>
                     </div>
@@ -262,8 +264,8 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
 
                   <!-- Right Readout & Circular Check Toggle -->
                   <div class="flex items-center gap-3 shrink-0">
-                    <span class="text-[13.5px] font-mono tabular-nums text-[#A1A1AA]">
-                      <strong class="text-[#F4F4F6] font-semibold">${loggedHrs.toFixed(1)}</strong> / ${targetHrs.toFixed(1)}h
+                    <span class="text-[13.5px] font-mono tabular-nums ${isCardsInfused ? 'text-black/80' : 'text-[#A1A1AA]'}">
+                      <strong class="${isCardsInfused ? 'text-[#09090B] font-bold' : 'text-[#F4F4F6] font-semibold'}">${loggedHrs.toFixed(1)}</strong> / ${targetHrs.toFixed(1)}h
                     </span>
 
                     <button
@@ -271,9 +273,13 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                       data-manual-toggle="${block.id}"
                       aria-label="Toggle Complete"
                       class="w-[38px] h-[38px] rounded-full flex items-center justify-center transition-all btn-tactile ${
-                        isCompleted
-                          ? 'bg-[var(--domino-accent)] text-[#09090B] border border-[var(--domino-accent)] font-bold shadow-sm'
-                          : 'bg-[#18191E] text-[#71717A] border border-white/[0.1]'
+                        isCardsInfused
+                          ? (isCompleted
+                              ? 'bg-[#09090B] text-white border border-[#09090B] font-bold shadow-md'
+                              : 'bg-black/10 text-black/70 border border-black/20 hover:bg-black/20')
+                          : (isCompleted
+                              ? 'bg-[var(--domino-accent)] text-[#09090B] border border-[var(--domino-accent)] font-bold shadow-sm'
+                              : 'bg-[#18191E] text-[#71717A] border border-white/[0.1]')
                       }"
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -284,37 +290,41 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                 </div>
 
                 <!-- Subtle progress bar on card bottom -->
-                <div class="w-full bg-[#1C1D22] h-1 rounded-full mt-3 overflow-hidden">
+                <div class="w-full ${isCardsInfused ? 'bg-black/15' : 'bg-[#1C1D22]'} h-1.5 rounded-full mt-3 overflow-hidden">
                   <div
-                    class="h-full rounded-full transition-all duration-300 ${isCompleted ? 'bg-[var(--domino-accent)]' : (isRunningThis ? 'bg-[var(--domino-accent)]' : 'bg-white/40')}"
+                    class="h-full rounded-full transition-all duration-300 ${
+                      isCardsInfused
+                        ? 'bg-[#09090B]'
+                        : (isCompleted ? 'bg-[var(--domino-accent)]' : (isRunningThis ? 'bg-[var(--domino-accent)]' : 'bg-white/40'))
+                    }"
                     style="width: ${pct}%;"
                   ></div>
                 </div>
 
                 ${isExpanded ? `
                   <!-- Expanded Tactile Time Adjuster Slider Drawer -->
-                  <div class="mt-5 pt-4 border-t border-white/[0.06]" data-drawer-stop>
+                  <div class="mt-5 pt-4 ${isCardsInfused ? 'border-t border-black/15' : 'border-t border-white/[0.06]'}" data-drawer-stop>
                     
                     <!-- Hero Slider Header & Quick Step -->
                     <div class="flex items-center justify-between mb-3">
-                      <span class="text-xs font-medium text-[var(--text-muted)]">Log Session Hours</span>
+                      <span class="text-xs font-semibold ${isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]'}">Log Session Hours</span>
                       <div class="flex items-center gap-2">
                         <button
                           type="button"
                           data-step-mins="-15"
                           data-block-id="${block.id}"
-                          class="w-7 h-7 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8] flex items-center justify-center text-sm font-bold btn-tactile"
+                          class="w-7 h-7 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-[#09090B] hover:bg-black/20' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8]'} flex items-center justify-center text-sm font-bold btn-tactile"
                           title="Decrease 15m"
                           aria-label="Decrease logged duration by 15 minutes"
                         >–</button>
-                        <span class="text-[17px] font-mono font-bold text-[#F4F4F6] tabular-nums px-2 py-0.5 rounded-lg bg-[var(--surface-well)] border border-[var(--border-subtle)]">
+                        <span class="text-[17px] font-mono font-bold ${isCardsInfused ? 'text-[#09090B] bg-black/10 border border-black/20' : 'text-[#F4F4F6] bg-[var(--surface-well)] border border-[var(--border-subtle)]'} tabular-nums px-2 py-0.5 rounded-lg">
                           ${loggedHrs.toFixed(2)}h
                         </span>
                         <button
                           type="button"
                           data-step-mins="15"
                           data-block-id="${block.id}"
-                          class="w-7 h-7 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8] flex items-center justify-center text-sm font-bold btn-tactile"
+                          class="w-7 h-7 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-[#09090B] hover:bg-black/20' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8]'} flex items-center justify-center text-sm font-bold btn-tactile"
                           title="Increase 15m"
                           aria-label="Increase logged duration by 15 minutes"
                         >+</button>
@@ -331,10 +341,14 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         value="${loggedHrs}"
                         data-slider-block="${block.id}"
                         aria-label="Logged session hours for ${block.name || 'Pillar'}: ${loggedHrs.toFixed(2)} hours"
-                        class="w-full h-2.5 bg-[#1C1D22] rounded-lg appearance-none cursor-pointer accent-[var(--domino-accent)]"
-                        style="background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, var(--surface-well) ${(loggedHrs / 6) * 100}%, var(--surface-well) 100%);"
+                        class="w-full h-2.5 rounded-lg appearance-none cursor-pointer ${isCardsInfused ? 'bg-black/15 accent-[#09090B]' : 'bg-[#1C1D22] accent-[var(--domino-accent)]'}"
+                        style="${
+                          isCardsInfused
+                            ? `background: linear-gradient(to right, #09090B 0%, #09090B ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) 100%);`
+                            : `background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, var(--surface-well) ${(loggedHrs / 6) * 100}%, var(--surface-well) 100%);`
+                        }"
                       />
-                      <div class="flex justify-between text-[11px] font-mono text-[var(--text-muted)] mt-1.5">
+                      <div class="flex justify-between text-[11px] font-mono ${isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]'} mt-1.5">
                         <span>0.0h</span>
                         <span>1.5h</span>
                         <span>3.0h</span>
@@ -349,7 +363,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         type="button"
                         data-set-mins="0"
                         data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full bg-[#18191E] border border-white/[0.08] text-[11px] font-medium text-[#A1A1AA] hover:text-white btn-tactile whitespace-nowrap"
+                        class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                       >
                         Reset (0h)
                       </button>
@@ -357,7 +371,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         type="button"
                         data-set-mins="${targetMins}"
                         data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full bg-[#18191E] border border-[var(--domino-accent)]/40 text-[11px] font-semibold text-[var(--domino-accent)] hover:text-white btn-tactile whitespace-nowrap"
+                        class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/20 border border-black/30 text-[#09090B] font-bold' : 'bg-[#18191E] border border-[var(--domino-accent)]/40 text-[var(--domino-accent)] hover:text-white font-semibold'} text-[11px] btn-tactile whitespace-nowrap"
                       >
                         Target (${targetHrs.toFixed(1)}h)
                       </button>
@@ -365,7 +379,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         type="button"
                         data-step-mins="30"
                         data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full bg-[#18191E] border border-white/[0.08] text-[11px] font-medium text-[#A1A1AA] hover:text-white btn-tactile whitespace-nowrap"
+                        class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                       >
                         +30m
                       </button>
@@ -373,7 +387,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         type="button"
                         data-step-mins="60"
                         data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full bg-[#18191E] border border-white/[0.08] text-[11px] font-medium text-[#A1A1AA] hover:text-white btn-tactile whitespace-nowrap"
+                        class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                       >
                         +1.0h
                       </button>
@@ -381,28 +395,30 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         type="button"
                         data-set-mins="240"
                         data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full bg-[#18191E] border border-white/[0.08] text-[11px] font-medium text-[#A1A1AA] hover:text-white btn-tactile whitespace-nowrap"
+                        class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                       >
                         Max (4h)
                       </button>
                     </div>
 
                     <!-- Recessed Bottom Well with Target Floor & Session Trigger -->
-                    <div class="recessed-well mt-2 flex items-center justify-between gap-3">
+                    <div class="mt-2 flex items-center justify-between gap-3 ${isCardsInfused ? 'bg-black/10 border border-black/15 p-3 rounded-[10px]' : 'recessed-well'}">
                       <div>
-                        <div class="text-[11px] text-[#71717A]">Target Floor</div>
-                        <div class="text-[15px] font-semibold text-[#F4F4F6] tabular-nums mt-0.5">
-                          ${targetHrs.toFixed(1)} <span class="text-[12px] text-[#71717A] font-normal">hrs / day</span>
+                        <div class="text-[11px] ${isCardsInfused ? 'text-black/70 font-semibold' : 'text-[#71717A]'}">Target Floor</div>
+                        <div class="text-[15px] font-bold ${isCardsInfused ? 'text-[#09090B]' : 'text-[#F4F4F6]'} tabular-nums mt-0.5">
+                          ${targetHrs.toFixed(1)} <span class="text-[12px] ${isCardsInfused ? 'text-black/60 font-medium' : 'text-[#71717A] font-normal'}">hrs / day</span>
                         </div>
                       </div>
 
                       <button
                         type="button"
                         data-timer-toggle="${block.id}"
-                        class="px-5 py-2.5 rounded-full text-[13px] font-semibold tracking-tight btn-tactile ${
+                        class="px-5 py-2.5 rounded-full text-[13px] font-bold tracking-tight btn-tactile ${
                           isRunningThis
                             ? 'bg-[#FECACA] text-[#991B1B] border border-[#F87171]'
-                            : 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
+                            : (isCardsInfused
+                                ? 'bg-[#09090B] text-white shadow-md hover:bg-black/90'
+                                : 'bg-[var(--domino-accent)] text-[#09090B] shadow-sm')
                         }"
                       >
                         ${isRunningThis ? `Stop • ${timerState.formatted || '00:00'}` : 'Start Session'}
@@ -415,12 +431,12 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
 
               <!-- Dedicated Live Session Timer Box Directly Below Card when Running! -->
               ${isRunningThis ? `
-                <div class="mt-1.5 p-3 rounded-[14px] bg-[#16171B] border border-[var(--domino-accent)]/40 flex items-center justify-between animate-fadeIn">
+                <div class="mt-1.5 p-3 rounded-[14px] ${isCardsInfused ? 'bg-black/10 border border-black/25' : 'bg-[#16171B] border border-[var(--domino-accent)]/40'} flex items-center justify-between animate-fadeIn">
                   <div class="flex items-center gap-2.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-[var(--domino-accent)] animate-pulse"></span>
+                    <span class="w-2.5 h-2.5 rounded-full ${isCardsInfused ? 'bg-[#09090B]' : 'bg-[var(--domino-accent)]'} animate-pulse"></span>
                     <div>
-                      <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--domino-accent)]">ACTIVE DRILL RUNNING</div>
-                      <div class="text-[20px] font-mono font-bold text-[#F4F4F6] tabular-nums leading-tight">
+                      <div class="text-[10px] font-bold uppercase tracking-wider ${isCardsInfused ? 'text-black/75' : 'text-[var(--domino-accent)]'}">ACTIVE DRILL RUNNING</div>
+                      <div class="text-[20px] font-mono font-bold ${isCardsInfused ? 'text-[#09090B]' : 'text-[#F4F4F6]'} tabular-nums leading-tight">
                         <span id="live-timer-digits-${block.id}">${timerState.formatted || '00:00'}</span>
                       </div>
                     </div>
@@ -523,14 +539,17 @@ function bindDashboardEvents(container) {
     });
   });
 
-  // Fluid Range Slider input (Strictly reactive to active accent)
+  // Fluid Range Slider input (Strictly reactive to active accent and card infusion)
   container.querySelectorAll('[data-slider-block]').forEach(slider => {
     slider.addEventListener('input', e => {
       const blockId = slider.dataset.sliderBlock;
       const hours = parseFloat(e.target.value);
       const mins = Math.round(hours * 60);
       setDominoDuration(blockId, activeDateStr, mins);
-      slider.style.background = `linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(hours / 6) * 100}%, var(--surface-well) ${(hours / 6) * 100}%, var(--surface-well) 100%)`;
+      const isInfused = getCardInfusionScope() === 'all';
+      slider.style.background = isInfused
+        ? `linear-gradient(to right, #09090B 0%, #09090B ${(hours / 6) * 100}%, rgba(0,0,0,0.18) ${(hours / 6) * 100}%, rgba(0,0,0,0.18) 100%)`
+        : `linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(hours / 6) * 100}%, var(--surface-well) ${(hours / 6) * 100}%, var(--surface-well) 100%)`;
     });
     slider.addEventListener('change', () => {
       playRelayClick();

@@ -1062,4 +1062,20 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 25. Full Soft Pastel Accent Infusion & Custom Color Selector
+
+### 25.1 Full Pastel Glow Across Planning Hero and Domino Cards
+- **Planning Hero Card**: Re-infused full soft pastel glow (`background-color: var(--domino-accent)` defaulting to Soft Lavender `#C4B5FD`). All typography upgraded to deep ink (`#09090B` / `text-black/70`) with high-contrast hardware gauge:
+  - **Segment 1 (Completed)**: Solid `#09090B` ink pill.
+  - **Segment 2 (In-Progress)**: Dark ink barcode hatch (`.bg-barcode-hatch-dark`).
+  - **Segment 3 (Remaining Floor)**: Subtle translucent ink well (`rgba(0, 0, 0, 0.15)`).
+- **All Domino Cards Infusion**: Enabled `.card-infused` on all domino cards (`background-color: var(--domino-accent)`), complete with deep-ink typography (`#09090B`), dark circular check buttons, dark perimeter progress bar, and dark hardware drawer controls with WCAG AAA readability.
+
+### 25.2 Interactive Custom Color Selector in Config
+- **Native Color Wheel Picker**: Added an interactive color wheel trigger with hidden `<input type="color">` alongside the 6 curated presets in [`src/views/settings.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/views/settings.js).
+- **Hex Input Row**: Added `#` prefix input with real-time validation and `Set` button for custom 3- and 6-digit hex values.
+- **Pastel Glow Scope**: Added an instant toggle between `All Cards` (default) and `Hero Only`.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

@@ -110,13 +110,23 @@ html, body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Primary Matte Obsidian Surfaces (100% Consistent Across All Cards) */
+/* Hero Planning Top Sheet - Saturated in Selected Soft Pastel Accent */
 .ron-top-sheet {
-  background-color: var(--surface-card);
+  background-color: var(--domino-accent);
+  color: #09090B;
   border-radius: 14px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   padding: 20px;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Infused Domino Card - Full Soft Pastel Accent Glow with Deep Ink Elements */
+.card-infused {
+  background-color: var(--domino-accent) !important;
+  color: #09090B !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.12);
 }
 
 /* Reference 4, 6, 7: Primary Matte Obsidian Bento Card (Crisp Geometry, Less Circular) */
