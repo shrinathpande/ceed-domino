@@ -527,3 +527,24 @@ export function setDominoDuration(dominoId, dateStr, minutes) {
   saveState(state);
   return cleanMins;
 }
+
+export function toggleDominoComplete(dominoId, dateStr) {
+  const rec = getDayRecord(dateStr);
+  const blocks = getBlocks();
+  const block = blocks.find(b => b.id === dominoId);
+  const effectiveTarget = rec.emergency ? Math.ceil((block?.targetMins || 60) / 2) : (block?.targetMins || 60);
+
+  if (rec.completed.includes(dominoId)) {
+    rec.completed = rec.completed.filter(id => id !== dominoId);
+    rec.durations[dominoId] = 0;
+  } else {
+    rec.completed.push(dominoId);
+    if (!rec.durations[dominoId] || rec.durations[dominoId] < effectiveTarget) {
+      rec.durations[dominoId] = effectiveTarget;
+    }
+  }
+  const state = getState();
+  recalculateStreak(state);
+  saveState(state);
+  return rec.completed.includes(dominoId);
+}

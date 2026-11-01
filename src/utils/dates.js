@@ -113,3 +113,11 @@ export function getExamCountdown() {
     detailed: `${days} days, ${hours} hours until CEED 2027 (Jan 17, 09:00 AM)`,
   };
 }
+
+export function getTodayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+export function getCampaignDayNumber(dateStr) {
+  return getDayIndex(dateStr || getTodayStr()) + 1;
+}

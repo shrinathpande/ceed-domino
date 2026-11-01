@@ -822,4 +822,48 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 15. Argoncodes/Code 2 Steering & High-Craft Dark Bento Implementation
+
+### 15.1 Architectural Direction & JSON Specification
+- Steered the entire design and implementation using the user-provided JSON specification:
+  - **Target Viewport**: iPhone 12 (390×844px, iOS Safari WebKit, Super Retina XDR OLED).
+  - **Design Philosophy**: Tactile Hardware Module & High-Craft Dark Bento UI.
+  - **Anti-Slop Strict Rules**: Zero neon glows/gradients; zero raw OS emojis (1.75px stroke inline SVGs); bitmap pixel font reserved strictly for hardware clock displays (`.font-pixel-display`), never on multi-line body copy or small pills; every interactive control enclosed in a defined recessed well (`#18191E`) or tactile pill container; all numeric readouts enforce `font-variant-numeric: tabular-nums`.
+
+### 15.2 Module Execution from `Argoncodes/Code 2`
+1. **Design Tokens & Surfaces (`src/style.css`)**:
+   - Canvas: `#000000`, Elevated Top Sheet: `#1C1D22` (`.ron-top-sheet`, `rounded-[28px]`, `border: 1px solid rgba(255,255,255,0.08)`).
+   - Primary Bento Card: `#121316` (`.bento-card`, `rounded-[26px]`, `border: 1px solid rgba(255,255,255,0.07)`).
+   - Recessed Bottom Well: `#18191E` (`.recessed-well`, `rounded-[18px]`, `border: 1px solid rgba(255,255,255,0.05)`).
+   - Tactile Beveled Status Pills (`.status-pill-beveled`) with inset highlight (`inset 0 1px 0 rgba(255,255,255,0.65)`).
+   - High-density vertical barcode hatch (`.bg-barcode-hatch`) and fine tick track (`.ruler-slot-ticks`).
+   - Spring press physics (`.btn-tactile:active { transform: scale(0.96); }`).
+2. **Tactile Beveled Status Pills (`src/components/status-pill.js`)**:
+   - `Pending`: Amber `#9A5B13` gradient, border `#E5A952`.
+   - `In Progress`: Cobalt `#1E40AF` gradient, border `#7A9CF5`.
+   - `Completed`: Forest `#15803D` gradient, border `#4ADE80`.
+   - `Under Floor`: Crimson `#B91C1C` gradient, border `#F87171`.
+   - `Routine`: Charcoal `#27272A` gradient, border `#A1A1AA`.
+3. **Reference 7 Scheduler Top Sheet & Lime Ruler Track (`src/views/dashboard.js`)**:
+   - 7-Day circular calendar date selector (`40px` circular buttons with `#09090B` active text on accent).
+   - Top Sheet with "Planning | CEED Campaign" split lockup, 38px 3-part progress bar (Solid White + Vertical Barcode Hatch + Slate Pill).
+   - 3-column sub-metrics row with micro-glyph prefixes (`— 2.0h`, `''' 1.5h`, `— 2/5`).
+   - Bento Domino Cards with closed pill status + 38px circular check toggle (`toggleDominoComplete`), and expanded state revealing floating teardrop pin callout (`< 1.5h >`) with vertical stem dropping into 8-capsule `#C8F560` lime track.
+   - Recessed bottom well housing Target Floor readout and solid white `Start Session` lock-screen timer CTA.
+4. **Reference 4 Bía Sleep & Reference 6 Moonbeam Allocation (`src/views/stats.js`)**:
+   - Row 1: Dual Bía mini-bentos (`✓✓` in `#3898FF` + active days; green circle chevron + mastery percentage).
+   - Row 2: Bía Consistency card with circular segmented ring + `25%` hero readout, 13x7 matrix of 4px-radius `#3898FF` sky-blue cells with interactive HUD inspector.
+   - Row 3: 2-Column Streak Bento with 2-tone flame (`#FF6B4A` / `#FFB800`) and 6 circular indicators.
+   - Row 4: Moonbeam allocation card with total hours readout, 44px chunky multi-block bar (`#F472B6`, `#C084FC`, `#60A5FA`, `#34D399`), and recessed 2x2 vertical-bar legend.
+   - Row 5: Bía analysis card with amber 4-point sparkle (`#F59E0B`) and metric highlights.
+5. **Reference 8 Asymmetric Peek Card & Action Bar (`src/views/studio-proctor.js`)**:
+   - 82% / 18% asymmetric horizontal split flex layout (470px fixed height).
+   - Inactive peek tab with warm stone `#2A282E` surface and -90° rotated label.
+   - Active card with prompt, scenario, and structured task callout well with lime accent border.
+   - Rubric protocol checklist with 24-minute pacing steps and interactive checkboxes.
+   - Recessed bottom scheduler bar with tabular 24:00 countdown, OLED fullscreen wake-lock trigger, and solid white `Start Drill` pill.
+   - Fullscreen OLED clock mode with 76px `.font-pixel-display` and tap-to-exit.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

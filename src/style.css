@@ -1,53 +1,16 @@
 @import "tailwindcss";
 
-/* ====================================================================
-   GEIST FONT FAMILIES (Local High-Performance WOFF2 Preloads)
-   ==================================================================== */
-/* Geist Serif (Default Editorial Aesthetic) */
 @font-face {
-  font-family: 'Geist Serif';
-  src: url('/fonts/geist/geist-serif/GeistSerifVF.woff2') format('woff2');
+  font-family: 'Geist Sans';
+  src: url('/fonts/geist/geist-sans/Geist-Variable.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Geist Serif Regular';
-  src: url('/fonts/geist/geist-serif/GeistSerif-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Geist Serif Square';
-  src: url('/fonts/geist/geist-serif/GeistSerif-Square.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Geist Serif Triangle';
-  src: url('/fonts/geist/geist-serif/GeistSerif-Triangle.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Geist Serif Heart';
-  src: url('/fonts/geist/geist-serif/GeistSerif-Heart.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Geist Pixel */
-@font-face {
-  font-family: 'Geist Pixel';
-  src: url('/fonts/geist/geist-pixel/GeistPixelVF.woff2') format('woff2');
+  font-family: 'Geist Mono';
+  src: url('/fonts/geist/geist-mono/GeistMono-Variable.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -61,193 +24,165 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Geist Pixel Grid';
-  src: url('/fonts/geist/geist-pixel/GeistPixel-Grid.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+:root {
+  --bg-canvas: #000000;
+  --surface-sheet: #1C1D22;
+  --surface-card: #121316;
+  --surface-well: #18191E;
+  --surface-peek: #2A282E;
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-well: rgba(255, 255, 255, 0.05);
+  --domino-accent: #C4B5FD;
+  --lime-capsule: #C8F560;
+  --sky-matrix: #3898FF;
+  --font-sans: 'Geist Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-pixel: 'Geist Pixel Square', monospace;
+
+  /* Backward compatible variable bindings */
+  --ground: #000000;
+  --surface: #121316;
+  --raised: #18191E;
+  --border: rgba(255, 255, 255, 0.07);
+  --rule: #27272A;
+  --text: #F4F4F6;
+  --muted: #71717A;
 }
 
-@font-face {
-  font-family: 'Geist Pixel Circle';
-  src: url('/fonts/geist/geist-pixel/GeistPixel-Circle.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-@font-face {
-  font-family: 'Geist Pixel Triangle';
-  src: url('/fonts/geist/geist-pixel/GeistPixel-Triangle.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-canvas);
+  color: #F4F4F6;
+  font-family: var(--font-sans);
+  letter-spacing: -0.02em;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  touch-action: manipulation;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
-@font-face {
-  font-family: 'Geist Pixel Line';
-  src: url('/fonts/geist/geist-pixel/GeistPixel-Line.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+/* Reserve Pixel Square strictly for hardware display moments */
+.font-pixel-display {
+  font-family: var(--font-pixel);
+  letter-spacing: -0.05em;
 }
 
-/* Geist Sans */
-@font-face {
-  font-family: 'Geist Sans';
-  src: url('/fonts/geist/geist-sans/Geist-Variable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
+.font-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
-/* Geist Mono */
-@font-face {
-  font-family: 'Geist Mono';
-  src: url('/fonts/geist/geist-mono/GeistMono-Variable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
-@layer base {
-  :root {
-    --ground: #000000;
-    --surface: #121214;
-    --raised: #18181B;
-    --border: #1F1F23;
-    --rule: #27272A;
-    --text: #F4F4F6;
-    --muted: #71717A;
-    --accent: #FBCFE8;
-    --domino-accent: #FBCFE8;
-    --radius-card: 24px;
-    --radius-btn: 9999px;
-
-    /* Curated Flat Soft Pastel Palette (Zero Neons) */
-    --pastel-lavender: #C4B5FD;
-    --pastel-periwinkle: #A5C4FF;
-    --pastel-mint: #A7F3D0;
-    --pastel-peach: #FDE6B8;
-    --pastel-rose: #FBCFE8;
-    --pastel-lime: #D9F99D;
-    --chalk-white: #F4F4F6;
-
-    /* Font Variable Tokens */
-    --font-geist-serif: 'Geist Serif', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-    --font-geist-serif-regular: 'Geist Serif Regular', serif;
-    --font-geist-serif-square: 'Geist Serif Square', serif;
-    --font-geist-serif-triangle: 'Geist Serif Triangle', serif;
-    --font-geist-serif-heart: 'Geist Serif Heart', serif;
-    --font-geist-sans: 'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-geist-mono: 'Geist Mono', monospace;
-    --font-geist-pixel: 'Geist Pixel', monospace;
-    --font-geist-pixel-square: 'Geist Pixel Square', monospace;
-    --font-geist-pixel-grid: 'Geist Pixel Grid', monospace;
-    --font-geist-pixel-circle: 'Geist Pixel Circle', monospace;
-    --font-geist-pixel-triangle: 'Geist Pixel Triangle', monospace;
-    --font-geist-pixel-line: 'Geist Pixel Line', monospace;
-  }
-
-  body {
-    background-color: #000000;
-    color: var(--text);
-    font-family: 'Geist Pixel Square', monospace;
-    letter-spacing: -0.05em;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-left: env(safe-area-inset-left, 0px);
-    padding-right: env(safe-area-inset-right, 0px);
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    overflow-x: hidden;
-  }
-
-  /* Universal GeistPixelSquare Typography with -5 (-0.05em) Letter Spacing */
-  *, *::before, *::after {
-    letter-spacing: -0.05em;
-  }
-
-  body, button, input, select, textarea, div, span, p, h1, h2, h3, h4, h5, h6, a {
-    font-family: 'Geist Pixel Square', monospace;
-    letter-spacing: -0.05em;
-  }
-
-  .font-pixel-square,
-  .font-serif,
-  .font-sans,
-  .font-mono,
-  .font-pixel {
-    font-family: 'Geist Pixel Square', monospace !important;
-    letter-spacing: -0.05em !important;
-  }
-
-  /* Enforce -5 (-0.05em) spacing across all tracking utility variants */
-  .tracking-tighter,
-  .tracking-tight,
-  .tracking-normal,
-  .tracking-wide,
-  .tracking-wider,
-  .tracking-widest {
-    letter-spacing: -0.05em !important;
-  }
-}
-
-/* Primary Flat Matte Bento Card Surface (Reference 5 & 4) */
-.bento-card {
-  background-color: #121214;
-  border-radius: 24px;
+/* Reference 7: Elevated Matte Slate Top Sheet */
+.ron-top-sheet {
+  background-color: var(--surface-sheet);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 20px;
-  border: 1px solid #1F1F23;
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease;
 }
 
-/* Inner Well Sub-Surface */
-.bento-subcard {
-  background-color: #18181B;
+/* Reference 4, 6, 7: Primary Matte Obsidian Bento Card */
+.bento-card {
+  background-color: var(--surface-card);
+  border-radius: 26px;
+  border: 1px solid var(--border-subtle);
+  padding: 20px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+/* Reference 7: Recessed Bottom Control Well */
+.recessed-well {
+  background-color: var(--surface-well);
   border-radius: 18px;
-  border: 1px solid #27272A;
+  border: 1px solid var(--border-well);
+  padding: 12px 16px;
 }
 
-/* Reference 5 Vertical Hatch Stripes (Solid Neutral Hatching) */
-.hatch-stripes {
+/* Reference 7: High-Density Vertical Barcode Hatch Pill */
+.bg-barcode-hatch {
   background-image: repeating-linear-gradient(
     90deg,
     #A1A1AA 0px,
     #A1A1AA 2px,
     transparent 2px,
-    transparent 5px
+    transparent 5.5px
   );
 }
 
-/* Reference 5 Fine Ruler Ticks */
-.ruler-ticks {
+/* Reference 3: Tactile Beveled Pastel Status Pills */
+.status-pill-beveled {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4.5px 11px;
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.pill-pending {
+  background: linear-gradient(180deg, #FFE8C2 0%, #FDD89B 100%);
+  border: 1.5px solid #E5A952;
+  color: #9A5B13;
+}
+
+.pill-inprogress {
+  background: linear-gradient(180deg, #DCE6FF 0%, #C3D4FF 100%);
+  border: 1.5px solid #7A9CF5;
+  color: #1E40AF;
+}
+
+.pill-completed {
+  background: linear-gradient(180deg, #D1FAE5 0%, #A7F3D0 100%);
+  border: 1.5px solid #4ADE80;
+  color: #15803D;
+}
+
+.pill-failed {
+  background: linear-gradient(180deg, #FFE2E2 0%, #FECACA 100%);
+  border: 1.5px solid #F87171;
+  color: #B91C1C;
+}
+
+.pill-routine {
+  background: linear-gradient(180deg, #E4E4E7 0%, #D4D4D8 100%);
+  border: 1.5px solid #A1A1AA;
+  color: #27272A;
+}
+
+/* Reference 7: Integrated Ruler Ticks + Lime Capsule Track */
+.ruler-slot-ticks {
   background-image: repeating-linear-gradient(
     90deg,
-    #27272A 0px 1.5px,
-    transparent 1.5px 7px
+    #3F3F46 0px,
+    #3F3F46 1.5px,
+    transparent 1.5px,
+    transparent 6px
   );
 }
 
-/* Flat Tactile Button Feedback (Zero Glow) */
+/* Spring Press Physics */
 .btn-tactile {
-  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease, background-color 0.15s ease;
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.16s ease;
 }
-
 .btn-tactile:active {
   transform: scale(0.96);
-}
-
-/* Micro-transition for pill state */
-.capsule-pill {
-  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
-}
-
-.capsule-pill:active {
-  transform: scale(0.95);
 }

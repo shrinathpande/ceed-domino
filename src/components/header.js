@@ -76,7 +76,7 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
   }
 
   headerEl.innerHTML = `
-    <div class="max-w-[420px] mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="max-w-[390px] mx-auto px-3.5 py-2.5 flex items-center justify-between">
       <!-- Left: Day XX of 87 + inline highlight pill [76d to CEED] -->
       <div class="flex items-center gap-2">
         <span class="text-sm font-semibold text-[#F4F4F6] tracking-tight">

@@ -1,6 +1,7 @@
 // src/utils/lockscreen-timer.js
 import { playRelayClick } from './sound.js';
 
+const ACTIVE_TIMER_KEY = 'ceed_v2_active_timer';
 let silentAudioEl = null;
 let lockScreenInterval = null;
 
@@ -48,23 +49,54 @@ function ensureAudioElement() {
   return silentAudioEl;
 }
 
-export function startLockScreenTimer(block, startedAt, onRemoteStop) {
+export function getActiveTimerState() {
+  try {
+    const raw = localStorage.getItem(ACTIVE_TIMER_KEY);
+    if (!raw) return { running: false, blockId: null, formatted: '00:00', elapsedMins: 0 };
+    const parsed = JSON.parse(raw);
+    const elapsedSec = Math.max(0, Math.floor((Date.now() - parsed.startedAt) / 1000));
+    const mins = Math.floor(elapsedSec / 60);
+    const secs = String(elapsedSec % 60).padStart(2, '0');
+    return {
+      running: true,
+      blockId: parsed.blockId,
+      title: parsed.title,
+      startedAt: parsed.startedAt,
+      elapsedSec,
+      elapsedMins: Math.round(elapsedSec / 60),
+      formatted: `${String(mins).padStart(2, '0')}:${secs}`
+    };
+  } catch {
+    return { running: false, blockId: null, formatted: '00:00', elapsedMins: 0 };
+  }
+}
+
+export function startLockScreenTimer(arg1, arg2, arg3) {
+  let blockId = typeof arg1 === 'string' ? arg1 : arg1?.id || 'd1';
+  let title = typeof arg2 === 'string' ? arg2 : (arg1?.name || arg1?.title || 'Domino Session');
+  let startedAt = typeof arg2 === 'number' ? arg2 : Date.now();
+  let onUpdate = typeof arg3 === 'function' ? arg3 : (typeof arg2 === 'function' ? arg2 : null);
+
+  localStorage.setItem(ACTIVE_TIMER_KEY, JSON.stringify({ blockId, title, startedAt }));
+
   const audio = ensureAudioElement();
   audio.play().catch(() => {});
 
   const updateMetadata = () => {
-    if (!('mediaSession' in navigator)) return;
     const elapsedSec = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
     const mins = Math.floor(elapsedSec / 60);
     const secs = String(elapsedSec % 60).padStart(2, '0');
-    const targetHrs = ((block.targetMins || 60) / 60).toFixed(1);
 
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: `${mins}m ${secs}s // ${block.name}`,
-      artist: `${block.badge} • TARGET: ${targetHrs}H`,
-      album: 'CEED 87-DAY DOMINO TRACKER'
-    });
-    navigator.mediaSession.playbackState = 'playing';
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: `${mins}m ${secs}s // ${title}`,
+        artist: 'ACTIVE DOMINO DRILL',
+        album: 'CEED 87-DAY DOMINO TRACKER'
+      });
+      navigator.mediaSession.playbackState = 'playing';
+    }
+
+    if (typeof onUpdate === 'function') onUpdate();
   };
 
   updateMetadata();
@@ -75,7 +107,7 @@ export function startLockScreenTimer(block, startedAt, onRemoteStop) {
     const handleStop = () => {
       stopLockScreenTimer();
       playRelayClick();
-      if (typeof onRemoteStop === 'function') onRemoteStop();
+      if (typeof onUpdate === 'function') onUpdate();
     };
     navigator.mediaSession.setActionHandler('pause', handleStop);
     navigator.mediaSession.setActionHandler('stop', handleStop);
@@ -83,6 +115,18 @@ export function startLockScreenTimer(block, startedAt, onRemoteStop) {
 }
 
 export function stopLockScreenTimer() {
+  let elapsedMins = 0;
+  try {
+    const raw = localStorage.getItem(ACTIVE_TIMER_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      const elapsedSec = Math.max(0, Math.floor((Date.now() - parsed.startedAt) / 1000));
+      elapsedMins = Math.max(1, Math.round(elapsedSec / 60));
+    }
+  } catch {}
+
+  localStorage.removeItem(ACTIVE_TIMER_KEY);
+
   if (lockScreenInterval) {
     clearInterval(lockScreenInterval);
     lockScreenInterval = null;
@@ -95,4 +139,6 @@ export function stopLockScreenTimer() {
     navigator.mediaSession.playbackState = 'none';
     navigator.mediaSession.metadata = null;
   }
+
+  return elapsedMins;
 }
