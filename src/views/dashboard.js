@@ -99,7 +99,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   const isTodaySelected = activeDateStr === todayStr;
 
   container.innerHTML = `
-    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-28 select-none">
+    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-6 select-none">
       
       <!-- 7-Day Circular Calendar Strip with Today Indicator -->
       <div class="mb-4">

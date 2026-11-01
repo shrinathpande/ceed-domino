@@ -41,11 +41,12 @@ function route() {
   const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
   const dateParam = urlParams.get('date');
 
-  // Render Top Header
+  // Render Top Sticky Header with Navigation
   renderHeader(_appContainer, hash, dateParam);
 
-  // Render Floating Bottom Navigation Dock
-  renderBottomDock(_appContainer, hash);
+  // Remove any obsolete floating bottom dock
+  const oldDock = document.getElementById('floatingBottomDock');
+  if (oldDock) oldDock.remove();
 
   // Scroll to top on route change
   window.scrollTo({ top: 0, behavior: 'instant' });

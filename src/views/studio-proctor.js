@@ -90,7 +90,7 @@ export function renderStudioProctor(container) {
   }
 
   container.innerHTML = `
-    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-28 space-y-3.5 select-none">
+    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-6 space-y-3.5 select-none">
 
       <!-- Day Stepper & Q1-Q5 Pill Switcher -->
       <div class="flex items-center justify-between gap-2">

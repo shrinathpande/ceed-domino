@@ -44,10 +44,11 @@ export function renderStats(container) {
     const dayMins = rec ? Object.values(rec.durations || {}).reduce((a, b) => a + b, 0) : 0;
     const hrs = dayMins / 60;
 
-    let bgHex = '#1A1B20';
-    if (hrs >= 5) bgHex = '#3898FF';
-    else if (hrs >= 2.5) bgHex = '#2563EB';
-    else if (hrs > 0) bgHex = '#1D3B7A';
+    let bgHex = '#18191E';
+    if (hrs >= 5) bgHex = '#C8F560'; // Peak Vibrant Lime
+    else if (hrs >= 3.5) bgHex = '#22C55E'; // High Bright Green
+    else if (hrs >= 2) bgHex = '#16A34A'; // Medium Emerald Green
+    else if (hrs > 0) bgHex = '#14532D'; // Low Deep Forest Green
 
     return { iso, hrs, bgHex, inCampaign: idx < 87, dayIndex: idx + 1 };
   });
@@ -56,13 +57,13 @@ export function renderStats(container) {
   const streakIndicators = [1, 2, 3, 4, 5, 6].map(num => num <= streakDays);
 
   container.innerHTML = `
-    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-28 space-y-3.5 select-none">
+    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-6 space-y-3.5 select-none">
 
       <!-- Top Row: Dual High-Craft Bentos -->
       <div class="grid grid-cols-2 gap-3">
         <div class="bento-card py-4 px-4 flex flex-col justify-between">
           <div class="flex items-center gap-2 mb-1.5">
-            <svg class="text-[#3898FF] shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="text-[#22C55E] shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/>
             </svg>
             <span class="text-[11.5px] font-medium text-[#71717A]">Active Days</span>
@@ -91,7 +92,7 @@ export function renderStats(container) {
         </div>
       </div>
 
-      <!-- Consistency Card with Segmented Ring & Glitch-Free 13-Column Grid -->
+      <!-- Consistency Card with Segmented Ring & Glitch-Free 13-Column High-Contrast Green Grid -->
       <section class="bento-card">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-1.5 text-[14px] font-medium text-[#D4D4D8]">
@@ -102,9 +103,9 @@ export function renderStats(container) {
         </div>
 
         <div class="flex items-center gap-3 mb-4">
-          <!-- Segmented Circular Ring SVG -->
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="text-[#3898FF] shrink-0">
-            <circle cx="12" cy="12" r="9" stroke="rgba(56, 152, 255, 0.2)" stroke-width="2.5" stroke-dasharray="4 3"/>
+          <!-- Segmented Circular Ring SVG (High Contrast Lime/Green) -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="text-[#22C55E] shrink-0">
+            <circle cx="12" cy="12" r="9" stroke="rgba(34, 197, 94, 0.2)" stroke-width="2.5" stroke-dasharray="4 3"/>
             <path d="M12 3a9 9 0 1 1-6.36 2.64" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
           </svg>
           <div class="text-[32px] font-bold text-[#F4F4F6] tabular-nums leading-none">
@@ -130,14 +131,15 @@ export function renderStats(container) {
           </div>
         </div>
 
-        <!-- Interactive HUD readout for tapped cell -->
+        <!-- Interactive HUD readout for tapped cell with green scale legend -->
         <div id="matrix-hud" class="flex items-center justify-between text-[11px] text-[#71717A] px-1">
-          <span>Tap any block to inspect logged time</span>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-[2px] bg-[#1A1B20]"></span>
-            <span class="w-2 h-2 rounded-[2px] bg-[#1D3B7A]"></span>
-            <span class="w-2 h-2 rounded-[2px] bg-[#2563EB]"></span>
-            <span class="w-2 h-2 rounded-[2px] bg-[#3898FF]"></span>
+          <span>Tap any block to inspect hours</span>
+          <div class="flex items-center gap-1.5" title="0h → 1-2h → 2-3.5h → 3.5-5h → 5h+">
+            <span class="w-2.5 h-2.5 rounded-[2px] bg-[#18191E]"></span>
+            <span class="w-2.5 h-2.5 rounded-[2px] bg-[#14532D]"></span>
+            <span class="w-2.5 h-2.5 rounded-[2px] bg-[#16A34A]"></span>
+            <span class="w-2.5 h-2.5 rounded-[2px] bg-[#22C55E]"></span>
+            <span class="w-2.5 h-2.5 rounded-[2px] bg-[#C8F560]"></span>
           </div>
         </div>
       </section>

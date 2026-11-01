@@ -32,6 +32,9 @@
   --surface-peek: #2A282E;
   --border-subtle: rgba(255, 255, 255, 0.07);
   --border-well: rgba(255, 255, 255, 0.05);
+  --text-primary: #F4F4F6;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
   --domino-accent: #C4B5FD;
   --lime-capsule: #C8F560;
   --sky-matrix: #3898FF;
@@ -49,6 +52,25 @@
   --muted: #71717A;
 }
 
+html.theme-light {
+  --bg-canvas: #F5F4F0;
+  --surface-sheet: #FFFFFF;
+  --surface-card: #FFFFFF;
+  --surface-well: #EBEAE4;
+  --surface-peek: #E3E1DB;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-well: rgba(0, 0, 0, 0.06);
+  --text-primary: #121214;
+  --text-secondary: #52525B;
+  --text-muted: #71717A;
+  --ground: #F5F4F0;
+  --surface: #FFFFFF;
+  --raised: #EBEAE4;
+  --border: rgba(0, 0, 0, 0.08);
+  --rule: #E4E4E7;
+  --text: #121214;
+}
+
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -58,7 +80,7 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-canvas);
-  color: #F4F4F6;
+  color: var(--text-primary);
   font-family: var(--font-sans);
   letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased;
@@ -67,9 +89,10 @@ html, body {
   padding-top: env(safe-area-inset-top, 0px);
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
   min-height: 100vh;
   min-height: -webkit-fill-available;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Reserve Pixel Square strictly for hardware display moments */

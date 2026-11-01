@@ -899,4 +899,39 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 17. Top Sticky Header, Dynamic Night/Light Mode, Green Stats Matrix & Bottom Dead Space Elimination
+
+### 17.1 Unified Sticky Top Header (`src/components/header.js` & `src/app.js`)
+- Migrated primary tab navigation from the bottom dock to the top sticky header (`sticky top-0 z-50 bg-[#000000]/90 backdrop-blur-md`).
+- **Row 1**: Compact telemetry strip containing `Day 11 of 87`, countdown pill (`76d to CEED`), Tabler Sun/Moon theme toggle button, Tabler shield badge (`🛡️` replaced with SVG), and Tabler flame streak pill (`⚡` replaced with SVG).
+- **Row 2**: Segmented 4-pill navigation bar (`Today`, `Stats`, `Studio`, `Config`) with active pill contrast and seamless tactile switching.
+- Completely removed obsolete `#floatingBottomDock` and its associated viewport padding overhead.
+
+### 17.2 Elimination of Bottom Dead Space Across All Views
+- Reduced body bottom padding from `calc(env(safe-area-inset-bottom) + 80px)` to `max(20px, env(safe-area-inset-bottom, 0px))` in `src/style.css`.
+- Replaced `pb-28` (112px bottom pad) with `pb-6` (24px clean pad) across `src/views/dashboard.js`, `src/views/stats.js`, `src/views/studio-proctor.js`, and `src/views/settings.js`.
+- Cleaned up ~180px of dead scroll space at the bottom of the iPhone 12 viewport.
+
+### 17.3 Visually Balanced Bento Domino Cards (`src/views/dashboard.js`)
+- Re-architected Domino card face into a clean, balanced 2-column layout:
+  - **Left Column**: Prominent block title (`Walk & Fitness`, `Sketching`, etc.) on top, with compact status pill (`Pending`, `In Progress`, `Completed`) + category tag (`Study` / `Work`) paired cleanly below.
+  - **Right Column**: Tabular monospace hours fraction (`1.5 / 1.5h`) beside a 36px circular check button with zero glow and clean SVG check glyph.
+  - **Bottom Active Progress**: Subtle progress perimeter bar plus the dedicated below-card live timer module when a study session is active.
+
+### 17.4 Dynamic Night/Light Mode & System Preference Adaptation (`src/components/theme-toggle.js`, `src/components/icons.js`, `src/style.css`)
+- Integrated system color scheme detection via `window.matchMedia('(prefers-color-scheme: light)')`.
+- Supported manual toggle via Sun/Moon icon in the sticky top header, persisting preference to `ceed_v2_theme_mode` in `localStorage`.
+- Defined full `html.theme-light` color token hierarchy (`--bg-canvas: #F5F4F0`, `--surface-card: #FFFFFF`, `--surface-well: #EBEAE4`, `--text-primary: #121214`) with smooth transitions.
+
+### 17.5 High-Contrast Green Consistency Matrix (`src/views/stats.js`)
+- Converted the 13×7 87-day consistency matrix from blue to a quantitative green density scale:
+  - `0.0h`: `#18191E` (Dark obsidian well)
+  - `> 0h to 2.0h`: `#14532D` (Deep forest green)
+  - `2.0h to 3.5h`: `#16A34A` (Mid emerald green)
+  - `3.5h to 5.0h`: `#22C55E` (Vibrant jade green)
+  - `5.0h+`: `#C8F560` (High-intensity lime-mint)
+- Aligned matrix HUD inspector and 4-tier legend pills to the new emerald-lime gradient.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*
