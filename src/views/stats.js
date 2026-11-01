@@ -203,58 +203,58 @@ export function renderStats(container) {
           </span>
         </div>
 
-        <!-- 40px Multi-Block Segment Bar -->
-        <div class="w-full rounded-[14px] bg-[#18191E] flex items-center gap-1.5 h-[38px] my-3 p-1">
-          <div style="flex: 42" class="h-full rounded-[9px] bg-[#F472B6]" title="Paper Sprint"></div>
-          <div style="flex: 28" class="h-full rounded-[9px] bg-[#C084FC]" title="Sketch Drills"></div>
-          <div style="flex: 16" class="h-full rounded-[9px] bg-[#60A5FA]" title="Walk & Fitness"></div>
-          <div style="flex: 14" class="h-full rounded-[9px] bg-[#34D399]" title="Studio Build"></div>
+        <!-- 40px Multi-Block Segment Bar (Anti-Slop Disciplined Monochromatic Accent Scale) -->
+        <div class="w-full rounded-[14px] bg-[var(--surface-well)] flex items-center gap-1.5 h-[38px] my-3 p-1">
+          <div style="flex: 42; background-color: var(--domino-accent);" class="h-full rounded-[9px] shadow-sm transition-all" title="Paper Sprint (100% Accent)"></div>
+          <div style="flex: 28; background-color: color-mix(in srgb, var(--domino-accent) 75%, transparent);" class="h-full rounded-[9px] transition-all" title="Sketch Drills (75% Accent)"></div>
+          <div style="flex: 16; background-color: color-mix(in srgb, var(--domino-accent) 50%, transparent);" class="h-full rounded-[9px] transition-all" title="Walk & Fitness (50% Accent)"></div>
+          <div style="flex: 14; background-color: color-mix(in srgb, var(--domino-accent) 28%, transparent);" class="h-full rounded-[9px] transition-all" title="Studio Build (28% Accent)"></div>
         </div>
 
         <!-- Recessed 2x2 Legend -->
         <div class="recessed-well grid grid-cols-2 gap-x-4 gap-y-2.5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-[3px] h-5 rounded-full bg-[#F472B6]"></span>
+              <span class="w-[3px] h-5 rounded-full" style="background-color: var(--domino-accent);"></span>
               <div>
-                <div class="text-[11.5px] text-[#A1A1AA]">Paper Sprint</div>
-                <div class="text-[12px] font-semibold text-[#F4F4F6] tabular-nums">${(totalStudyMins * 0.55 / 60).toFixed(1)}h</div>
+                <div class="text-[11.5px] text-[var(--text-secondary)]">Paper Sprint</div>
+                <div class="text-[12px] font-semibold text-[var(--text-primary)] tabular-nums">${(totalStudyMins * 0.55 / 60).toFixed(1)}h</div>
               </div>
             </div>
-            <span class="text-[11px] text-[#71717A] tabular-nums">42%</span>
+            <span class="text-[11px] text-[var(--text-muted)] tabular-nums">42%</span>
           </div>
 
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-[3px] h-5 rounded-full bg-[#C084FC]"></span>
+              <span class="w-[3px] h-5 rounded-full" style="background-color: color-mix(in srgb, var(--domino-accent) 75%, transparent);"></span>
               <div>
-                <div class="text-[11.5px] text-[#A1A1AA]">Sketch Drills</div>
-                <div class="text-[12px] font-semibold text-[#F4F4F6] tabular-nums">${(totalStudyMins * 0.45 / 60).toFixed(1)}h</div>
+                <div class="text-[11.5px] text-[var(--text-secondary)]">Sketch Drills</div>
+                <div class="text-[12px] font-semibold text-[var(--text-primary)] tabular-nums">${(totalStudyMins * 0.45 / 60).toFixed(1)}h</div>
               </div>
             </div>
-            <span class="text-[11px] text-[#71717A] tabular-nums">28%</span>
+            <span class="text-[11px] text-[var(--text-muted)] tabular-nums">28%</span>
           </div>
 
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-[3px] h-5 rounded-full bg-[#60A5FA]"></span>
+              <span class="w-[3px] h-5 rounded-full" style="background-color: color-mix(in srgb, var(--domino-accent) 50%, transparent);"></span>
               <div>
-                <div class="text-[11.5px] text-[#A1A1AA]">Walk & Run</div>
-                <div class="text-[12px] font-semibold text-[#F4F4F6] tabular-nums">${(totalWorkMins / 60).toFixed(1)}h</div>
+                <div class="text-[11.5px] text-[var(--text-secondary)]">Walk & Run</div>
+                <div class="text-[12px] font-semibold text-[var(--text-primary)] tabular-nums">${(totalWorkMins / 60).toFixed(1)}h</div>
               </div>
             </div>
-            <span class="text-[11px] text-[#71717A] tabular-nums">16%</span>
+            <span class="text-[11px] text-[var(--text-muted)] tabular-nums">16%</span>
           </div>
 
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-[3px] h-5 rounded-full bg-[#34D399]"></span>
+              <span class="w-[3px] h-5 rounded-full" style="background-color: color-mix(in srgb, var(--domino-accent) 28%, transparent);"></span>
               <div>
-                <div class="text-[11.5px] text-[#A1A1AA]">Studio Build</div>
-                <div class="text-[12px] font-semibold text-[#F4F4F6] tabular-nums">${(totalHours * 0.14).toFixed(1)}h</div>
+                <div class="text-[11.5px] text-[var(--text-secondary)]">Studio Build</div>
+                <div class="text-[12px] font-semibold text-[var(--text-primary)] tabular-nums">${(totalHours * 0.14).toFixed(1)}h</div>
               </div>
             </div>
-            <span class="text-[11px] text-[#71717A] tabular-nums">14%</span>
+            <span class="text-[11px] text-[var(--text-muted)] tabular-nums">14%</span>
           </div>
         </div>
       </section>

@@ -56,12 +56,12 @@ export function showExamToast() {
         <button id="toast-dismiss-btn" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-[#A1A1AA] hover:text-white flex items-center justify-center text-xs font-bold leading-none shrink-0" aria-label="Close">✕</button>
       </div>
 
-      <div class="mt-2.5 pt-2 border-t border-white/[0.08] flex items-center justify-between text-[11px]">
-        <span class="text-[#71717A]">Exact Countdown</span>
+      <div class="mt-2.5 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px]">
+        <span class="text-[var(--text-muted)]">Exact Countdown</span>
         <span class="font-mono font-bold text-emerald-400 tabular-nums text-[12.5px]">${cd.days}d ${String(cd.hours).padStart(2, '0')}h ${String(cd.minutes).padStart(2, '0')}m ${String(cd.seconds).padStart(2, '0')}s</span>
       </div>
 
-      <div class="mt-1 flex items-center justify-between text-[10px] text-[#71717A]">
+      <div class="mt-1 flex items-center justify-between text-[10px] text-[var(--text-muted)]">
         <span>Reporting: ${cd.reportingTimeFormatted}</span>
         <span>Duration: 3 Hours</span>
       </div>
@@ -76,19 +76,19 @@ export function showExamToast() {
 
   toast.style.cssText = `
     position: fixed;
-    top: 24px;
+    top: max(20px, calc(env(safe-area-inset-top, 0px) + 10px));
     left: 50%;
     transform: translate(-50%, 0);
     z-index: 99999;
     padding: 14px 16px;
     font-family: var(--font-sans);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background-color: #16171B;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--surface-card);
     color: var(--text-primary);
     border-radius: 14px;
     width: calc(100vw - 32px);
     max-width: 360px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -202,7 +202,7 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
   if (!headerEl) {
     headerEl = document.createElement('header');
     headerEl.id = 'topInstrumentHeader';
-    headerEl.className = 'sticky top-0 z-50 bg-[#000000]/90 dark:bg-black/90 backdrop-blur-md border-b border-white/[0.08] select-none';
+    headerEl.className = 'sticky top-0 z-50 bg-[var(--bg-canvas)]/90 backdrop-blur-md border-b border-[var(--border-subtle)] select-none pt-[env(safe-area-inset-top,0px)] transition-colors duration-200';
     container.prepend(headerEl);
   }
 
@@ -211,18 +211,18 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
     : `${examCountdown.compact} to CEED`;
 
   headerEl.innerHTML = `
-    <div class="max-w-[390px] mx-auto px-3.5 pt-2.5 pb-2">
+    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-2">
       <!-- Row 1: Telemetry, Countdown Pill, Sun/Moon Theme Toggle & Streak -->
       <div class="flex items-center justify-between mb-2">
         <!-- Left: Day of 87 + Interactive [XXd to CEED] Pill -->
         <div class="flex items-center gap-1.5">
           <span class="text-sm font-semibold text-[var(--text-primary)] tracking-tight">
-            Day <span class="font-bold text-[var(--domino-accent)]">${String(dayIndex + 1).padStart(2, '0')}</span> <span class="text-[#71717A] font-normal">of 87</span>
+            Day <span class="font-bold text-[var(--domino-accent)]">${String(dayIndex + 1).padStart(2, '0')}</span> <span class="text-[var(--text-muted)] font-normal">of 87</span>
           </span>
           <button
             id="btn-exam-countdown"
             type="button"
-            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-medium bg-[#18181E] hover:bg-[#27272A] text-[#A1A1AA] hover:text-[var(--domino-accent)] border border-white/[0.08] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none active:scale-95"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-medium bg-[var(--surface-well)] hover:opacity-90 text-[var(--text-secondary)] hover:text-[var(--domino-accent)] border border-[var(--border-subtle)] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none active:scale-95"
             title="Tap for exact CEED exam timing & countdown"
             aria-label="Exam Countdown Details"
           >
@@ -237,14 +237,14 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
             id="btn-color-mode-toggle"
             type="button"
             aria-label="Toggle Night/Light Mode"
-            class="w-[28px] h-[28px] rounded-full flex items-center justify-center bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-[#F4F4F6] btn-tactile"
+            class="w-[28px] h-[28px] rounded-full flex items-center justify-center bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] btn-tactile"
             title="${isLight ? 'Switch to Night Mode' : 'Switch to Light Mode'}"
           >
             ${isLight ? icons.moon(13) : icons.sun(13)}
           </button>
 
           <!-- Streak Pill with 2-Tone SVG Flame -->
-          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#18191E] border border-white/[0.08] text-[var(--text-primary)]">
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-primary)]">
             <span>${icons.flame(13)}</span>
             <span>${telemetry.streak}d</span>
           </div>
@@ -252,14 +252,14 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
       </div>
 
       <!-- Row 2: Sticky 4-Tab Navigation Bar (Today, Stats, Studio, Config) -->
-      <nav class="grid grid-cols-4 gap-1 p-1 rounded-full bg-[#141418] border border-white/[0.07]" aria-label="Main Navigation">
+      <nav class="grid grid-cols-4 gap-1 p-1 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)]" aria-label="Main Navigation">
         ${tabs.map(tab => `
           <a
             href="${tab.hash}"
             class="flex items-center justify-center gap-1.5 py-1.5 rounded-full text-[11.5px] transition-all btn-tactile ${
               tab.isActive
                 ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
-                : 'text-[#A1A1AA] hover:text-[#F4F4F6] font-medium'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium'
             }"
             aria-current="${tab.isActive ? 'page' : 'false'}"
           >

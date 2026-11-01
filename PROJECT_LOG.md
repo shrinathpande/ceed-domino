@@ -1050,4 +1050,16 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 24. UI-Taste Anti-Slop Audit & Engineering Polish Pass
+
+### 24.1 Comprehensive Diagnostic Audit Across 5 Dimensions
+- Applied the `ui-taste` playbook (`anti-slop-craft.md` and `audit.md`):
+  1. **Accessibility**: Added explicit ARIA labels on custom time slider and stepper buttons; added keyboard `keydown` support (`Enter` / `Space`) to Domino cards; resolved borderline contrast ratios on secondary labels.
+  2. **Performance**: Eliminated full-view re-render thrashing in Studio Proctor by isolating 1-second drill timer ticks to DOM text updates (`#studio-timer-digits` and `#oled-fullscreen-digits`), preserving component focus and scroll state.
+  3. **Theming & System Consistency**: Fixed slider dynamic accent jump (previously hardcoded to `#C8F560` in input listener); tokenized sticky header classes (`bg-[var(--bg-canvas)]/90`, `border-[var(--border-subtle)]`, `bg-[var(--surface-well)]`) for seamless light/dark mode parity; transformed Stats effort allocation segments into an anti-slop disciplined monochromatic accent scale (`color-mix` with active `var(--domino-accent)`).
+  4. **Responsive Layout & Input**: Configured seamless iPhone 12 notch flow by letting sticky header background bleed into `env(safe-area-inset-top)` while maintaining zero extra body padding; added `touch-action: pan-x` to time slider to prevent vertical page-scroll collisions on iOS Safari.
+  5. **Implementation Integrity**: Added persistent state management for 24-minute studio pacing checklist milestones (`ceed_v2_studio_pacing`) so checked steps persist across question changes and never reset during live timer ticks; preserved all core invariants (`ceed_v2_state`, `ceed_v2_blocks`, `isDominoTask()`).
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

@@ -12,6 +12,28 @@ let drillSecondsRemaining = 24 * 60;
 let drillInterval = null;
 let wakeLockSentinel = null;
 
+const PACING_STORAGE_KEY = 'ceed_v2_studio_pacing';
+
+function getPacingChecks(dayIdx, qIdx) {
+  try {
+    const raw = localStorage.getItem(PACING_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return parsed[`${dayIdx}_${qIdx}`] || [];
+  } catch {
+    return [];
+  }
+}
+
+function setPacingChecks(dayIdx, qIdx, stepIndices) {
+  try {
+    const raw = localStorage.getItem(PACING_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    parsed[`${dayIdx}_${qIdx}`] = stepIndices;
+    localStorage.setItem(PACING_STORAGE_KEY, JSON.stringify(parsed));
+  } catch {}
+}
+
 async function requestWakeLock() {
   try {
     if ('wakeLock' in navigator) {
@@ -70,12 +92,19 @@ export function renderStudioProctor(container) {
     : 'Prioritize speed, primary form, human scale, and dynamic diagonal perspective lines before rendering textures.';
 
   const timeStr = formatTime(drillSecondsRemaining);
+  const savedChecks = getPacingChecks(studioDayIndex, activeQIndex);
+  const pacingMilestones = [
+    '1. 3-Min Thumbnail & Perspective Horizon (0–3m)',
+    '2. Primary Form & Human Scale (3–11m)',
+    '3. Line Weight Hierarchy & Cast Shadows (11–19m)',
+    '4. Annotated Callouts & Functional Detailing (19–24m)'
+  ];
 
   if (isOledFullscreen) {
     requestWakeLock();
     container.innerHTML = `
       <div id="oled-fullscreen" class="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center px-6 text-center select-none cursor-pointer">
-        <div class="font-pixel-display text-[76px] text-[#F4F4F6] leading-none mb-6 tabular-nums">${timeStr}</div>
+        <div id="oled-fullscreen-digits" class="font-pixel-display text-[76px] text-[#F4F4F6] leading-none mb-6 tabular-nums">${timeStr}</div>
         <p class="text-[14px] text-[#A1A1AA] max-w-[320px] leading-relaxed line-clamp-3">${task || scenario}</p>
         <span class="mt-8 text-[11px] uppercase tracking-widest text-[#52525B]">Tap anywhere to exit OLED clock</span>
       </div>
@@ -108,7 +137,7 @@ export function renderStudioProctor(container) {
               class="w-[36px] h-[36px] rounded-full text-[12px] font-semibold tabular-nums transition-all btn-tactile ${
                 activeQIndex === idx
                   ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
-                  : 'bg-[#141418] text-[#71717A] border border-white/[0.06]'
+                  : 'bg-[var(--surface-well)] text-[#71717A] border border-[var(--border-subtle)]'
               }"
             >Q${idx + 1}</button>
           `).join('')}
@@ -136,8 +165,8 @@ export function renderStudioProctor(container) {
         </p>
 
         <!-- Structured Task Callout Well -->
-        <div class="recessed-well border-l-2 !border-l-[#C8F560]">
-          <div class="text-[10.5px] font-bold uppercase tracking-wider text-[#C8F560] mb-1">Mandatory Deliverables:</div>
+        <div class="recessed-well border-l-2 !border-l-[var(--domino-accent)]">
+          <div class="text-[10.5px] font-bold uppercase tracking-wider text-[var(--domino-accent)] mb-1">Mandatory Deliverables:</div>
           <p class="text-[13px] text-[#A1A1AA] leading-relaxed">
             ${task}
           </p>
@@ -165,24 +194,27 @@ export function renderStudioProctor(container) {
           24-Minute Pacing Protocol (Checklist)
         </div>
         <div class="space-y-2">
-          ${[
-            '1. 3-Min Thumbnail & Perspective Horizon (0–3m)',
-            '2. Primary Form & Human Scale (3–11m)',
-            '3. Line Weight Hierarchy & Cast Shadows (11–19m)',
-            '4. Annotated Callouts & Functional Detailing (19–24m)'
-          ].map(step => `
-            <label class="recessed-well !py-2.5 !px-3 flex items-center gap-2.5 text-[12.5px] text-[#E4E4E7] cursor-pointer hover:bg-white/[0.02]">
-              <input type="checkbox" class="w-4 h-4 accent-[#C8F560] rounded cursor-pointer" />
-              <span>${step}</span>
-            </label>
-          `).join('')}
+          ${pacingMilestones.map((step, idx) => {
+            const isChecked = savedChecks.includes(idx);
+            return `
+              <label class="recessed-well !py-2.5 !px-3 flex items-center gap-2.5 text-[12.5px] cursor-pointer hover:bg-white/[0.02]">
+                <input
+                  type="checkbox"
+                  data-step-check="${idx}"
+                  ${isChecked ? 'checked' : ''}
+                  class="w-4 h-4 accent-[var(--domino-accent)] rounded cursor-pointer"
+                />
+                <span class="${isChecked ? 'line-through text-[#71717A]' : 'text-[#E4E4E7]'}">${step}</span>
+              </label>
+            `;
+          }).join('')}
         </div>
       </section>
 
       <!-- Bottom Scheduler Action Bar -->
       <div class="recessed-well !rounded-[12px] !p-3.5 flex items-center justify-between gap-2">
         <div class="flex items-baseline gap-2 pl-1">
-          <span class="text-[28px] font-semibold text-[#F4F4F6] tabular-nums leading-none">${timeStr}</span>
+          <span id="studio-timer-digits" class="text-[28px] font-semibold text-[#F4F4F6] tabular-nums leading-none">${timeStr}</span>
           <span class="text-[12px] text-[#71717A]">timer</span>
         </div>
 
@@ -211,6 +243,30 @@ export function renderStudioProctor(container) {
 
     </div>
   `;
+
+  // Bind Pacing Checkbox changes with persistence
+  container.querySelectorAll('[data-step-check]').forEach(input => {
+    input.addEventListener('change', () => {
+      playRelayClick();
+      const current = getPacingChecks(studioDayIndex, activeQIndex);
+      const stepIdx = parseInt(input.dataset.stepCheck, 10);
+      let updated;
+      if (input.checked) {
+        updated = [...new Set([...current, stepIdx])];
+      } else {
+        updated = current.filter(i => i !== stepIdx);
+      }
+      setPacingChecks(studioDayIndex, activeQIndex, updated);
+      const span = input.nextElementSibling;
+      if (span) {
+        if (input.checked) {
+          span.className = 'line-through text-[#71717A]';
+        } else {
+          span.className = 'text-[#E4E4E7]';
+        }
+      }
+    });
+  });
 
   container.querySelectorAll('[data-q-idx]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -271,8 +327,14 @@ export function renderStudioProctor(container) {
           releaseWakeLock();
           stopLockScreenTimer();
           playBeep(880, 0.4);
+          renderStudioProctor(container);
+          return;
         }
-        renderStudioProctor(container);
+        const formatted = formatTime(drillSecondsRemaining);
+        const normalDigits = container.querySelector('#studio-timer-digits');
+        if (normalDigits) normalDigits.textContent = formatted;
+        const oledDigits = container.querySelector('#oled-fullscreen-digits');
+        if (oledDigits) oledDigits.textContent = formatted;
       }, 1000);
       renderStudioProctor(container);
     }

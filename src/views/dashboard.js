@@ -297,30 +297,32 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                     
                     <!-- Hero Slider Header & Quick Step -->
                     <div class="flex items-center justify-between mb-3">
-                      <span class="text-xs font-medium text-[#71717A]">Log Session Hours</span>
+                      <span class="text-xs font-medium text-[var(--text-muted)]">Log Session Hours</span>
                       <div class="flex items-center gap-2">
                         <button
                           type="button"
                           data-step-mins="-15"
                           data-block-id="${block.id}"
-                          class="w-7 h-7 rounded-full bg-[#18191E] border border-white/[0.08] text-[#D4D4D8] flex items-center justify-center text-sm font-bold btn-tactile"
+                          class="w-7 h-7 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8] flex items-center justify-center text-sm font-bold btn-tactile"
                           title="Decrease 15m"
+                          aria-label="Decrease logged duration by 15 minutes"
                         >–</button>
-                        <span class="text-[17px] font-mono font-bold text-[#F4F4F6] tabular-nums px-2 py-0.5 rounded-lg bg-[#18191E] border border-white/[0.08]">
+                        <span class="text-[17px] font-mono font-bold text-[#F4F4F6] tabular-nums px-2 py-0.5 rounded-lg bg-[var(--surface-well)] border border-[var(--border-subtle)]">
                           ${loggedHrs.toFixed(2)}h
                         </span>
                         <button
                           type="button"
                           data-step-mins="15"
                           data-block-id="${block.id}"
-                          class="w-7 h-7 rounded-full bg-[#18191E] border border-white/[0.08] text-[#D4D4D8] flex items-center justify-center text-sm font-bold btn-tactile"
+                          class="w-7 h-7 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8] flex items-center justify-center text-sm font-bold btn-tactile"
                           title="Increase 15m"
+                          aria-label="Increase logged duration by 15 minutes"
                         >+</button>
                       </div>
                     </div>
 
-                    <!-- Fluid Tactile Range Slider -->
-                    <div class="py-2">
+                    <!-- Fluid Tactile Range Slider with Safe Pan-X Touch Capture -->
+                    <div class="py-2" style="touch-action: pan-x;">
                       <input
                         type="range"
                         min="0"
@@ -328,10 +330,11 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         step="0.25"
                         value="${loggedHrs}"
                         data-slider-block="${block.id}"
+                        aria-label="Logged session hours for ${block.name || 'Pillar'}: ${loggedHrs.toFixed(2)} hours"
                         class="w-full h-2.5 bg-[#1C1D22] rounded-lg appearance-none cursor-pointer accent-[var(--domino-accent)]"
-                        style="background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, #1C1D22 ${(loggedHrs / 6) * 100}%, #1C1D22 100%);"
+                        style="background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, var(--surface-well) ${(loggedHrs / 6) * 100}%, var(--surface-well) 100%);"
                       />
-                      <div class="flex justify-between text-[11px] font-mono text-[#71717A] mt-1.5">
+                      <div class="flex justify-between text-[11px] font-mono text-[var(--text-muted)] mt-1.5">
                         <span>0.0h</span>
                         <span>1.5h</span>
                         <span>3.0h</span>
@@ -481,7 +484,7 @@ function bindDashboardEvents(container) {
     });
   });
 
-  // Card body expansion (clicking outside interactive elements)
+  // Card body expansion (clicking or pressing Enter/Space outside interactive elements)
   container.querySelectorAll('[data-card-id]').forEach(card => {
     card.addEventListener('click', (e) => {
       if (e.target.closest('button') || e.target.closest('input')) return;
@@ -489,6 +492,17 @@ function bindDashboardEvents(container) {
       expandedBlockId = expandedBlockId === id ? null : id;
       playRelayClick();
       renderDashboard(container);
+    });
+
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        if (e.target.closest('button') || e.target.closest('input')) return;
+        e.preventDefault();
+        const id = card.dataset.cardId;
+        expandedBlockId = expandedBlockId === id ? null : id;
+        playRelayClick();
+        renderDashboard(container);
+      }
     });
   });
 
@@ -509,14 +523,14 @@ function bindDashboardEvents(container) {
     });
   });
 
-  // Fluid Range Slider input
+  // Fluid Range Slider input (Strictly reactive to active accent)
   container.querySelectorAll('[data-slider-block]').forEach(slider => {
     slider.addEventListener('input', e => {
       const blockId = slider.dataset.sliderBlock;
       const hours = parseFloat(e.target.value);
       const mins = Math.round(hours * 60);
       setDominoDuration(blockId, activeDateStr, mins);
-      slider.style.background = `linear-gradient(to right, #C8F560 0%, #C8F560 ${(hours / 6) * 100}%, #1C1D22 ${(hours / 6) * 100}%, #1C1D22 100%)`;
+      slider.style.background = `linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(hours / 6) * 100}%, var(--surface-well) ${(hours / 6) * 100}%, var(--surface-well) 100%)`;
     });
     slider.addEventListener('change', () => {
       playRelayClick();
