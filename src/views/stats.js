@@ -78,12 +78,12 @@ export function renderStats(container) {
 
         <div class="bento-card py-4 px-4 flex flex-col justify-between">
           <div class="flex items-center gap-2 mb-1.5">
-            <span class="w-5 h-5 rounded-full bg-[#10B981]/15 text-[#10B981] flex items-center justify-center">
+            <span class="w-5 h-5 rounded-full bg-[var(--domino-accent)]/20 text-[var(--domino-accent)] flex items-center justify-center">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
             </span>
             <span class="text-[11.5px] font-medium text-[#71717A]">Mastery Pace</span>
           </div>
-          <div class="text-[28px] font-semibold text-[#10B981] tabular-nums leading-none">
+          <div class="text-[28px] font-semibold text-[var(--domino-accent)] tabular-nums leading-none">
             ${masteryPct}<span class="text-[17px] font-normal">%</span>
           </div>
           <div class="text-[11px] text-[#71717A] mt-2">
@@ -103,12 +103,12 @@ export function renderStats(container) {
         </div>
 
         <div class="flex items-center gap-3 mb-4">
-          <!-- Segmented Circular Ring SVG (High Contrast Lime/Green) -->
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="text-[#22C55E] shrink-0">
-            <circle cx="12" cy="12" r="9" stroke="rgba(34, 197, 94, 0.2)" stroke-width="2.5" stroke-dasharray="4 3"/>
+          <!-- Segmented Circular Ring SVG (Active Accent) -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="text-[var(--domino-accent)] shrink-0">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity="0.2" stroke-width="2.5" stroke-dasharray="4 3"/>
             <path d="M12 3a9 9 0 1 1-6.36 2.64" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
           </svg>
-          <div class="text-[32px] font-bold text-[#F4F4F6] tabular-nums leading-none">
+          <div class="text-[32px] font-bold text-[var(--domino-accent)] tabular-nums leading-none">
             ${consistencyPct}<span class="text-[18px] text-[#71717A] font-normal">%</span>
           </div>
           <span class="text-[12px] text-[#71717A] leading-tight ml-auto text-right">

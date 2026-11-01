@@ -32,6 +32,10 @@ export function initApp(container) {
 
   // Listen for hash changes
   window.addEventListener('hashchange', () => route());
+
+  // Listen for dynamic accent color changes
+  document.addEventListener('accent-changed', () => route());
+
   route();
 }
 

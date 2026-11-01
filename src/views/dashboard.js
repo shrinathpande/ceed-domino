@@ -158,7 +158,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
             Planning
           </h1>
           <div class="pl-4 border-l border-white/[0.1] text-right">
-            <div class="text-[15px] font-medium text-[#F4F4F6] leading-tight">CEED Campaign</div>
+            <div class="text-[15px] font-semibold text-[var(--domino-accent)] leading-tight">CEED Campaign</div>
             <button
               type="button"
               id="btn-hero-countdown"
@@ -170,11 +170,11 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
           </div>
         </div>
 
-        <!-- 3-Part Chunky Pill Bar (Solid White + Barcode Hatch + Matte Slate) -->
+        <!-- 3-Part Chunky Pill Bar (Solid Accent + Barcode Hatch + Matte Slate) -->
         <div class="flex items-center gap-1.5 h-[36px] mb-4">
           <div
             style="flex: ${solidFlex}"
-            class="h-full bg-[#F4F4F6] rounded-[9px] transition-all duration-300"
+            class="h-full bg-[var(--domino-accent)] rounded-[9px] transition-all duration-300 shadow-sm"
             title="Completed Hours"
           ></div>
           <div
@@ -194,21 +194,21 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
           <div>
             <div class="text-[11px] text-[#71717A] mb-1">Study logged</div>
             <div class="flex items-start gap-1.5">
-              <span class="w-2.5 h-[3px] rounded-full bg-[#F4F4F6] mt-2"></span>
+              <span class="w-2.5 h-[3px] rounded-full bg-[var(--domino-accent)] mt-2"></span>
               <span class="text-[20px] font-medium text-[#F4F4F6] tabular-nums leading-none">${studyHours.toFixed(1)}h</span>
             </div>
           </div>
           <div>
             <div class="text-[11px] text-[#71717A] mb-1">Work & fitness</div>
             <div class="flex items-start gap-1.5">
-              <span class="text-[11px] font-mono text-[#71717A] leading-none mt-1">'''</span>
+              <span class="text-[11px] font-mono text-[var(--domino-accent)] font-bold leading-none mt-1">'''</span>
               <span class="text-[20px] font-medium text-[#F4F4F6] tabular-nums leading-none">${workWalkHours.toFixed(1)}h</span>
             </div>
           </div>
           <div>
             <div class="text-[11px] text-[#71717A] mb-1">Dominos locked</div>
             <div class="flex items-start gap-1.5">
-              <span class="w-2.5 h-[3px] rounded-full bg-[#71717A] mt-2"></span>
+              <span class="w-2.5 h-[3px] rounded-full bg-[var(--domino-accent)] mt-2"></span>
               <span class="text-[20px] font-medium text-[#F4F4F6] tabular-nums leading-none">${lockedCount} / ${mandatoryBlocks.length}</span>
             </div>
           </div>
@@ -272,7 +272,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                       aria-label="Toggle Complete"
                       class="w-[38px] h-[38px] rounded-full flex items-center justify-center transition-all btn-tactile ${
                         isCompleted
-                          ? 'bg-[#A7F3D0] text-[#064E3B] border border-[#4ADE80]'
+                          ? 'bg-[var(--domino-accent)] text-[#09090B] border border-[var(--domino-accent)] font-bold shadow-sm'
                           : 'bg-[#18191E] text-[#71717A] border border-white/[0.1]'
                       }"
                     >
@@ -286,7 +286,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                 <!-- Subtle progress bar on card bottom -->
                 <div class="w-full bg-[#1C1D22] h-1 rounded-full mt-3 overflow-hidden">
                   <div
-                    class="h-full rounded-full transition-all duration-300 ${isCompleted ? 'bg-[#A7F3D0]' : (isRunningThis ? 'bg-emerald-400' : 'bg-white/40')}"
+                    class="h-full rounded-full transition-all duration-300 ${isCompleted ? 'bg-[var(--domino-accent)]' : (isRunningThis ? 'bg-[var(--domino-accent)]' : 'bg-white/40')}"
                     style="width: ${pct}%;"
                   ></div>
                 </div>
@@ -328,8 +328,8 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         step="0.25"
                         value="${loggedHrs}"
                         data-slider-block="${block.id}"
-                        class="w-full h-2.5 bg-[#1C1D22] rounded-lg appearance-none cursor-pointer accent-[#C8F560]"
-                        style="background: linear-gradient(to right, #C8F560 0%, #C8F560 ${(loggedHrs / 6) * 100}%, #1C1D22 ${(loggedHrs / 6) * 100}%, #1C1D22 100%);"
+                        class="w-full h-2.5 bg-[#1C1D22] rounded-lg appearance-none cursor-pointer accent-[var(--domino-accent)]"
+                        style="background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, #1C1D22 ${(loggedHrs / 6) * 100}%, #1C1D22 100%);"
                       />
                       <div class="flex justify-between text-[11px] font-mono text-[#71717A] mt-1.5">
                         <span>0.0h</span>
@@ -354,7 +354,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         type="button"
                         data-set-mins="${targetMins}"
                         data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full bg-[#18191E] border border-white/[0.08] text-[11px] font-medium text-[#C8F560] hover:text-white btn-tactile whitespace-nowrap"
+                        class="px-2.5 py-1 rounded-full bg-[#18191E] border border-[var(--domino-accent)]/40 text-[11px] font-semibold text-[var(--domino-accent)] hover:text-white btn-tactile whitespace-nowrap"
                       >
                         Target (${targetHrs.toFixed(1)}h)
                       </button>
@@ -399,7 +399,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         class="px-5 py-2.5 rounded-full text-[13px] font-semibold tracking-tight btn-tactile ${
                           isRunningThis
                             ? 'bg-[#FECACA] text-[#991B1B] border border-[#F87171]'
-                            : 'bg-[#F4F4F6] text-[#09090B]'
+                            : 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                         }"
                       >
                         ${isRunningThis ? `Stop • ${timerState.formatted || '00:00'}` : 'Start Session'}
@@ -412,11 +412,11 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
 
               <!-- Dedicated Live Session Timer Box Directly Below Card when Running! -->
               ${isRunningThis ? `
-                <div class="mt-1.5 p-3 rounded-[14px] bg-[#16171B] border border-emerald-500/40 flex items-center justify-between animate-fadeIn">
+                <div class="mt-1.5 p-3 rounded-[14px] bg-[#16171B] border border-[var(--domino-accent)]/40 flex items-center justify-between animate-fadeIn">
                   <div class="flex items-center gap-2.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-[var(--domino-accent)] animate-pulse"></span>
                     <div>
-                      <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">ACTIVE DRILL RUNNING</div>
+                      <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--domino-accent)]">ACTIVE DRILL RUNNING</div>
                       <div class="text-[20px] font-mono font-bold text-[#F4F4F6] tabular-nums leading-tight">
                         <span id="live-timer-digits-${block.id}">${timerState.formatted || '00:00'}</span>
                       </div>

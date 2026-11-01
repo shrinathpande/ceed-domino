@@ -217,12 +217,12 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
         <!-- Left: Day of 87 + Interactive [XXd to CEED] Pill -->
         <div class="flex items-center gap-1.5">
           <span class="text-sm font-semibold text-[var(--text-primary)] tracking-tight">
-            Day ${String(dayIndex + 1).padStart(2, '0')} <span class="text-[#71717A] font-normal">of 87</span>
+            Day <span class="font-bold text-[var(--domino-accent)]">${String(dayIndex + 1).padStart(2, '0')}</span> <span class="text-[#71717A] font-normal">of 87</span>
           </span>
           <button
             id="btn-exam-countdown"
             type="button"
-            class="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-medium bg-[#18181E] hover:bg-[#27272A] text-[#A1A1AA] hover:text-[#F4F4F6] border border-white/[0.08] transition-all cursor-pointer select-none active:scale-95"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-medium bg-[#18181E] hover:bg-[#27272A] text-[#A1A1AA] hover:text-[var(--domino-accent)] border border-white/[0.08] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none active:scale-95"
             title="Tap for exact CEED exam timing & countdown"
             aria-label="Exam Countdown Details"
           >
@@ -258,7 +258,7 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
             href="${tab.hash}"
             class="flex items-center justify-center gap-1.5 py-1.5 rounded-full text-[11.5px] transition-all btn-tactile ${
               tab.isActive
-                ? 'bg-[#F4F4F6] text-[#09090B] font-semibold shadow-sm'
+                ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                 : 'text-[#A1A1AA] hover:text-[#F4F4F6] font-medium'
             }"
             aria-current="${tab.isActive ? 'page' : 'false'}"

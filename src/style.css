@@ -136,6 +136,20 @@ html, body {
   padding: 12px 16px;
 }
 
+/* Dynamic Accent Utility Tokens */
+.accent-fill {
+  background-color: var(--domino-accent);
+  color: #09090B;
+}
+
+.accent-text {
+  color: var(--domino-accent);
+}
+
+.accent-border {
+  border-color: var(--domino-accent);
+}
+
 /* Reference 7: High-Density Vertical Barcode Hatch Pill */
 .bg-barcode-hatch {
   background-image: repeating-linear-gradient(

@@ -107,7 +107,7 @@ export function renderStudioProctor(container) {
               data-q-idx="${idx}"
               class="w-[36px] h-[36px] rounded-full text-[12px] font-semibold tabular-nums transition-all btn-tactile ${
                 activeQIndex === idx
-                  ? 'bg-[#F4F4F6] text-[#09090B]'
+                  ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                   : 'bg-[#141418] text-[#71717A] border border-white/[0.06]'
               }"
             >Q${idx + 1}</button>
@@ -201,7 +201,7 @@ export function renderStudioProctor(container) {
             class="px-5 py-2.5 rounded-full text-[13px] font-semibold btn-tactile ${
               drillRunning
                 ? 'bg-[#FECACA] text-[#991B1B] border border-[#F87171]'
-                : 'bg-[#F4F4F6] text-[#09090B]'
+                : 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
             }"
           >
             ${drillRunning ? 'Pause Drill' : (drillSecondsRemaining < 1440 ? 'Resume Drill' : 'Start Drill')}

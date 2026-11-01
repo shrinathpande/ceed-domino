@@ -1011,4 +1011,29 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 22. System-Wide Dynamic Accent Color Orchestration (`var(--domino-accent)`)
+
+### 22.1 End-to-End Accent Permeation Across All Views
+- Weaved the user's selected theme color (`var(--domino-accent)`) consistently through every major interactive control and visual anchor:
+  - **Top Sticky Navigation Bar**: Active tab (`Today`, `Stats`, `Studio`, `Config`) is now prominently highlighted with a solid pill in `var(--domino-accent)` with deep ink `#09090B` typography and icons.
+  - **Header Telemetry**: Day index digits (`Day XX`) rendered in bold `var(--domino-accent)`; countdown pill highlighted with subtle accent border on hover/focus.
+  - **Hero Planning Card**:
+    - `CEED Campaign` label set in `text-[var(--domino-accent)] font-semibold`.
+    - 3-Part Progress Bar: Segment 1 (completed hours) filled with solid `var(--domino-accent)`.
+    - Sub-metrics row: Solid dash and 3-tick indicator glyphs set in `var(--domino-accent)`.
+  - **7-Day Calendar Strip**: Selected day circle and Today indicator dot saturated in `var(--domino-accent)`.
+  - **Domino Cards**:
+    - Circular check button: Saturated with `var(--domino-accent)` with deep ink `#09090B` checkmark when completed.
+    - Bottom perimeter progress bar: Fills with `var(--domino-accent)` as session hours are logged.
+    - Expanded Drawer: Interactive timeline scrubber track and target chips filled with `var(--domino-accent)`.
+    - Primary CTA Button (`Start Session`): Saturated with `var(--domino-accent)` and deep ink `#09090B` bold text.
+    - Active Drill Card: Border outline and pulsing status dot accented in `var(--domino-accent)`.
+  - **Stats View**: Circular consistency ring, percentage readout, and mastery badge icons unified in `var(--domino-accent)`.
+  - **Studio Proctor**: Active question switcher pills (Q1–Q5) and the primary "Start Drill" action button saturated in `var(--domino-accent)`.
+
+### 22.2 Reactive Real-Time Theme Transitioning (`src/app.js` & `src/style.css`)
+- Wired a global `accent-changed` event listener in `src/app.js`: Tapping any of the 6 curated soft pastel swatches in Config instantly updates the entire app (all headers, navigation pills, progress bars, buttons, and badges) with zero page reload or lag.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*
