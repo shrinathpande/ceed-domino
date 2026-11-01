@@ -147,3 +147,48 @@ export function playBeep(freq = 880, duration = 0.2) {
     console.warn('Beep audio error:', err);
   }
 }
+
+/**
+ * Ascending Harmonic Mechanical Victory Chime (A-Major Triad: A4 → C#5 → E5)
+ * Celebratory 100% Domino Completion Feedback synthesized via Web Audio API.
+ */
+export function playVictoryChime() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const notes = [
+      { freq: 440.00, timeOffset: 0.00, dur: 0.45 }, // A4
+      { freq: 554.37, timeOffset: 0.10, dur: 0.50 }, // C#5
+      { freq: 659.25, timeOffset: 0.20, dur: 0.70 }  // E5
+    ];
+
+    const now = ctx.currentTime;
+
+    notes.forEach(note => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(note.freq, now + note.timeOffset);
+
+      const startTime = now + note.timeOffset;
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.linearRampToValueAtTime(0.25, startTime + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + note.dur);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(startTime);
+      osc.stop(startTime + note.dur + 0.05);
+    });
+
+    // Tactile haptic vibration pattern for mobile
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([40, 60, 80]);
+    }
+  } catch (err) {
+    console.warn('Victory chime audio error:', err);
+  }
+}

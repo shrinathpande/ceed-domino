@@ -9,7 +9,7 @@ import {
   getCardInfusionScope
 } from '../core/state.js';
 import { getTodayStr, getCampaignDayNumber, getExamCountdown, formatDateLocal } from '../utils/dates.js';
-import { playRelayClick } from '../utils/sound.js';
+import { playRelayClick, playVictoryChime } from '../utils/sound.js';
 import { renderStatusPill } from '../components/status-pill.js';
 import { showExamToast } from '../components/header.js';
 import {
@@ -99,6 +99,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   const hatchFlex = Math.max(inProgressHours / totalSpan, inProgressHours > 0 ? 0.16 : 0.14);
   const slateFlex = Math.max(remainingHours / totalSpan, 0.15);
 
+  const isAllLocked = lockedCount === mandatoryBlocks.length && mandatoryBlocks.length > 0;
   const isTodaySelected = activeDateStr === todayStr;
 
   container.innerHTML = `
@@ -215,6 +216,20 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
             </div>
           </div>
         </div>
+
+        ${isAllLocked ? `
+          <div
+            id="btn-replay-celebration"
+            class="mt-3.5 py-2 px-3.5 rounded-full bg-[#09090B] text-white flex items-center justify-between cursor-pointer btn-tactile hover:bg-black/90 transition-transform select-none"
+            title="Tap to replay 100% Domino Celebration"
+          >
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[var(--domino-accent)]"></span>
+              <span class="text-[12px] font-bold tracking-tight">${mandatoryBlocks.length}/${mandatoryBlocks.length} Dominos Locked • Day Complete</span>
+            </div>
+            <span class="text-[11px] font-medium text-white/70">Replay Celebration</span>
+          </div>
+        ` : ''}
       </section>
 
       <!-- Domino Cards Stream -->
@@ -548,10 +563,42 @@ function bindDashboardEvents(container) {
       e.stopPropagation();
       e.preventDefault();
       const blockId = btn.dataset.manualToggle;
+
+      const mandatoryBlocks = getBlocks().filter(isDominoTask);
+      const recBefore = getDayRecord(activeDateStr);
+      const wasCompleted = recBefore.completed.includes(blockId);
+      const wasAllLocked = mandatoryBlocks.length > 0 && mandatoryBlocks.every(b => recBefore.completed.includes(b.id));
+
       toggleDominoComplete(blockId, activeDateStr);
       playRelayClick();
+
+      const recAfter = getDayRecord(activeDateStr);
+      const nowCompleted = recAfter.completed.includes(blockId);
+      const nowAllLocked = mandatoryBlocks.length > 0 && mandatoryBlocks.every(b => recAfter.completed.includes(b.id));
+
       renderDashboard(container);
+
+      // In-place tactile spring pop on this card if completed
+      if (!wasCompleted && nowCompleted) {
+        const cardEl = container.querySelector(`[data-card-id="${blockId}"]`);
+        if (cardEl) {
+          cardEl.classList.remove('card-complete-pop');
+          void cardEl.offsetWidth;
+          cardEl.classList.add('card-complete-pop');
+        }
+      }
+
+      // If all 4 dominos achieved 100% completion, trigger celebratory animation!
+      if (!wasAllLocked && nowAllLocked) {
+        triggerVictoryCelebration(container);
+      }
     });
+  });
+
+  // Replay 100% celebration button in hero sheet
+  container.querySelector('#btn-replay-celebration')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    triggerVictoryCelebration(container);
   });
 
   // Fluid Range Slider input (Strictly reactive to active accent and card infusion)
@@ -638,4 +685,102 @@ function handleToggleTimer(blockId, container) {
   }
   playRelayClick();
   renderDashboard(container);
+}
+
+/**
+ * Micro-confetti particle sparks emitting from Hero Planning card.
+ * Lightweight, hardware accelerated standard Canvas 2D API.
+ */
+function spawnHeroConfetti(heroEl) {
+  const oldCanvas = heroEl.querySelector('.celebration-canvas');
+  if (oldCanvas) oldCanvas.remove();
+
+  const canvas = document.createElement('canvas');
+  canvas.className = 'celebration-canvas';
+  heroEl.style.position = 'relative';
+  heroEl.appendChild(canvas);
+
+  const rect = heroEl.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--domino-accent').trim() || '#C4B5FD';
+  const colors = [accentColor, '#F59E0B', '#FFFFFF', '#09090B', '#3898FF'];
+
+  const particles = Array.from({ length: 48 }, () => {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 2.5 + Math.random() * 5.5;
+    return {
+      x: canvas.width / 2,
+      y: canvas.height * 0.45,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 1.8,
+      size: 3 + Math.random() * 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 1,
+      rotation: Math.random() * Math.PI,
+      vRot: (Math.random() - 0.5) * 0.22
+    };
+  });
+
+  const startTime = performance.now();
+
+  function animate(now) {
+    const elapsed = now - startTime;
+    if (elapsed > 1600) {
+      canvas.remove();
+      return;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.12; // gentle gravity
+      p.rotation += p.vRot;
+      p.alpha = Math.max(0, 1 - elapsed / 1500);
+
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+      ctx.restore();
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+/**
+ * 100% All-Dominos Completion Celebration:
+ * 1. Web Audio API ascending harmonic chime (A-Major chord) + haptics
+ * 2. Synchronized 60ms ripple wave down all 4 cards
+ * 3. Micro-confetti sparks from Hero Planning Card
+ */
+export function triggerVictoryCelebration(container) {
+  // 1. Synthesize audio chime + haptic vibration
+  playVictoryChime();
+
+  // 2. Ripple cascade across all domino cards
+  const cards = container.querySelectorAll('article.bento-card');
+  cards.forEach((card, idx) => {
+    card.style.animationDelay = `${idx * 60}ms`;
+    card.classList.remove('celebration-ripple');
+    void card.offsetWidth;
+    card.classList.add('celebration-ripple');
+  });
+
+  // 3. Canvas Micro-Confetti Sparks from Hero card
+  const heroSheet = container.querySelector('.ron-top-sheet');
+  if (heroSheet && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    spawnHeroConfetti(heroSheet);
+  }
 }

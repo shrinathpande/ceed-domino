@@ -1146,4 +1146,29 @@ Implemented an Emil Kowalski-compliant 40ms cascading entrance system that trigg
 
 ---
 
+## 29. In-Place Card Completion & 100% All-Dominos Victory Celebration
+
+### 29.1 Elimination of In-View Re-stagger Glitch
+- **Root Cause**: `renderDashboard()` reapplied `.stagger-item` to all cards whenever a checkmark or slider was touched, causing the whole page to stagger-animate as if reloading.
+- **Resolution**:
+  - Scoped `.stagger-item` entrance animation to `.view-enter-stagger` on `#appShell`.
+  - Added timed auto-removal of `.view-enter-stagger` after 650ms in `src/app.js`.
+  - In-place user actions (toggling dominos, slider time adjustments, quick presets) now update smoothly in-place without triggering the entrance cascade.
+
+### 29.2 Individual Card Completion Tactile Spring Pop
+- **Keyframe Physics**: `@keyframes cardCompletePop` (`scale(0.98)` → `scale(1.02)` → `scale(1)` in `260ms cubic-bezier(0.16, 1, 0.3, 1)`).
+- **Execution**: When a card is marked complete, only that specific card executes the spring pop along with `.check-pop-enter` on the checkmark icon, while all other cards remain stationary.
+
+### 29.3 100% Full-Completion Victory Celebration
+- **Visual Sparks**:
+  - Micro-confetti particle canvas emits sparks from the Hero Planning Card (`.ron-top-sheet`) in active accent, gold (`#F59E0B`), and white (48 particles with gentle physics and auto-removal in 1.6s).
+  - All 4 domino cards execute a synchronized sequential ripple wave (`@keyframes celebrationRipple` at 60ms stagger per card).
+  - Hero card displays a settled celebratory pill: `4/4 Dominos Locked • Day Complete` with instant tap-to-replay.
+- **Acoustic & Haptic Synthesis**:
+  - Synthesized an uplifting ascending harmonic chord (A-Major triad: A4 [440Hz] → C#5 [554.37Hz] → E5 [659.25Hz] with exponential decay) via pure Web Audio API (`playVictoryChime()` in `src/utils/sound.js`).
+  - Added mobile haptic vibration pulse (`navigator.vibrate([40, 60, 80])`).
+- **Accessibility**: Zero particle emission and zero card scale under `@media (prefers-reduced-motion: reduce)`.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

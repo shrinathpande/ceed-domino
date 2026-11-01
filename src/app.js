@@ -45,6 +45,15 @@ function route() {
   const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
   const dateParam = urlParams.get('date');
 
+  // Trigger clean staggered cascade on app open and route change
+  _appContainer.classList.remove('view-enter-stagger');
+  void _appContainer.offsetWidth; // Force reflow so entrance animation triggers cleanly
+  _appContainer.classList.add('view-enter-stagger');
+  clearTimeout(_appContainer._staggerTimeout);
+  _appContainer._staggerTimeout = setTimeout(() => {
+    _appContainer.classList.remove('view-enter-stagger');
+  }, 650);
+
   // Render Top Sticky Header with Navigation
   renderHeader(_appContainer, hash, dateParam);
 
