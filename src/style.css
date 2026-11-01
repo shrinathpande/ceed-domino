@@ -64,20 +64,6 @@
     --radius-btn: 4px;
   }
 
-  /* Full Emergency Mode: Red industrial alert shift */
-  html.emergency-mode,
-  body.emergency-active-theme {
-    --ground: #100303 !important;
-    --surface: #1a0606 !important;
-    --raised: #280909 !important;
-    --border: #521212 !important;
-    --rule: #3d0d0d !important;
-    --text: #fee2e2 !important;
-    --muted: #fca5a5 !important;
-    --accent: #ef4444 !important;
-    --domino-accent: #ef4444 !important;
-  }
-
   body {
     background-color: var(--ground);
     color: var(--text);

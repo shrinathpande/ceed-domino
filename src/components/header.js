@@ -1,5 +1,5 @@
 // src/components/header.js
-import { getState, getCumulativeTelemetry, getTheme, cycleTheme, THEMES } from '../core/state.js';
+import { getState, getCumulativeTelemetry, getTheme, cycleTheme, THEMES, getAccentColor } from '../core/state.js';
 import { getDayIndex, getExamCountdown } from '../utils/dates.js';
 import { playRelayClick } from '../utils/sound.js';
 
@@ -15,8 +15,9 @@ export function showInAppToast(msg, isAlert = false) {
   clearTimeout(toast._timeout);
   clearTimeout(toast._removeTimeout);
 
-  const borderCol = isAlert ? '#FF69AF' : '#ffffff';
-  const textCol = isAlert ? '#FF69AF' : '#ffffff';
+  const accentColor = getAccentColor();
+  const borderCol = isAlert ? accentColor : '#ffffff';
+  const textCol = isAlert ? accentColor : '#ffffff';
 
   toast.innerHTML = `
     <div style="flex: 1; padding-right: 8px;">${msg}</div>
@@ -110,10 +111,10 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
         <!-- Center: Jan 17 Countdown Pill -->
         <button
           id="btn-header-countdown"
-          class="flex items-center gap-1 px-2 py-0.5 bg-[#0a0a0a] border border-neutral-700 hover:border-[#FF69AF] text-white rounded-full text-[10px] font-bold active:scale-95 transition-all"
+          class="flex items-center gap-1 px-2 py-0.5 bg-[#0a0a0a] border border-neutral-700 text-white rounded-full text-[10px] font-bold active:scale-95 transition-all"
           title="${examCountdown.detailed}"
         >
-          <span class="w-1.5 h-1.5 rounded-full bg-[#FF69AF] animate-pulse"></span>
+          <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background-color: ${getAccentColor()};"></span>
           <span>${examCountdown.compact}</span>
         </button>
 
@@ -132,7 +133,7 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
             <span class="font-bold text-white">${state.shields || 0}</span>
           </div>
 
-          <div class="flex items-center gap-0.5 px-1.5 py-0.5 bg-[#FF69AF] text-black rounded font-bold text-[10px]">
+          <div class="flex items-center gap-0.5 px-1.5 py-0.5 text-black rounded font-bold text-[10px]" style="background-color: ${getAccentColor()};">
             <span>🔥</span>
             <span>${telemetry.streak}D</span>
           </div>

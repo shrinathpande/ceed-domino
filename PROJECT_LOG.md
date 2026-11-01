@@ -618,6 +618,42 @@ Before modifying code, the upgrade plan was grilled against core requirements an
   - In `data-manual-toggle`: unchecking now resets `rec.durations[id] = 0`, clears `rec.completed`, recalculates the streak, flushes state, and immediately empties the progress bar to 0% (`0.0h / 3.0h`). Checking sets duration to `targetMins` and fills the bar to 100%.
   - Updated `setDominoDuration` and `logHours` in `src/core/state.js` to automatically uncheck whenever logged minutes drop below `effectiveTarget`.
 
+### 10. Complete UX Architecture Revamp & Customization Overhaul
+
+**Date**: November 1, 2026  
+**Trigger**: Direct user UX alignment and decisive 10-point architecture blueprint.
+
+### 10.1 Domino Card Face & Tap Model
+- **Two-Way Completion Model**:
+  - Tapping the dedicated square corner button (`✓`/`○`) completes the domino (sets duration to target floor, fills high-contrast bar to 100%, illuminates full neon border) OR uncompletes it (resets duration to 0.0h, empties bar to 0%, reverts border to neutral).
+  - Tapping this corner button is isolated with `e.stopPropagation()` and `e.preventDefault()`, so it never accidentally expands/collapses the card.
+- **Card Tap Affordance**:
+  - Tapping the card body opens the drawer for time customization.
+  - Inside the drawer: precision range slider with live readout `${(val/60).toFixed(1)}h (${val}m)` + `-15m` and `+15m` quick steppers.
+- **Direct Card Face Timer**:
+  - Direct `[ ▶ TIMER ]` / `[ ⏹ STOP ]` button located directly on each card face.
+  - Starting the timer displays a prominent live stopwatch banner directly nested within that card on the Today page (`[ ⏱️ LIVE SESSION: mm:ss ] [ Lock-Screen Active ]`).
+- **High-Contrast Percentage Hierarchy**:
+  - Card face clearly displays percentage badge (`100%`, `67%`) and hours `(2.0h / 3.0h)` right next to title with a high-contrast liquid progress bar.
+
+### 10.2 Complete Removal of Checkpoint Alarm Drawer
+- Removed the 6 AM - 11 PM Checkpoint alarms drawer from the Today dashboard as requested.
+
+### 10.3 Stats View Reorganization
+- **87-Day Campaign Matrix on Top**: The 87-Day GitHub-style contribution matrix is now the first element at the top of the Stats view with day inspection HUD.
+- **CEED Master Ledger (500h)**: Pinned directly beneath the campaign matrix, tracking cumulative productive hours against the 500h target.
+- **Removed Per-Pillar Cumulative Breakdown**: Removed the redundant per-pillar list, streamlining the view to the 4 athletic gauges, circadian biological peak analyzer, and data exports.
+
+### 10.4 Config & Terminal Customization
+- **Custom Accent Color Chooser**:
+  - Added native color picker (`<input type="color">`), hex code text input, live glowing preview swatch, and 6 instant OLED neon presets (`#FF69AF`, `#00E5FF`, `#10B981`, `#F59E0B`, `#8B5CF6`, `#FFFFFF`).
+  - Automatically updates `--domino-accent` across CSS variables and localStorage (`settings.accentColor`).
+- **Emergency Mode Removed**: Completely purged from settings, CSS, and UI.
+- **Fully Customizable Domino Pillars & Badges**:
+  - Non-hardcoded: users can edit badges, titles, categories (`STUDY`, `WORK`, `WALK`, `REST`, `OTHER`), and target floor hours.
+  - Added `[ + ADD NEW DOMINO PILLAR ]` button to create custom pillars.
+  - Added delete buttons (`✕`) for removing pillars.
+
 ---
 
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

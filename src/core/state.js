@@ -24,6 +24,7 @@ const DEFAULT_SETTINGS = {
   startDate: '2026-10-22',
   endDate: '2027-01-17',
   theme: 'cyber',
+  accentColor: '#FF69AF'
 };
 
 // Core architectural invariant: any block with 'DOMINO' in badge is mandatory
@@ -427,6 +428,28 @@ export function cycleTheme() {
   const idx = THEMES.findIndex(t => t.id === current);
   const nextIdx = (idx + 1) % THEMES.length;
   return setTheme(THEMES[nextIdx].id);
+}
+
+// User-chosen OLED accent color (supports custom hex string or presets)
+export function getAccentColor() {
+  try {
+    const state = getState();
+    if (state.settings && state.settings.accentColor) return state.settings.accentColor;
+  } catch {}
+  return '#FF69AF';
+}
+
+export function setAccentColor(hex) {
+  let cleanHex = hex || '#FF69AF';
+  if (!cleanHex.startsWith('#')) cleanHex = '#' + cleanHex;
+  document.documentElement.style.setProperty('--domino-accent', cleanHex);
+  document.documentElement.style.setProperty('--accent', cleanHex);
+  const state = getState();
+  state.settings = state.settings || {};
+  state.settings.accentColor = cleanHex;
+  saveState(state);
+  document.dispatchEvent(new CustomEvent('accent-changed', { detail: cleanHex }));
+  return cleanHex;
 }
 
 // Helpers for backward-compatibility
