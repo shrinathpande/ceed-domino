@@ -577,4 +577,36 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 9. Precision Time Slider, Dedicated Timer Cell & Part A Elimination
+
+**Date**: November 1, 2026  
+**Commit Focus**: Tactile Ergonomics & Decluttering
+
+### 9.1 Precision OLED Time Slider
+- **User Problem**: The 8-button block grid (`+0.5h`, `+1.0h`, `+1.5h`, `+2.0h`, `+3.0h`, `+4.0h`, `-0.5h`, `TIMER`) was visually loud, bulky on iPhone 12 viewports, and inflexible for logging arbitrary times (e.g. 45m, 1h 15m, 2h 45m).
+- **Solution**:
+  - Replaced the button block grid with a sleek custom OLED range slider (`min="0"`, `max="360"`, `step="15"` minutes).
+  - Features a glowing `#FF69AF` thumb, active scale bounce (`scale(1.25)`), and smooth gradient fill representing logged progress against target.
+  - Paired with tactile `-15m` and `+15m` quick stepper buttons and a live readout: `${(loggedMins / 60).toFixed(1)}h (${loggedMins}m)`.
+  - Backed by `setDominoDuration(blockId, dateStr, durationMins)` in `src/core/state.js`, triggering instant state persistence and mechanical relay click audio.
+
+### 9.2 Dedicated Timer Cell
+- **User Problem**: The stopwatch timer button was buried inside the hour button grid, leading to accidental timer activation or confusion about active timer status.
+- **Solution**:
+  - Isolated the timer into a prominent, dedicated card cell right below the time slider.
+  - Displays clear operational status:
+    * Idle: `🔒 [Domino Name] Timer — Lock-Screen Live Activity Ready` with white `START TIMER` button.
+    * Running: `⏱️ [Domino Name] Timer — LIVE TIMER RUNNING` with neon pink pulse border and high-contrast `STOP & COMMIT` button.
+  - Completely decoupled from duration adjustments to prevent misclicks.
+
+### 9.3 Elimination of Part A Section from Domino 3
+- **User Problem**: The Part A drill micro-counter (`-5`, `+5`, `+10`, `35/35`) and Part A progress bars were deemed unnecessary and distracting from the core domino focus.
+- **Solution**:
+  - Completely removed the Part A micro-counter drawer, question buttons, and badges from Domino 3 (`d3: Paperwork & CEED Sprint`).
+  - Removed Part A question count indicators from the Today dashboard header metrics.
+  - Removed the Part A 3,045 question campaign progress bar from `src/views/stats.js`, keeping the Stats view focused purely on the 500-Hour Mastery campaign and circadian telemetry.
+  - Removed `hasPartACounter` flag from `DEFAULT_BLOCKS` in `src/core/state.js`.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

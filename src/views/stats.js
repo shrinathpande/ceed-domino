@@ -80,7 +80,7 @@ export function renderStatsView(container) {
         <div class="card-shell border border-[#FF69AF] bg-[#0c0c0c] p-3 flex flex-col justify-between">
           <div class="text-[10px] text-neutral-400 uppercase tracking-wider">CUMULATIVE STUDY</div>
           <div class="text-2xl font-bold text-[#FF69AF] mt-1 mb-0.5">${telemetry.cumulativeStudyHours}h</div>
-          <div class="text-[10px] text-neutral-500">Part A: ${telemetry.totalPartASolved} Qs</div>
+          <div class="text-[10px] text-neutral-500">Paperwork & Sketching</div>
         </div>
 
         <div class="card-shell border border-neutral-700 bg-[#0c0c0c] p-3 flex flex-col justify-between">
@@ -125,7 +125,7 @@ export function renderStatsView(container) {
         </div>
       </div>
 
-      <!-- 500-Hour Mastery & 3,045 Part A Progress Bars -->
+      <!-- 500-Hour Mastery Progress Bar -->
       <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-3 flex flex-col gap-2.5">
         <div>
           <div class="flex justify-between text-[11px] font-bold mb-1">
@@ -134,16 +134,6 @@ export function renderStatsView(container) {
           </div>
           <div class="w-full h-2.5 bg-black border border-neutral-700 rounded-full overflow-hidden">
             <div class="liquid-progress h-full bg-[#FF69AF]" style="width: ${masteryPct}%"></div>
-          </div>
-        </div>
-
-        <div>
-          <div class="flex justify-between text-[11px] font-bold mb-1">
-            <span>PART A CAMPAIGN (35 Qs × 87d)</span>
-            <span class="text-white">${telemetry.totalPartASolved} / ${partATargetTotal} Qs (${partAPct}%)</span>
-          </div>
-          <div class="w-full h-2.5 bg-black border border-neutral-700 rounded-full overflow-hidden">
-            <div class="liquid-progress h-full bg-white" style="width: ${partAPct}%"></div>
           </div>
         </div>
       </div>

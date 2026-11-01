@@ -3,7 +3,7 @@ import {
   getBlocks,
   getDayRecord,
   logHours,
-  logPartAQuestions,
+  setDominoDuration,
   isDominoTask,
   getState,
   saveState
@@ -28,7 +28,7 @@ const DEFAULT_CHECKPOINTS = [
   { id: 'cp_2100', time: '21:00', label: '09:00 PM – 11:00 PM // NIGHT SPRINT', note: 'Final push & 11:00 PM wind-down', alarmOn: true, actions: [{ label: '+2H STUDY', blockId: 'd2', mins: 120 }, { label: '+2H WORK', blockId: 'd4', mins: 120 }] }
 ];
 
-let expandedBlockId = 'd3'; // Default open to Paperwork & Part A Micro-Counter
+let expandedBlockId = null;
 let showCheckpoints = false;
 let activeDateStr = new Date().toISOString().slice(0, 10);
 let liveStopwatchInterval = null;
@@ -121,7 +121,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
             ${(todayStudyMins / 60).toFixed(1)} <span class="text-xs font-normal text-neutral-400">HRS</span>
           </div>
           <div class="text-[10px] text-neutral-400">
-            Part A: <span class="text-white font-bold">${record.partACount || 0}</span>/35 Qs
+            CEED Sprint Target: 3.0h
           </div>
         </div>
 
@@ -139,8 +139,8 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
 
       <!-- Daily Domino Pillars Stream -->
       <div class="text-[10px] text-neutral-400 uppercase tracking-wider mb-2 flex justify-between items-center px-0.5">
-        <span>DOMINO PILLARS (TAP CARD TO EXPAND)</span>
-        <span class="text-neutral-500 text-[9px]">LOCK-SCREEN READY</span>
+        <span>DAILY DOMINOS (TAP TO ADJUST TIME)</span>
+        <span class="text-neutral-500 text-[9px]">OLED SLIDER</span>
       </div>
 
       <div class="flex flex-col gap-2.5 mb-3">
@@ -258,11 +258,8 @@ function renderDominoBlockCard(block, record, activeTimer) {
   const isUnder = isDone && loggedMins < targetMins;
   const isExpanded = expandedBlockId === block.id;
   const isRunning = activeTimer && activeTimer.blockId === block.id;
-  const showPartA = block.id === 'd3' || block.hasPartACounter;
 
   const pct = Math.min(100, Math.round((loggedMins / Math.max(1, targetMins)) * 100));
-  const partACount = record.partACount || 0;
-  const partAPct = Math.min(100, Math.round((partACount / 35) * 100));
 
   const borderStyle = isDone
     ? 'border-2 border-[#FF69AF] bg-[#0c0409]'
@@ -287,7 +284,6 @@ function renderDominoBlockCard(block, record, activeTimer) {
               ${block.badge}
             </span>
             <span class="text-neutral-400">${block.category}</span>
-            ${showPartA ? `<span class="px-1 border ${partACount >= 35 ? 'border-[#FF69AF] text-[#FF69AF]' : 'border-neutral-700 text-neutral-400'}">PART A: ${partACount}/35</span>` : ''}
             ${isUnder ? `<span class="px-1 border border-yellow-500 text-yellow-400 text-[9px]">UNDER</span>` : ''}
           </div>
           <div class="text-xs font-bold text-white truncate">${block.name}</div>
@@ -315,53 +311,81 @@ function renderDominoBlockCard(block, record, activeTimer) {
         </div>
       </div>
 
-      <!-- Expanded Drawer: Hour Logging Pills + Lock-Screen Stopwatch + Part A Micro-Counter -->
+      <!-- Expanded Drawer: Custom Time Slider + Dedicated Timer Cell -->
       ${isExpanded ? `
         <div class="px-3 pb-3 pt-2 border-t border-neutral-800/80 bg-black/60 flex flex-col gap-2.5" data-drawer>
-          <!-- Quick Hour Pills -->
-          <div>
-            <div class="text-[10px] text-neutral-400 uppercase mb-1.5 flex justify-between">
-              <span>TAP TO LOG HOURS:</span>
-              <span class="text-neutral-500">ACCUMULATIVE</span>
+          <!-- Custom Precision Time Slider Cell -->
+          <div class="border border-neutral-800 bg-[#080808] p-3 rounded-lg flex flex-col gap-2">
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="text-neutral-400 font-bold uppercase tracking-wider text-[10px]">TIME LOGGED</span>
+              <span class="text-white font-mono font-bold text-xs" data-slider-readout="${block.id}">
+                ${(loggedMins / 60).toFixed(1)}h (${loggedMins}m)
+              </span>
             </div>
-            <div class="grid grid-cols-4 gap-1.5">
-              <button data-log-mins="30" data-block="${block.id}" class="btn-tactile h-11 border border-neutral-700 text-xs font-bold text-white active:bg-[#FF69AF] active:text-black">+0.5h</button>
-              <button data-log-mins="60" data-block="${block.id}" class="btn-tactile h-11 border border-neutral-700 text-xs font-bold text-white active:bg-[#FF69AF] active:text-black">+1.0h</button>
-              <button data-log-mins="90" data-block="${block.id}" class="btn-tactile h-11 border border-neutral-700 text-xs font-bold text-white active:bg-[#FF69AF] active:text-black">+1.5h</button>
-              <button data-log-mins="120" data-block="${block.id}" class="btn-tactile h-11 border border-neutral-700 text-xs font-bold text-white active:bg-[#FF69AF] active:text-black">+2.0h</button>
-              <button data-log-mins="180" data-block="${block.id}" class="btn-tactile h-11 border border-neutral-700 text-xs font-bold text-white active:bg-[#FF69AF] active:text-black">+3.0h</button>
-              <button data-log-mins="240" data-block="${block.id}" class="btn-tactile h-11 border border-neutral-700 text-xs font-bold text-white active:bg-[#FF69AF] active:text-black">+4.0h</button>
-              <button data-log-mins="-30" data-block="${block.id}" class="btn-tactile h-11 border border-neutral-800 text-neutral-400 text-xs active:bg-neutral-800">-0.5h</button>
+
+            <div class="flex items-center gap-2 pt-1">
               <button
-                data-timer-toggle="${block.id}"
-                class="btn-tactile h-11 border-2 ${isRunning ? 'border-[#FF69AF] bg-[#FF69AF] text-black' : 'border-white text-white'} text-[11px] font-bold"
+                data-step-mins="-15"
+                data-block="${block.id}"
+                class="btn-tactile h-9 px-2.5 border border-neutral-700 bg-black text-xs font-bold text-neutral-300 hover:text-white active:scale-95 shrink-0"
+                aria-label="Decrease 15 minutes"
               >
-                ${isRunning ? 'STOP' : '🔒 TIMER'}
+                -15m
               </button>
+
+              <div class="flex-1 px-1">
+                <input
+                  type="range"
+                  min="0"
+                  max="360"
+                  step="15"
+                  value="${loggedMins}"
+                  data-slider-block="${block.id}"
+                  class="w-full cursor-pointer"
+                  aria-label="Adjust minutes logged"
+                />
+              </div>
+
+              <button
+                data-step-mins="15"
+                data-block="${block.id}"
+                class="btn-tactile h-9 px-2.5 border border-neutral-700 bg-black text-xs font-bold text-neutral-300 hover:text-white active:scale-95 shrink-0"
+                aria-label="Increase 15 minutes"
+              >
+                +15m
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between text-[9px] text-neutral-500 font-mono px-1">
+              <span>0h</span>
+              <span>1h</span>
+              <span>2h</span>
+              <span>3h</span>
+              <span>4h</span>
+              <span>5h</span>
+              <span>6h</span>
             </div>
           </div>
 
-          <!-- Embedded Daily Part A Micro-Counter -->
-          ${showPartA ? `
-            <div class="border border-neutral-800 bg-[#0a0a0a] p-2.5 rounded-lg">
-              <div class="flex items-center justify-between text-[10px] mb-1.5">
-                <span class="font-bold text-white">DAILY 35-QUESTION PART A DRILL</span>
-                <span class="font-bold ${partACount >= 35 ? 'text-[#FF69AF]' : 'text-neutral-300'}">${partACount} / 35 Qs</span>
-              </div>
-              <div class="w-full h-1.5 bg-black border border-neutral-800 mb-2 rounded-full overflow-hidden">
-                <div class="liquid-progress h-full bg-[#FF69AF]" style="width: ${partAPct}%"></div>
-              </div>
-              <div class="grid grid-cols-4 gap-1.5">
-                <button data-part-a="-5" class="btn-tactile h-10 border border-neutral-800 text-neutral-400 text-xs">-5 Qs</button>
-                <button data-part-a="5" class="btn-tactile h-10 border border-neutral-700 text-white text-xs font-bold active:bg-[#FF69AF] active:text-black">+5 Qs</button>
-                <button data-part-a="10" class="btn-tactile h-10 border border-neutral-700 text-white text-xs font-bold active:bg-[#FF69AF] active:text-black">+10 Qs</button>
-                <button data-part-a-exact="35" class="btn-tactile h-10 border border-[#FF69AF] text-[#FF69AF] text-[11px] font-bold active:bg-[#FF69AF] active:text-black">35/35</button>
-              </div>
-              <div class="text-[9px] text-neutral-500 mt-1.5 text-center">
-                Hitting 35/35 automatically logs +1.0h to Paperwork Domino
+          <!-- Dedicated Timer Cell -->
+          <div class="card-shell border ${isRunning ? 'border-[#FF69AF] bg-[#FF69AF]/10' : 'border-neutral-800 bg-[#0c0c0c]'} p-2.5 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="text-lg shrink-0">${isRunning ? '⏱️' : '🔒'}</span>
+              <div class="truncate">
+                <div class="text-[11px] font-bold text-white uppercase truncate">${block.name} Timer</div>
+                <div class="text-[10px] text-neutral-400">
+                  ${isRunning ? `<span data-live-sw class="text-[#FF69AF] font-bold">LIVE TIMER RUNNING</span>` : 'Lock-Screen Live Activity Ready'}
+                </div>
               </div>
             </div>
-          ` : ''}
+
+            <button
+              data-timer-toggle="${block.id}"
+              class="btn-tactile h-10 px-4 border-2 ${isRunning ? 'border-[#FF69AF] bg-[#FF69AF] text-black font-extrabold' : 'border-white bg-white text-black font-bold'} text-xs uppercase shrink-0"
+            >
+              ${isRunning ? 'STOP & COMMIT' : 'START TIMER'}
+            </button>
+          </div>
         </div>
       ` : ''}
     </div>
@@ -379,8 +403,8 @@ function bindDashboardEvents(container, record, blocks) {
   // Universal Card Tap to Expand/Collapse
   container.querySelectorAll('[data-card-id]').forEach(card => {
     const toggleExpansion = (e) => {
-      // If tap originated from an interactive child button, ignore card toggle
-      if (e.target.closest('button, input, select, textarea, [data-log-mins], [data-part-a], [data-part-a-exact], [data-timer-toggle]')) {
+      // If tap originated from an interactive child element, ignore card toggle
+      if (e.target.closest('button, input, select, textarea, [data-slider-block], [data-step-mins], [data-timer-toggle]')) {
         return;
       }
       const id = card.getAttribute('data-card-id');
@@ -426,40 +450,48 @@ function bindDashboardEvents(container, record, blocks) {
     });
   });
 
-  // Quick Hour Pills
-  container.querySelectorAll('[data-log-mins]').forEach(btn => {
+  // Custom Time Slider (Live scrubbing + Commit)
+  container.querySelectorAll('[data-slider-block]').forEach(slider => {
+    const blockId = slider.getAttribute('data-slider-block');
+    const readout = container.querySelector(`[data-slider-readout="${blockId}"]`);
+
+    // Live update readout while dragging
+    slider.addEventListener('input', (e) => {
+      e.stopPropagation();
+      const val = Number(e.target.value);
+      if (readout) {
+        readout.textContent = `${(val / 60).toFixed(1)}h (${val}m)`;
+      }
+    });
+
+    // Commit change on drag end
+    slider.addEventListener('change', (e) => {
+      e.stopPropagation();
+      const val = Number(e.target.value);
+      setDominoDuration(blockId, activeDateStr, val);
+      playRelayClick();
+      showInAppToast(`Saved ${(val / 60).toFixed(1)}h (${val}m)`);
+      renderDashboard(container);
+    });
+  });
+
+  // -15m and +15m Steppers
+  container.querySelectorAll('[data-step-mins]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const blockId = btn.getAttribute('data-block');
-      const mins = Number(btn.getAttribute('data-log-mins'));
-      logHours(activeDateStr, blockId, mins);
-      showInAppToast(`${mins >= 0 ? '+' : ''}${mins / 60}h logged`);
+      const step = Number(btn.getAttribute('data-step-mins'));
+      const rec = getDayRecord(activeDateStr);
+      const current = Number(rec.durations[blockId]) || 0;
+      const next = Math.max(0, Math.min(360, current + step));
+      setDominoDuration(blockId, activeDateStr, next);
+      playRelayClick();
+      showInAppToast(`Set to ${(next / 60).toFixed(1)}h (${next}m)`);
       renderDashboard(container);
     });
   });
 
-  // Part A Micro-Counter
-  container.querySelectorAll('[data-part-a]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const delta = Number(btn.getAttribute('data-part-a'));
-      logPartAQuestions(activeDateStr, delta, false);
-      showInAppToast(`${delta >= 0 ? '+' : ''}${delta} Part A Questions`);
-      renderDashboard(container);
-    });
-  });
-
-  container.querySelectorAll('[data-part-a-exact]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const exact = Number(btn.getAttribute('data-part-a-exact'));
-      logPartAQuestions(activeDateStr, exact, true);
-      showInAppToast('35/35 Part A Target Cleared! +1h Reward', true);
-      renderDashboard(container);
-    });
-  });
-
-  // LockScreen Stopwatch
+  // LockScreen Stopwatch in dedicated timer cell
   container.querySelectorAll('[data-timer-toggle]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
