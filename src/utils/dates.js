@@ -96,24 +96,40 @@ export function getExamCountdown() {
       days: 0,
       hours: 0,
       minutes: 0,
+      seconds: 0,
       isExpired: true,
       compact: 'EXAM',
+      precise: '0d 00h 00m 00s',
+      examDateTimeStr: 'Sunday, Jan 17, 2027 • 09:00 AM IST',
       detailed: 'Today is CEED Exam Day! Lock in and execute.',
     };
   }
 
-  const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const days = Math.floor(totalHours / 24);
-  const hours = totalHours % 24;
-  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  const totalSeconds = Math.floor(diffMs / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const remSecAfterDays = totalSeconds % 86400;
+  const hours = Math.floor(remSecAfterDays / 3600);
+  const remSecAfterHours = remSecAfterDays % 3600;
+  const minutes = Math.floor(remSecAfterHours / 60);
+  const seconds = remSecAfterHours % 60;
+
+  const targetDateObj = new Date(`${endDateStr}T09:00:00`);
+  const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+  const dateFormatted = targetDateObj.toLocaleDateString('en-US', options);
 
   return {
     days,
     hours,
     minutes,
+    seconds,
     isExpired: false,
     compact: `${days}d`,
-    detailed: `${days} days, ${hours} hours until CEED 2027 (Jan 17, 09:00 AM)`,
+    precise: `${days}d ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`,
+    examDateFormatted: dateFormatted,
+    examTimeFormatted: '09:00 AM – 12:00 PM IST',
+    reportingTimeFormatted: '08:00 AM IST',
+    examDateTimeStr: `${dateFormatted} • 09:00 AM IST`,
+    detailed: `${days}d ${hours}h ${minutes}m ${seconds}s until CEED 2027`,
   };
 }
 

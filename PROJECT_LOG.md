@@ -934,4 +934,36 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 18. Precision Exam Countdown Ticker, Live Exam Toast, Crisp Card Geometry & Complete Shield Removal
+
+### 18.1 Interactive Exam Countdown Pill & Live Breakdown (`src/components/header.js` & `src/utils/dates.js`)
+- Made the `76d to CEED` pill an interactive trigger:
+  - Toggles between compact view (`76d to CEED`) and a precise live ticker (`XXd XXh XXm XXs`).
+  - When expanded, updates live every second via `setInterval` so aspirants can observe active seconds counting down to CEED 2027.
+- Enhanced `getExamCountdown()` to calculate exact total seconds, days, hours, minutes, seconds, and formatted date strings (`Sunday, Jan 17, 2027 • 09:00 AM IST`).
+
+### 18.2 Live Exam Schedule Toast Pop-Up (`src/components/header.js` & `src/views/dashboard.js`)
+- Tapping the countdown pill in the header (or the hero planning countdown) immediately triggers `showExamToast()`:
+  - Renders a floating matte obsidian bento notification card at the top of the viewport.
+  - Header: CEED 2027 Examination title with Tabler clock icon.
+  - Exact Schedule: `Sunday, January 17, 2027 • 09:00 AM – 12:00 PM IST` (Reporting: `08:00 AM IST`).
+  - Live Countdown Readout: `XXd XXh XXm XXs remaining` ticking down live every second.
+  - Interactive dismiss button `✕` with tactile relay sound, auto-dismissing after 6 seconds.
+
+### 18.3 Crisp, Less-Circular Card Geometry (`src/style.css`, `dashboard.js`, `stats.js`, `studio-proctor.js`, `settings.js`)
+- Globally eliminated exaggerated circular pill card curvature:
+  - `.ron-top-sheet`: Reduced `border-radius` from `28px` to `14px`.
+  - `.bento-card`: Reduced `border-radius` from `26px` to `14px`.
+  - `.recessed-well`: Reduced `border-radius` from `18px` to `10px` for clean concentric geometry.
+  - Active session timer in `dashboard.js`: Reduced from `rounded-[20px]` to `rounded-[14px]`.
+  - Grid matrices in `stats.js` & `settings.js`: Reduced from `rounded-2xl` to `rounded-xl` (12px).
+  - Studio action bar: Reduced from `!rounded-[24px]` to `!rounded-[12px]`.
+
+### 18.4 Complete Shield Removal Across the Entire App (`src/components/header.js` & `src/views/settings.js`)
+- Completely removed the shield badge from the sticky top header (Row 1 now cleanly pairs the Sun/Moon toggle with the flame streak pill).
+- Completely removed the "Streak Shields Bank" card and its increment button from `src/views/settings.js`.
+- Active UI is now 100% free of shields, focusing entirely on pure execution discipline.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

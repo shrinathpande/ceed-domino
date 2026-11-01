@@ -10,6 +10,7 @@ import {
 import { getTodayStr, getCampaignDayNumber, getExamCountdown, formatDateLocal } from '../utils/dates.js';
 import { playRelayClick } from '../utils/sound.js';
 import { renderStatusPill } from '../components/status-pill.js';
+import { showExamToast } from '../components/header.js';
 import {
   startLockScreenTimer,
   stopLockScreenTimer,
@@ -158,9 +159,14 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
           </h1>
           <div class="pl-4 border-l border-white/[0.1] text-right">
             <div class="text-[15px] font-medium text-[#F4F4F6] leading-tight">CEED Campaign</div>
-            <div class="text-[12px] text-[#71717A] tabular-nums mt-0.5">
+            <button
+              type="button"
+              id="btn-hero-countdown"
+              class="text-[12px] text-[#71717A] hover:text-[#F4F4F6] tabular-nums mt-0.5 transition-colors cursor-pointer text-right block ml-auto"
+              title="Tap for exact CEED exam timing & countdown"
+            >
               Day ${dayNum} of 87 • ${countdown.days}d left
-            </div>
+            </button>
           </div>
         </div>
 
@@ -406,7 +412,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
 
               <!-- Dedicated Live Session Timer Box Directly Below Card when Running! -->
               ${isRunningThis ? `
-                <div class="mt-1.5 p-3 rounded-[20px] bg-[#16171B] border border-emerald-500/40 flex items-center justify-between animate-fadeIn">
+                <div class="mt-1.5 p-3 rounded-[14px] bg-[#16171B] border border-emerald-500/40 flex items-center justify-between animate-fadeIn">
                   <div class="flex items-center gap-2.5">
                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     <div>
@@ -451,6 +457,13 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
 }
 
 function bindDashboardEvents(container) {
+  // Hero countdown click -> Exact exam timing toast
+  container.querySelector('#btn-hero-countdown')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playRelayClick();
+    showExamToast();
+  });
+
   // Jump to Today button
   container.querySelector('#btn-jump-today')?.addEventListener('click', () => {
     activeDateStr = getTodayStr();

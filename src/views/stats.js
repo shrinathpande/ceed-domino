@@ -117,7 +117,7 @@ export function renderStats(container) {
         </div>
 
         <!-- Glitch-Free 13-Column Grid using explicit CSS Grid style -->
-        <div class="p-2 rounded-2xl bg-[#16171B] border border-white/[0.04] mb-3">
+        <div class="p-2 rounded-xl bg-[#16171B] border border-white/[0.04] mb-3">
           <div style="display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 4.5px;">
             ${matrixCells.map(cell => `
               <div

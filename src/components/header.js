@@ -5,6 +5,104 @@ import { icons } from './icons.js';
 import { getColorMode, toggleColorMode } from './theme-toggle.js';
 import { playRelayClick } from '../utils/sound.js';
 
+let isCountdownExpanded = false;
+let countdownLiveTimer = null;
+let toastLiveTimer = null;
+
+export function showExamToast() {
+  let toast = document.getElementById('ceed-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'ceed-toast';
+    document.body.appendChild(toast);
+  }
+
+  clearTimeout(toast._timeout);
+  clearTimeout(toast._removeTimeout);
+  if (toastLiveTimer) {
+    clearInterval(toastLiveTimer);
+    toastLiveTimer = null;
+  }
+
+  const dismiss = () => {
+    if (toastLiveTimer) {
+      clearInterval(toastLiveTimer);
+      toastLiveTimer = null;
+    }
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, -12px)';
+    toast.style.pointerEvents = 'none';
+    clearTimeout(toast._removeTimeout);
+    toast._removeTimeout = setTimeout(() => {
+      toast.style.display = 'none';
+    }, 250);
+  };
+
+  const updateToastContent = () => {
+    const cd = getExamCountdown();
+    toast.innerHTML = `
+      <div class="flex items-start justify-between gap-3 w-full">
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </span>
+          <div>
+            <div class="text-[11px] font-semibold tracking-wider text-[#A1A1AA] uppercase">CEED 2027 Examination</div>
+            <div class="text-[13px] font-bold text-[#F4F4F6] mt-0.5">${cd.examDateFormatted} • 09:00 AM IST</div>
+          </div>
+        </div>
+        <button id="toast-dismiss-btn" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-[#A1A1AA] hover:text-white flex items-center justify-center text-xs font-bold leading-none shrink-0" aria-label="Close">✕</button>
+      </div>
+
+      <div class="mt-2.5 pt-2 border-t border-white/[0.08] flex items-center justify-between text-[11px]">
+        <span class="text-[#71717A]">Exact Countdown</span>
+        <span class="font-mono font-bold text-emerald-400 tabular-nums text-[12.5px]">${cd.days}d ${String(cd.hours).padStart(2, '0')}h ${String(cd.minutes).padStart(2, '0')}m ${String(cd.seconds).padStart(2, '0')}s</span>
+      </div>
+
+      <div class="mt-1 flex items-center justify-between text-[10px] text-[#71717A]">
+        <span>Reporting: ${cd.reportingTimeFormatted}</span>
+        <span>Duration: 3 Hours</span>
+      </div>
+    `;
+
+    toast.querySelector('#toast-dismiss-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playRelayClick();
+      dismiss();
+    });
+  };
+
+  toast.style.cssText = `
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 99999;
+    padding: 14px 16px;
+    font-family: var(--font-sans);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background-color: #16171B;
+    color: var(--text-primary);
+    border-radius: 14px;
+    width: calc(100vw - 32px);
+    max-width: 360px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 1;
+    pointer-events: auto;
+  `;
+
+  toast.style.display = 'flex';
+  updateToastContent();
+  toastLiveTimer = setInterval(updateToastContent, 1000);
+
+  toast._timeout = setTimeout(dismiss, 6000);
+}
+
 export function showInAppToast(msg, isAlert = false) {
   if (!isAlert) return;
   let toast = document.getElementById('ceed-toast');
@@ -16,6 +114,10 @@ export function showInAppToast(msg, isAlert = false) {
 
   clearTimeout(toast._timeout);
   clearTimeout(toast._removeTimeout);
+  if (toastLiveTimer) {
+    clearInterval(toastLiveTimer);
+    toastLiveTimer = null;
+  }
 
   toast.innerHTML = `
     <div style="flex: 1; padding-right: 8px;">${msg}</div>
@@ -27,7 +129,7 @@ export function showInAppToast(msg, isAlert = false) {
     top: 20px;
     left: 50%;
     transform: translate(-50%, 0);
-    z-index: 9999;
+    z-index: 99999;
     padding: 8px 16px;
     font-size: 12px;
     font-family: var(--font-sans);
@@ -35,7 +137,7 @@ export function showInAppToast(msg, isAlert = false) {
     border: 1px solid var(--border-subtle);
     background-color: var(--surface-well);
     color: var(--text-primary);
-    border-radius: 9999px;
+    border-radius: 14px;
     max-width: 90vw;
     display: flex;
     align-items: center;
@@ -104,21 +206,32 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
     container.prepend(headerEl);
   }
 
+  const pillLabel = isCountdownExpanded
+    ? examCountdown.precise
+    : `${examCountdown.compact} to CEED`;
+
   headerEl.innerHTML = `
     <div class="max-w-[390px] mx-auto px-3.5 pt-2.5 pb-2">
-      <!-- Row 1: Telemetry, Countdown, Sun/Moon Theme Toggle, Shield & Streak -->
+      <!-- Row 1: Telemetry, Countdown Pill, Sun/Moon Theme Toggle & Streak -->
       <div class="flex items-center justify-between mb-2">
-        <!-- Left: Day of 87 + [XXd to CEED] -->
+        <!-- Left: Day of 87 + Interactive [XXd to CEED] Pill -->
         <div class="flex items-center gap-1.5">
           <span class="text-sm font-semibold text-[var(--text-primary)] tracking-tight">
             Day ${String(dayIndex + 1).padStart(2, '0')} <span class="text-[#71717A] font-normal">of 87</span>
           </span>
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-medium bg-[#18181E] text-[#A1A1AA] border border-white/[0.07]">
-            ${examCountdown.compact} to CEED
-          </span>
+          <button
+            id="btn-exam-countdown"
+            type="button"
+            class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#18181E] hover:bg-[#27272A] text-[#A1A1AA] hover:text-[#F4F4F6] border border-white/[0.08] transition-all cursor-pointer select-none active:scale-95"
+            title="Tap for exact CEED exam timing & countdown"
+            aria-label="Exam Countdown Details"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 ${isCountdownExpanded ? 'animate-pulse' : ''}"></span>
+            <span id="countdown-pill-text" class="tabular-nums font-mono">${pillLabel}</span>
+          </button>
         </div>
 
-        <!-- Right: Sun/Moon Theme Toggle + Shield Badge + Streak Pill -->
+        <!-- Right: Sun/Moon Theme Toggle + Streak Pill (Shield Completely Removed) -->
         <div class="flex items-center gap-1.5">
           <!-- Night/Light Mode Toggle Button -->
           <button
@@ -130,12 +243,6 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
           >
             ${isLight ? icons.moon(13) : icons.sun(13)}
           </button>
-
-          <!-- Shield Badge -->
-          <div class="flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-medium bg-[#18191E] border border-white/[0.08] text-[#A1A1AA]">
-            <span class="text-[#A1A1AA]">${icons.shield(12)}</span>
-            <span class="text-[var(--text-primary)] font-bold">${state.shields || 0}</span>
-          </div>
 
           <!-- Streak Pill with 2-Tone SVG Flame -->
           <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#18191E] border border-white/[0.08] text-[var(--text-primary)]">
@@ -164,6 +271,35 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
       </nav>
     </div>
   `;
+
+  // Bind Exam Countdown Pill Click
+  headerEl.querySelector('#btn-exam-countdown')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playRelayClick();
+
+    isCountdownExpanded = !isCountdownExpanded;
+
+    const pillText = headerEl.querySelector('#countdown-pill-text');
+    if (countdownLiveTimer) {
+      clearInterval(countdownLiveTimer);
+      countdownLiveTimer = null;
+    }
+
+    if (isCountdownExpanded) {
+      const updatePill = () => {
+        const cd = getExamCountdown();
+        if (pillText) pillText.textContent = cd.precise;
+      };
+      updatePill();
+      countdownLiveTimer = setInterval(updatePill, 1000);
+    } else {
+      const cd = getExamCountdown();
+      if (pillText) pillText.textContent = `${cd.compact} to CEED`;
+    }
+
+    // Trigger toast pop-up detailing exact exam schedule & time
+    showExamToast();
+  });
 
   // Bind Night/Light mode toggle
   headerEl.querySelector('#btn-color-mode-toggle')?.addEventListener('click', (e) => {

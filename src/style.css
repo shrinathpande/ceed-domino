@@ -113,15 +113,15 @@ html, body {
 /* Reference 7: Elevated Matte Slate Top Sheet */
 .ron-top-sheet {
   background-color: var(--surface-sheet);
-  border-radius: 28px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 20px;
 }
 
-/* Reference 4, 6, 7: Primary Matte Obsidian Bento Card */
+/* Reference 4, 6, 7: Primary Matte Obsidian Bento Card (Crisp Geometry, Less Circular) */
 .bento-card {
   background-color: var(--surface-card);
-  border-radius: 26px;
+  border-radius: 14px;
   border: 1px solid var(--border-subtle);
   padding: 20px;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
@@ -130,7 +130,7 @@ html, body {
 /* Reference 7: Recessed Bottom Control Well */
 .recessed-well {
   background-color: var(--surface-well);
-  border-radius: 18px;
+  border-radius: 10px;
   border: 1px solid var(--border-well);
   padding: 12px 16px;
 }

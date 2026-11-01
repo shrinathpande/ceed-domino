@@ -180,7 +180,7 @@ export function renderStudioProctor(container) {
       </section>
 
       <!-- Bottom Scheduler Action Bar -->
-      <div class="recessed-well !rounded-[24px] !p-3.5 flex items-center justify-between gap-2">
+      <div class="recessed-well !rounded-[12px] !p-3.5 flex items-center justify-between gap-2">
         <div class="flex items-baseline gap-2 pl-1">
           <span class="text-[28px] font-semibold text-[#F4F4F6] tabular-nums leading-none">${timeStr}</span>
           <span class="text-[12px] text-[#71717A]">timer</span>

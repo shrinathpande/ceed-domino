@@ -79,7 +79,7 @@ export function renderSettingsView(container) {
           ${blocks.map((b) => {
             const targetHrs = (b.targetMins / 60).toFixed(1);
             return `
-              <div class="p-3.5 rounded-2xl bg-[#18181B] border border-[#27272A] flex flex-col gap-2" data-block-id="${b.id}">
+              <div class="p-3.5 rounded-xl bg-[#18181B] border border-[#27272A] flex flex-col gap-2" data-block-id="${b.id}">
                 <!-- Row 1: Badge + Category Pill + Delete -->
                 <div class="flex items-center justify-between gap-2">
                   <input
@@ -161,22 +161,7 @@ export function renderSettingsView(container) {
         </button>
       </div>
 
-      <!-- 3. Streak Shields Bank -->
-      <div class="bento-card mb-3.5 flex items-center justify-between">
-        <div>
-          <div class="text-[12px] font-medium text-[#71717A]">Gamification Guard</div>
-          <div class="text-sm font-semibold text-[#F4F4F6]">Streak Shields</div>
-          <div class="text-[11px] text-[#71717A] mt-0.5">${state.shields || 0} of 3 active (+1 every 7-day streak)</div>
-        </div>
-        <button
-          id="btn-add-shield"
-          class="px-4 py-2 rounded-full bg-[#F4F4F6] text-[#09090B] text-xs font-semibold btn-tactile"
-        >
-          +1 Shield
-        </button>
-      </div>
-
-      <!-- 4. Backup & Factory Reset -->
+      <!-- 3. Backup & Factory Reset -->
       <div class="bento-card mb-3.5">
         <div class="text-[12px] font-medium text-[#71717A] mb-1">Data Portability</div>
         <div class="text-sm font-semibold text-[#F4F4F6] mb-3">Backup & Storage</div>
@@ -222,15 +207,6 @@ function bindSettingsEvents(container) {
       playRelayClick();
       renderSettingsView(container);
     });
-  });
-
-  // +1 Shield
-  container.querySelector('#btn-add-shield')?.addEventListener('click', () => {
-    const state = getState();
-    state.shields = Math.min(3, (state.shields || 0) + 1);
-    saveState(state);
-    playRelayClick();
-    renderSettingsView(container);
   });
 
   // Reset Blocks to Default
