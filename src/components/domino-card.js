@@ -79,7 +79,7 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
         </div>
 
         <!-- Collapsible Description (hidden by default, expands on tap) -->
-        <div class="card-desc-body hidden mt-2 pt-2 border-t border-[var(--rule)] text-xs text-[var(--muted)] font-serif">
+        <div class="card-desc-body hidden mt-2 pt-2 border-t border-[var(--rule)] text-xs text-[var(--muted)] font-pixel-square">
           ${domino.subtitle ? `<p class="font-mono text-[11px] font-medium text-[var(--text)] mb-1">${domino.subtitle}</p>` : ''}
           <p class="leading-relaxed text-[var(--text)]/85">${domino.desc}</p>
         </div>

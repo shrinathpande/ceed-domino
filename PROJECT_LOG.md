@@ -807,4 +807,19 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 14. Universal GeistPixelSquare Typography with -5 (-0.05em) Letter Spacing
+
+### 14.1 Font Family & Preload
+- Set primary typographic family globally to **`Geist Pixel Square`** (`GeistPixel-Square.woff2`).
+- Preloaded `/fonts/geist/geist-pixel/GeistPixel-Square.woff2` directly in `index.html`.
+- Bound `@font-face` for `Geist Pixel Square` across all weights (`100 900`) for seamless rendering of bold, semibold, and regular weights without fallback.
+
+### 14.2 Universal -5 (-0.05em) Spacing System
+- Enforced `letter-spacing: -0.05em;` globally across `body`, `button`, `input`, `select`, `textarea`, `div`, `span`, `p`, headings, and links.
+- Overrode all Tailwind tracking utility variants (`tracking-tight`, `tracking-tighter`, `tracking-wide`, `tracking-wider`, `tracking-widest`) to strictly map to `-0.05em !important;`.
+- Configured `src/fonts/geist-pixel.js` `GeistPixelSquare` export with `letterSpacing: '-0.05em'`.
+- Updated all view sections (`dashboard.js`, `settings.js`, `stats.js`, `studio-proctor.js`, `header.js`) with `.font-pixel-square`.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

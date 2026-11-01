@@ -29,7 +29,8 @@ export function showInAppToast(msg, isAlert = false) {
     z-index: 9999;
     padding: 8px 16px;
     font-size: 12px;
-    font-family: var(--font-geist-serif);
+    font-family: 'Geist Pixel Square', monospace;
+    letter-spacing: -0.05em;
     font-weight: 600;
     border: 1px solid #27272A;
     background-color: #18181B;

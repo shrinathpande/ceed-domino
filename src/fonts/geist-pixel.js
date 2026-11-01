@@ -2,7 +2,7 @@
 export const GeistPixelSquare = {
   className: 'font-pixel-square',
   variable: '--font-geist-pixel-square',
-  style: { fontFamily: "'Geist Pixel Square', monospace" }
+  style: { fontFamily: "'Geist Pixel Square', monospace", letterSpacing: '-0.05em' }
 };
 
 export const GeistPixelGrid = {

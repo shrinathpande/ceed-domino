@@ -76,7 +76,7 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
   if (oledDeskMode) {
     acquireWakeLock();
     container.innerHTML = `
-      <div class="fixed inset-0 bg-black z-50 flex flex-col justify-between p-6 font-serif text-[#F4F4F6] select-none">
+      <div class="fixed inset-0 bg-black z-50 flex flex-col justify-between p-6 font-pixel-square text-[#F4F4F6] select-none">
         <div class="flex justify-between items-center text-xs text-[#71717A]">
           <span class="tracking-widest uppercase font-mono">Day ${daySet.day} // ${q.code}</span>
           <button id="btn-exit-oled" class="px-4 py-2 rounded-full border border-[#27272A] bg-[#18181B] text-[#F4F4F6] font-medium text-xs btn-tactile">
@@ -102,7 +102,7 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
   const isPromptExpanded = activeCardSide === 'PROMPT';
 
   container.innerHTML = `
-    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-serif select-none" aria-label="Part B Studio Proctor">
+    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-pixel-square select-none" aria-label="Part B Studio Proctor">
       
       <!-- Top Navigation Pill (Reference 5) -->
       <div class="bento-card p-3 mb-3.5 flex items-center justify-between gap-2">

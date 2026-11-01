@@ -56,7 +56,7 @@
 @font-face {
   font-family: 'Geist Pixel Square';
   src: url('/fonts/geist/geist-pixel/GeistPixel-Square.woff2') format('woff2');
-  font-weight: 500;
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -153,7 +153,8 @@
   body {
     background-color: #000000;
     color: var(--text);
-    font-family: var(--font-geist-serif);
+    font-family: 'Geist Pixel Square', monospace;
+    letter-spacing: -0.05em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
@@ -167,57 +168,33 @@
     overflow-x: hidden;
   }
 
-  .font-serif {
-    font-family: var(--font-geist-serif);
+  /* Universal GeistPixelSquare Typography with -5 (-0.05em) Letter Spacing */
+  *, *::before, *::after {
+    letter-spacing: -0.05em;
   }
 
-  .font-serif-regular {
-    font-family: var(--font-geist-serif-regular);
+  body, button, input, select, textarea, div, span, p, h1, h2, h3, h4, h5, h6, a {
+    font-family: 'Geist Pixel Square', monospace;
+    letter-spacing: -0.05em;
   }
 
-  .font-serif-square {
-    font-family: var(--font-geist-serif-square);
-  }
-
-  .font-serif-triangle {
-    font-family: var(--font-geist-serif-triangle);
-  }
-
-  .font-serif-heart {
-    font-family: var(--font-geist-serif-heart);
-  }
-
-  .font-sans {
-    font-family: var(--font-geist-sans);
-  }
-
-  .font-mono {
-    font-family: var(--font-geist-mono);
-    font-variant-numeric: tabular-nums;
-  }
-
+  .font-pixel-square,
+  .font-serif,
+  .font-sans,
+  .font-mono,
   .font-pixel {
-    font-family: var(--font-geist-pixel);
+    font-family: 'Geist Pixel Square', monospace !important;
+    letter-spacing: -0.05em !important;
   }
 
-  .font-pixel-square {
-    font-family: var(--font-geist-pixel-square);
-  }
-
-  .font-pixel-grid {
-    font-family: var(--font-geist-pixel-grid);
-  }
-
-  .font-pixel-circle {
-    font-family: var(--font-geist-pixel-circle);
-  }
-
-  .font-pixel-triangle {
-    font-family: var(--font-geist-pixel-triangle);
-  }
-
-  .font-pixel-line {
-    font-family: var(--font-geist-pixel-line);
+  /* Enforce -5 (-0.05em) spacing across all tracking utility variants */
+  .tracking-tighter,
+  .tracking-tight,
+  .tracking-normal,
+  .tracking-wide,
+  .tracking-wider,
+  .tracking-widest {
+    letter-spacing: -0.05em !important;
   }
 }
 

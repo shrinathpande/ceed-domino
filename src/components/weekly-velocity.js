@@ -73,7 +73,7 @@ export function renderWeeklyVelocity(container, currentDateStr) {
     <div class="flex items-center justify-between border-b border-[var(--rule)] pb-2.5 mb-3">
       <div>
         <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--text)]">WEEKLY VELOCITY & BURNDOWN</h2>
-        <p class="text-[10px] text-[var(--muted)] mt-0.5 font-serif">Week ${currentWeekNumber} of ${totalWeeks} · Days ${weekStartDay + 1}–${weekEndDay + 1}</p>
+        <p class="text-[10px] text-[var(--muted)] mt-0.5 font-pixel-square">Week ${currentWeekNumber} of ${totalWeeks} · Days ${weekStartDay + 1}–${weekEndDay + 1}</p>
       </div>
       <div class="text-right">
         <span class="text-xs font-bold text-[var(--text)] tabular-nums">${loggedHours}h / ${targetHours}h</span>
@@ -95,7 +95,7 @@ export function renderWeeklyVelocity(container, currentDateStr) {
         return `
           <div>
             <div class="flex items-center justify-between text-[11px] mb-1">
-              <span class="text-[var(--text)] font-medium font-serif truncate mr-2">${stat.name}</span>
+              <span class="text-[var(--text)] font-medium font-pixel-square truncate mr-2">${stat.name}</span>
               <span class="text-[var(--muted)] tabular-nums shrink-0">${hLogged}h / ${hTarget}h (${pct}%)</span>
             </div>
             <div class="w-full h-1 bg-[var(--raised)] border border-[var(--border)] rounded-[1px] overflow-hidden">
