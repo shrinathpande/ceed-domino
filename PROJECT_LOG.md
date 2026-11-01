@@ -505,4 +505,52 @@ If the user asks what to build or improve next, consider these high-leverage dir
 
 ---
 
+## 7. CEED Domino v2.0 Major Upgrade (Argoncodes Integration)
+
+**Date**: November 1, 2026  
+**Trigger**: Complete integration and reconciliation of new modules from `Argoncodes/` into core codebase.
+
+### 7.1 Grill-Me Critical Alignment & Architectural Decisions
+Before modifying code, the upgrade plan was grilled against core requirements and four key architectural decisions were aligned:
+1. **Header & Navigation**: View-specific headers (Dashboard, Studio, Stats, Settings) each host their own integrated top instrument header displaying the compact Jan 17, 2027 09:00 AM IST countdown pill (`[XXd remaining]`) with tap-for-toast details, while the bottom navigation dock remains persistent.
+2. **LocalStorage Migration**: Automatic on-mount migration implemented in `src/core/state.js`. Legacy state from `ceed_domino_state_v2` is seamlessly converted into `ceed_v2_state`, preserving historical records, completed tasks, and streak progress.
+3. **Curated Question Bank**: The complete 87-day IIT Bombay question bank from `src/data/part_b_questions.json` (415 KB) is wired directly into the redesigned Part B Studio Deck, retaining calendar alignment and jump-to-day functionality.
+4. **Non-Blocking Mobile Alarms**: Replaced thread-blocking `window.alert()` calls with synthesized Web Audio multi-tone harmonic chimes (`playAlarmTone()`), tactile in-app notification toasts, and standard native Notifications.
+
+### 7.2 Deployed v2.0 Modules & File Registry
+1. **`src/utils/lockscreen-timer.js`**:
+   - Zero external audio files: Generates an in-memory 1-second silent mono 8kHz PCM WAV Data URI via pure JavaScript.
+   - Live media session integration (`navigator.mediaSession`) broadcasting timer title, elapsed minutes/seconds, block badge, and target hours to the iPhone 12 Lock Screen.
+   - Remote lock-screen `pause` and `stop` action handlers that auto-commit elapsed study time.
+2. **`src/utils/sound.js`**:
+   - Web Audio API dual-stage relay snap/thud (`playDing()` / `playRelayClick()`).
+   - Pure sine-harmonic cascade chime (`playAlarmTone()`, 880Hz -> 1760Hz) for checkpoint alarms.
+3. **`src/core/state.js`**:
+   - Keys: `ceed_v2_state`, `ceed_v2_blocks`, `ceed_v2_alarms`.
+   - Time-independent hour logger: Users can log hours at any time without wall-clock schedule restrictions.
+   - Daily 35-Question Part A Micro-Counter (`logPartAQuestions`): Tracks daily Part A question count, automatically awarding +1.0h study credit to Paperwork Domino (`d3`) upon hitting 35/35.
+   - Circadian Peak Productive Hour Analyzer: Aggregates timestamped logs into 4 biological windows (Morning 05:00–11:59, Afternoon 12:00–16:59, Evening 17:00–20:59, Night 21:00–04:59).
+4. **`src/views/dashboard.js`**:
+   - Dual Daily Hour Ledger (Study Hours vs. Total Productive Hours).
+   - 4 Core Domino Cards with live progress bars and `#FF69AF` full-perimeter completion borders.
+   - Tap-anywhere card body expansion.
+   - Embedded Part A Micro-Counter with `-5`, `+5`, `+10`, and `35/35` quick buttons.
+   - Checkpoint Alarms drawer (06:00 AM to 11:00 PM) with 1-tap quick actions (+1.5H WALK, +2H STUDY, etc.).
+5. **`src/views/stats.js`**:
+   - 4 Master Athletic Gauges (Cumulative Study, Cumulative Work, Total Productive, Domino Streak/Level).
+   - Peak Biological Output breakdown bars with top window highlight.
+   - 500-Hour Mastery Progress Bar & 3,045 Part A Campaign Progress Bar.
+   - Authentic 87-Day GitHub 5-Tier Green Contribution Matrix with cell inspection HUD.
+   - Single-click CSV and JSON data export downloads.
+6. **`src/views/studio-proctor.js`**:
+   - 4-Zone iPhone 12 layout: Sticky top HUD bar, 5-Pill Question Switcher (`SKETCH`, `PROD`, `VCD`, `ANIM`, `IXD`), single focused briefing card with collapsible Trend and Checklist drawers, and direct study domino sync.
+   - OLED Desk Clock Mode for distraction-free physical sketching against desk-mounted timer.
+7. **`src/views/settings.js`**:
+   - System Terminal Configuration with live Domino Pillar and Badge editor.
+   - Emergency Mode (Streak Saver) with 2-consecutive-day block rule and red theme shift.
+   - Streak Shield Bank management.
+   - Full JSON state backup and restore.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

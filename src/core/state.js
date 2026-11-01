@@ -1,259 +1,425 @@
-/**
- * State Manager — LocalStorage-backed reactive state for CEED Domino Tracker.
- * Dispatches 'state-changed' CustomEvent on document whenever state updates.
- */
+// src/core/state.js
+import { playRelayClick } from '../utils/sound.js';
 
-const STORAGE_KEY = 'ceed_domino_state_v2';
+export const STATE_KEY = 'ceed_v2_state';
+export const BLOCKS_KEY = 'ceed_v2_blocks';
+export const ALARMS_KEY = 'ceed_v2_alarms';
+const LEGACY_STORAGE_KEY = 'ceed_domino_state_v2';
 
-const DEFAULT_STATE = {
-  shields: 2,
-  days: {},
-  settings: {
-    startDate: '2026-10-22',
-    endDate: '2027-01-17',
-    theme: 'system', // 'light' | 'dark' | 'system'
-    customDominos: null, // null = use defaults
-  },
+export const DEFAULT_BLOCKS = [
+  { id: 'd1', badge: 'DOMINO 1', name: 'Walk & Fitness', category: 'WALK', targetMins: 90 },
+  { id: 'd2', badge: 'DOMINO 2', name: 'Study & Sketching', category: 'STUDY', targetMins: 120 },
+  { id: 'd3', badge: 'DOMINO 3', name: 'Paperwork & CEED Sprint', category: 'STUDY', targetMins: 180, hasPartACounter: true },
+  { id: 'd4', badge: 'DOMINO 4', name: 'Work & Studio Output', category: 'WORK', targetMins: 240 }
+];
+
+const DEFAULT_SETTINGS = {
+  startDate: '2026-10-22',
+  endDate: '2027-01-17',
+  theme: 'dark',
 };
 
-let _state = null;
+// Core architectural invariant: any block with 'DOMINO' in badge is mandatory
+export function isDominoTask(block) {
+  if (!block || !block.badge) return false;
+  return block.badge.toUpperCase().includes('DOMINO');
+}
 
-/** Load state from LocalStorage or return defaults */
-export function loadState() {
-  if (_state) return _state;
+export function getBlocks() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(BLOCKS_KEY);
+    return raw ? JSON.parse(raw) : structuredClone(DEFAULT_BLOCKS);
+  } catch {
+    return structuredClone(DEFAULT_BLOCKS);
+  }
+}
+
+export function saveBlocks(blocks) {
+  localStorage.setItem(BLOCKS_KEY, JSON.stringify(blocks));
+  document.dispatchEvent(new CustomEvent('blocks-changed', { detail: blocks }));
+}
+
+let _stateCache = null;
+
+/** Load state or migrate from legacy ceed_domino_state_v2 */
+export function getState() {
+  if (_stateCache) return _stateCache;
+  try {
+    const raw = localStorage.getItem(STATE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      // Merge with defaults for forward-compat
-      _state = { ...DEFAULT_STATE, ...parsed, settings: { ...DEFAULT_STATE.settings, ...(parsed.settings || {}) } };
-    } else {
-      _state = structuredClone(DEFAULT_STATE);
+      _stateCache = {
+        records: parsed.records || {},
+        streak: parsed.streak || 0,
+        bestStreak: parsed.bestStreak || 0,
+        shields: parsed.shields !== undefined ? parsed.shields : 2,
+        settings: { ...DEFAULT_SETTINGS, ...(parsed.settings || {}) }
+      };
+      return _stateCache;
     }
-  } catch {
-    _state = structuredClone(DEFAULT_STATE);
-  }
-  return _state;
-}
 
-/** Save current state to LocalStorage and dispatch change event */
-export function saveState() {
-  if (!_state) return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(_state));
-  document.dispatchEvent(new CustomEvent('state-changed', { detail: _state }));
-}
+    // Attempt automatic seamless migration from legacy storage key
+    const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (legacyRaw) {
+      const legacy = JSON.parse(legacyRaw);
+      const migratedRecords = {};
 
-/** Get current state (read-only reference) */
-export function getState() {
-  return _state || loadState();
-}
+      if (legacy.days && typeof legacy.days === 'object') {
+        for (const [dateStr, dayData] of Object.entries(legacy.days)) {
+          const completedArr = [];
+          if (dayData.completed && typeof dayData.completed === 'object') {
+            for (const [k, v] of Object.entries(dayData.completed)) {
+              if (v) completedArr.push(k);
+            }
+          }
+          migratedRecords[dateStr] = {
+            durations: dayData.durations || {},
+            completed: completedArr,
+            logs: [],
+            customMins: [],
+            partACount: 0,
+            partABonusClaimed: false,
+            emergency: !!dayData.emergency,
+            shieldUsed: !!dayData.shieldUsed
+          };
+        }
+      }
 
-/** Ensure a day record exists for the given date string */
-export function ensureDayRecord(dateStr) {
-  const state = getState();
-  if (!state.days[dateStr]) {
-    state.days[dateStr] = {
-      completed: {},
-      durations: {}, // e.g. { d1: 120, d3: 150 }
-      emergency: false,
-      shieldUsed: false,
-      wakeTimestamp: null,
-      examLog: null,
+      _stateCache = {
+        records: migratedRecords,
+        streak: 0,
+        bestStreak: 0,
+        shields: legacy.shields !== undefined ? legacy.shields : 2,
+        settings: { ...DEFAULT_SETTINGS, ...(legacy.settings || {}) }
+      };
+
+      recalculateStreak(_stateCache);
+      saveState(_stateCache);
+      return _stateCache;
+    }
+
+    _stateCache = {
+      records: {},
+      streak: 0,
+      bestStreak: 0,
+      shields: 2,
+      settings: structuredClone(DEFAULT_SETTINGS)
     };
-  } else {
-    if (state.days[dateStr].durations === undefined) {
-      state.days[dateStr].durations = {};
-    }
-    if (state.days[dateStr].examLog === undefined) {
-      state.days[dateStr].examLog = null;
-    }
+    return _stateCache;
+  } catch {
+    _stateCache = {
+      records: {},
+      streak: 0,
+      bestStreak: 0,
+      shields: 2,
+      settings: structuredClone(DEFAULT_SETTINGS)
+    };
+    return _stateCache;
   }
-  return state.days[dateStr];
 }
 
-/** Get actual logged duration (in minutes) for a domino on a specific date */
-export function getDominoDuration(dominoId, dateStr, defaultMinutes = 0) {
-  const day = ensureDayRecord(dateStr);
-  if (day.durations && day.durations[dominoId] !== undefined) {
-    return Number(day.durations[dominoId]);
+export function loadState() {
+  return getState();
+}
+
+export function saveState(state = _stateCache) {
+  if (!state) return;
+  _stateCache = state;
+  try {
+    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    document.dispatchEvent(new CustomEvent('state-changed', { detail: state }));
+  } catch (err) {
+    console.error('Failed to save state to localStorage:', err);
   }
-  if (day.completed && day.completed[dominoId]) {
-    return defaultMinutes;
+}
+
+export function getDayRecord(dateStr) {
+  const state = getState();
+  if (!state.records[dateStr]) {
+    state.records[dateStr] = {
+      durations: {},
+      completed: [],
+      logs: [],
+      customMins: [],
+      partACount: 0,
+      partABonusClaimed: false,
+      emergency: false,
+      shieldUsed: false
+    };
+    saveState(state);
+  } else {
+    // Forward compat
+    const rec = state.records[dateStr];
+    if (!rec.durations) rec.durations = {};
+    if (!rec.completed) rec.completed = [];
+    if (!rec.logs) rec.logs = [];
+    if (!rec.customMins) rec.customMins = [];
+    if (rec.partACount === undefined) rec.partACount = 0;
+    if (rec.partABonusClaimed === undefined) rec.partABonusClaimed = false;
+  }
+  return state.records[dateStr];
+}
+
+// Backward-compatible alias for legacy calls
+export function ensureDayRecord(dateStr) {
+  return getDayRecord(dateStr);
+}
+
+// Time-independent logger with automatic Domino checkoff
+export function logHours(dateStr, blockId, deltaMins, customLabel = null) {
+  const state = getState();
+  const blocks = getBlocks();
+  const block = blocks.find(b => b.id === blockId);
+  if (!block) return;
+
+  if (!state.records[dateStr]) getDayRecord(dateStr);
+  const rec = state.records[dateStr];
+
+  const prev = rec.durations[blockId] || 0;
+  const next = Math.max(0, prev + deltaMins);
+  rec.durations[blockId] = next;
+
+  // Record timestamped log entry regardless of time of day
+  if (deltaMins !== 0) {
+    const now = new Date();
+    const nowTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    rec.logs.unshift({
+      id: 'log_' + Date.now(),
+      time: nowTime,
+      hour24: now.getHours(),
+      blockId,
+      category: block.category,
+      mins: deltaMins,
+      label: customLabel || block.name
+    });
+  }
+
+  // Auto-complete Domino when target floor is met
+  const effectiveTarget = rec.emergency ? Math.ceil(block.targetMins / 2) : block.targetMins;
+  if (next >= effectiveTarget && !rec.completed.includes(blockId)) {
+    rec.completed.push(blockId);
+  } else if (next === 0) {
+    rec.completed = rec.completed.filter(id => id !== blockId);
+  }
+
+  recalculateStreak(state);
+  saveState(state);
+  playRelayClick();
+  return rec;
+}
+
+// Daily 35-Question Part A Micro-Counter with Auto +1.0h Study Reward
+export function logPartAQuestions(dateStr, deltaQs, setExact = false) {
+  const state = getState();
+  if (!state.records[dateStr]) getDayRecord(dateStr);
+  const rec = state.records[dateStr];
+
+  const prev = rec.partACount || 0;
+  const next = setExact ? Math.max(0, deltaQs) : Math.max(0, prev + deltaQs);
+  rec.partACount = next;
+  saveState(state);
+
+  // Auto-reward +60m (1.0h) to Paperwork/CEED Domino ('d3') upon hitting 35/35
+  if (next >= 35 && !rec.partABonusClaimed) {
+    rec.partABonusClaimed = true;
+    saveState(state);
+    logHours(dateStr, 'd3', 60, '35/35 Part A Daily Target Complete');
+  } else {
+    playRelayClick();
+  }
+
+  return rec;
+}
+
+export function recalculateStreak(state) {
+  const blocks = getBlocks();
+  const mandatoryIds = blocks.filter(isDominoTask).map(b => b.id);
+  if (mandatoryIds.length === 0) return;
+
+  const dates = Object.keys(state.records).sort();
+  let currentStreak = 0;
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  for (const d of dates) {
+    const rec = state.records[d];
+    const allDone = mandatoryIds.every(id => (rec.completed || []).includes(id));
+    if (allDone || rec.shieldUsed) {
+      currentStreak += 1;
+    } else if (d !== todayStr) {
+      currentStreak = 0;
+    }
+  }
+
+  state.streak = currentStreak;
+  if (currentStreak > (state.bestStreak || 0)) {
+    state.bestStreak = currentStreak;
+  }
+}
+
+function parseHour24Fallback(logItem) {
+  if (typeof logItem.hour24 === 'number') return logItem.hour24;
+  if (!logItem.time) return 12;
+  const match = logItem.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+  if (!match) return 12;
+  let hr = parseInt(match[1], 10);
+  const ampm = (match[3] || '').toUpperCase();
+  if (ampm === 'PM' && hr < 12) hr += 12;
+  if (ampm === 'AM' && hr === 12) hr = 0;
+  return hr;
+}
+
+export function getCumulativeTelemetry() {
+  const state = getState();
+  const blocks = getBlocks();
+  const blockMap = Object.fromEntries(blocks.map(b => [b.id, b]));
+
+  let cumulativeStudyMins = 0;
+  let cumulativeWorkMins = 0;
+  let cumulativeWalkMins = 0;
+  let totalCompletedDominos = 0;
+  let totalPartASolved = 0;
+
+  // Circadian Output Buckets (in minutes)
+  const windowMins = {
+    MORNING: { label: 'MORNING (05:00–11:59)', mins: 0 },
+    AFTERNOON: { label: 'AFTERNOON (12:00–16:59)', mins: 0 },
+    EVENING: { label: 'EVENING (17:00–20:59)', mins: 0 },
+    NIGHT: { label: 'NIGHT (21:00–04:59)', mins: 0 }
+  };
+
+  for (const rec of Object.values(state.records)) {
+    totalPartASolved += rec.partACount || 0;
+
+    for (const [blockId, mins] of Object.entries(rec.durations || {})) {
+      const b = blockMap[blockId];
+      const cat = b ? b.category : 'OTHER';
+      if (cat === 'STUDY') cumulativeStudyMins += mins;
+      else if (cat === 'WORK') cumulativeWorkMins += mins;
+      else if (cat === 'WALK') cumulativeWalkMins += mins;
+    }
+
+    for (const cEntry of rec.customMins || []) {
+      if (cEntry.category === 'STUDY') cumulativeStudyMins += cEntry.mins;
+      else if (cEntry.category === 'WORK') cumulativeWorkMins += cEntry.mins;
+      else if (cEntry.category === 'WALK') cumulativeWalkMins += cEntry.mins;
+    }
+
+    for (const compId of rec.completed || []) {
+      if (isDominoTask(blockMap[compId])) totalCompletedDominos += 1;
+    }
+
+    // Aggregate timestamped logs into biological time-of-day windows
+    for (const logItem of rec.logs || []) {
+      if (!logItem.mins || logItem.mins <= 0) continue;
+      const hr = parseHour24Fallback(logItem);
+      if (hr >= 5 && hr < 12) windowMins.MORNING.mins += logItem.mins;
+      else if (hr >= 12 && hr < 17) windowMins.AFTERNOON.mins += logItem.mins;
+      else if (hr >= 17 && hr < 21) windowMins.EVENING.mins += logItem.mins;
+      else windowMins.NIGHT.mins += logItem.mins;
+    }
+  }
+
+  const totalLoggedWindowMins = Object.values(windowMins).reduce((s, w) => s + w.mins, 0);
+  const peakWindows = Object.entries(windowMins).map(([key, data]) => {
+    const pct = totalLoggedWindowMins > 0 ? Math.round((data.mins / totalLoggedWindowMins) * 100) : 0;
+    return {
+      key,
+      label: data.label,
+      hours: (data.mins / 60).toFixed(1),
+      mins: data.mins,
+      pct
+    };
+  });
+
+  const topWindow = [...peakWindows].sort((a, b) => b.mins - a.mins)[0];
+  const totalProductiveMins = cumulativeStudyMins + cumulativeWorkMins + cumulativeWalkMins;
+  const level = Math.floor(totalCompletedDominos / 4) + 1;
+
+  return {
+    cumulativeStudyHours: (cumulativeStudyMins / 60).toFixed(1),
+    cumulativeWorkHours: (cumulativeWorkMins / 60).toFixed(1),
+    cumulativeWalkHours: (cumulativeWalkMins / 60).toFixed(1),
+    totalProductiveHours: (totalProductiveMins / 60).toFixed(1),
+    totalCompletedDominos,
+    totalPartASolved,
+    level,
+    streak: state.streak || 0,
+    bestStreak: state.bestStreak || 0,
+    peakWindows,
+    topWindowName: topWindow && topWindow.mins > 0 ? `${topWindow.key} (${topWindow.pct}%)` : 'NO DATA YET'
+  };
+}
+
+// Helpers for backward-compatibility
+export function updateSettings(newSettings) {
+  const state = getState();
+  state.settings = { ...(state.settings || {}), ...newSettings };
+  saveState(state);
+}
+
+export function resetState() {
+  _stateCache = {
+    records: {},
+    streak: 0,
+    bestStreak: 0,
+    shields: 2,
+    settings: structuredClone(DEFAULT_SETTINGS)
+  };
+  saveState(_stateCache);
+  localStorage.removeItem(BLOCKS_KEY);
+  localStorage.removeItem(ALARMS_KEY);
+  playRelayClick();
+}
+
+export function formatHours(totalMinutes) {
+  if (!totalMinutes || isNaN(totalMinutes)) return '0h';
+  const hours = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  if (hours === 0) return `${mins}m`;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h ${mins}m`;
+}
+
+export function formatDetailedHours(totalMinutes) {
+  if (!totalMinutes || isNaN(totalMinutes)) return '0h 00m';
+  const hours = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  return `${hours}h ${String(mins).padStart(2, '0')}m`;
+}
+
+export function getAllCompletedTasksCount() {
+  const telemetry = getCumulativeTelemetry();
+  return telemetry.totalCompletedDominos;
+}
+
+export function getGrandTotalLoggedMinutes() {
+  const telemetry = getCumulativeTelemetry();
+  return Math.round(parseFloat(telemetry.totalProductiveHours) * 60);
+}
+
+export function getDominoDuration(dominoId, dateStr, defaultMinutes = 0) {
+  const rec = getDayRecord(dateStr);
+  if (rec.durations && rec.durations[dominoId] !== undefined) {
+    return Number(rec.durations[dominoId]);
   }
   return 0;
 }
 
-/** Set actual logged duration (in minutes) for a domino on a specific date */
 export function setDominoDuration(dominoId, dateStr, minutes) {
-  const day = ensureDayRecord(dateStr);
-  day.durations = day.durations || {};
+  const rec = getDayRecord(dateStr);
   const cleanMins = Math.max(0, Math.round(Number(minutes)));
-  day.durations[dominoId] = cleanMins;
+  rec.durations[dominoId] = cleanMins;
+  const blocks = getBlocks();
+  const block = blocks.find(b => b.id === dominoId);
+  const effectiveTarget = rec.emergency ? Math.ceil((block?.targetMins || 60) / 2) : (block?.targetMins || 60);
 
-  // If logging time > 0, ensure it is marked completed
-  if (cleanMins > 0) {
-    day.completed = day.completed || {};
-    day.completed[dominoId] = true;
+  if (cleanMins >= effectiveTarget && !rec.completed.includes(dominoId)) {
+    rec.completed.push(dominoId);
+  } else if (cleanMins === 0) {
+    rec.completed = rec.completed.filter(id => id !== dominoId);
   }
-  saveState();
+  const state = getState();
+  recalculateStreak(state);
+  saveState(state);
   return cleanMins;
-}
-
-/** Calculate lifetime cumulative minutes logged for a specific domino across all days */
-export function getCumulativeDominoMinutes(dominoId, dominosList = null) {
-  const state = getState();
-  let totalMinutes = 0;
-
-  for (const date in state.days) {
-    const day = state.days[date];
-    if (!day) continue;
-
-    if (day.durations && day.durations[dominoId] !== undefined) {
-      totalMinutes += Number(day.durations[dominoId]);
-    } else if (day.completed && day.completed[dominoId]) {
-      // Fallback: if completed without explicit duration, use domino normal floor
-      const targetDom = dominosList ? dominosList.find((d) => d.id === dominoId) : null;
-      const floorMins = targetDom ? (day.emergency ? targetDom.emergencyMins : targetDom.normalMins) : 0;
-      totalMinutes += floorMins;
-    }
-  }
-  return totalMinutes;
-}
-
-/** Calculate grand total logged minutes across all MANDATORY DOMINO tasks across all days */
-export function getGrandTotalLoggedMinutes(dominosList = null) {
-  const state = getState();
-  const dominos = dominosList || state.settings.customDominos || [
-    { id: 'd1', badge: 'DOMINO 1', normalMins: 120, emergencyMins: 45 },
-    { id: 'd2', badge: 'DOMINO 2', normalMins: 90, emergencyMins: 30 },
-    { id: 'd3', badge: 'DOMINO 3', normalMins: 120, emergencyMins: 60 },
-    { id: 'd4', badge: 'DOMINO 4', normalMins: 120, emergencyMins: 60 },
-  ];
-  const dominoMap = new Map();
-  dominos
-    .filter((d) => d.badge && d.badge.toUpperCase().includes('DOMINO'))
-    .forEach((d) => dominoMap.set(d.id, d));
-
-  let totalMinutes = 0;
-
-  for (const date in state.days) {
-    const day = state.days[date];
-    if (!day) continue;
-
-    for (const [id, dom] of dominoMap.entries()) {
-      if (day.durations && day.durations[id] !== undefined) {
-        totalMinutes += Number(day.durations[id]);
-      } else if (day.completed && day.completed[id]) {
-        const floorMins = day.emergency ? dom.emergencyMins : dom.normalMins;
-        totalMinutes += floorMins;
-      }
-    }
-  }
-  return totalMinutes;
-}
-
-/** Format total minutes to decimal hours or hours+mins string (e.g. 14.5h or 14h 30m) */
-export function formatHours(totalMinutes) {
-  const hours = (totalMinutes / 60).toFixed(1);
-  return `${hours.endsWith('.0') ? hours.slice(0, -2) : hours}h`;
-}
-
-/** Format total minutes to detailed hours & minutes (e.g. "4h 15m") */
-export function formatDetailedHours(totalMinutes) {
-  const h = Math.floor(totalMinutes / 60);
-  const m = totalMinutes % 60;
-  if (h === 0) return `${m}m`;
-  if (m === 0) return `${h}h`;
-  return `${h}h ${m}m`;
-}
-
-/** Count total completed mandatory DOMINO tasks across all historical days */
-export function getAllCompletedTasksCount(dominosList = null) {
-  const state = getState();
-  const dominos = dominosList || state.settings.customDominos || [
-    { id: 'd1', badge: 'DOMINO 1' },
-    { id: 'd2', badge: 'DOMINO 2' },
-    { id: 'd3', badge: 'DOMINO 3' },
-    { id: 'd4', badge: 'DOMINO 4' },
-  ];
-  const dominoIds = new Set(
-    dominos
-      .filter((d) => d.badge && d.badge.toUpperCase().includes('DOMINO'))
-      .map((d) => d.id)
-  );
-
-  let count = 0;
-  for (const date in state.days) {
-    const day = state.days[date];
-    if (day && day.completed) {
-      for (const id in day.completed) {
-        if (dominoIds.has(id)) {
-          count++;
-        }
-      }
-    }
-  }
-  return count;
-}
-
-/** Get exam session log for date */
-export function getExamLog(dateStr) {
-  const day = ensureDayRecord(dateStr);
-  return day.examLog;
-}
-
-/** Save exam session log for date */
-export function saveExamSession(dateStr, sessionData) {
-  const state = getState();
-  const day = ensureDayRecord(dateStr);
-  day.examLog = {
-    updatedAt: Date.now(),
-    ...sessionData,
-  };
-  saveState();
-  return day.examLog;
-}
-
-/** Export state as JSON blob for download */
-export function exportStateAsJSON() {
-  const state = getState();
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `ceed-domino-backup-${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-/** Import state from a JSON file */
-export function importStateFromFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      try {
-        const imported = JSON.parse(evt.target.result);
-        _state = { ...DEFAULT_STATE, ...imported, settings: { ...DEFAULT_STATE.settings, ...(imported.settings || {}) } };
-        saveState();
-        resolve(true);
-      } catch (err) {
-        reject(new Error('Invalid backup file'));
-      }
-    };
-    reader.onerror = () => reject(new Error('Failed to read file'));
-    reader.readAsText(file);
-  });
-}
-
-/** Reset all state to defaults */
-export function resetState() {
-  _state = structuredClone(DEFAULT_STATE);
-  saveState();
-}
-
-/** Update settings */
-export function updateSettings(partial) {
-  const state = getState();
-  state.settings = { ...state.settings, ...partial };
-  saveState();
 }

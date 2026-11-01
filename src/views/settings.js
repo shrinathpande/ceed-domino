@@ -1,372 +1,318 @@
-/**
- * Settings View — Industrial Brutalist Configuration Terminal.
- * Full Domino Block editing, reordering, custom additions, date ranges, and appearance.
- */
-import { getState, updateSettings, resetState } from '../core/state.js';
-import { DEFAULT_DOMINOS, getDominos, isDominoTask } from '../core/dominos.js';
-import { icon } from '../icons/index.js';
-import { applyTheme } from '../components/theme-toggle.js';
-import { renderBackupControls } from '../components/backup-controls.js';
-import { showToast } from '../components/header.js';
-import { formatMins } from '../utils/format.js';
+// src/views/settings.js
+import {
+  getBlocks,
+  saveBlocks,
+  getState,
+  saveState,
+  DEFAULT_BLOCKS,
+  isDominoTask
+} from '../core/state.js';
+import { playRelayClick } from '../utils/sound.js';
+import { getExamCountdown } from '../utils/dates.js';
 
-let _activeEditModal = null;
+let activeDateStr = new Date().toISOString().slice(0, 10);
 
-export function renderSettings(container, onBack) {
+function showInAppToast(msg, isAlert = false) {
+  let toast = document.getElementById('ceed-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'ceed-toast';
+    toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 text-xs font-mono font-bold tracking-tight border-2 shadow-2xl transition-all duration-300 pointer-events-none select-none max-w-[90vw] text-center';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.className = `fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 text-xs font-mono font-bold tracking-tight border-2 ${isAlert ? 'border-red-500 bg-black text-red-400' : 'border-white bg-black text-white'} shadow-2xl transition-all duration-300 pointer-events-none select-none max-w-[90vw] text-center opacity-100 scale-100`;
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.className += ' opacity-0 scale-95';
+  }, 3200);
+}
+
+export function renderSettingsView(container) {
+  const blocks = getBlocks();
   const state = getState();
-  const dominos = getDominos();
+  const todayRec = state.records?.[activeDateStr] || { emergency: false };
+  const isEmergency = todayRec.emergency || false;
+  const examCountdown = getExamCountdown();
+
+  // Apply or remove global emergency theme shift
+  if (isEmergency) {
+    document.documentElement.classList.add('emergency-mode');
+  } else {
+    document.documentElement.classList.remove('emergency-mode');
+  }
 
   container.innerHTML = `
-    <div class="max-w-xl mx-auto px-4 py-4 space-y-4 pb-28 font-mono">
-      <!-- Back Navigation Header -->
-      <div class="flex items-center justify-between border-b border-[var(--rule)] pb-3">
-        <button id="settingsBackBtn" class="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--text)] hover:opacity-80 transition-opacity touch-manipulation" aria-label="Return to console">
-          <span class="w-4 h-4">${icon('arrowLeft')}</span>
-          DASHBOARD CONSOLE
+    <section class="w-full max-w-[390px] mx-auto px-3 pt-2 pb-24 font-mono text-white select-none">
+      <!-- Settings Terminal Header -->
+      <div class="border-2 border-white bg-[#0a0a0a] p-3 mb-3 flex items-center justify-between">
+        <div>
+          <div class="text-[10px] uppercase tracking-wider text-neutral-400 mb-0.5">SYSTEM TERMINAL // CONFIG</div>
+          <div class="text-sm font-bold text-white">CEED DOMINO v2.0 CONFIG</div>
+        </div>
+        <button
+          id="settings-exam-countdown"
+          class="text-[10px] font-bold text-white bg-black border border-neutral-700 px-2 py-0.5 active:border-[#FF69AF] active:text-[#FF69AF]"
+          title="${examCountdown.detailed}"
+        >
+          ${examCountdown.compact}
         </button>
-        <span class="text-xs text-[var(--muted)]">CONFIG TERMINAL</span>
       </div>
 
-      <!-- Section: Exam Timeline Parameters -->
-      <section class="ledger-card p-4" aria-label="Timeline parameters">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--muted)] mb-3">EXAM CALENDAR TARGETS</h2>
-        <div class="grid grid-cols-2 gap-3 text-xs">
-          <div>
-            <label for="startDateInput" class="block font-medium text-[var(--muted)] mb-1">START DATE</label>
-            <input type="date" id="startDateInput" value="${state.settings.startDate}"
-              class="w-full px-2.5 py-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] focus:outline-none focus:border-[var(--text)]" />
+      <!-- Emergency Mode Toggle Card -->
+      <div class="border-2 ${isEmergency ? 'border-red-600 bg-[#120404]' : 'border-neutral-800 bg-[#0a0a0a]'} p-3 mb-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="pr-2">
+            <div class="text-xs font-bold ${isEmergency ? 'text-red-400' : 'text-white'}">EMERGENCY MODE (STREAK SAVER)</div>
+            <div class="text-[10px] text-neutral-400 leading-tight mt-0.5">Halts target floors by 50% for crisis days. Cannot be used 2 days in a row.</div>
           </div>
-          <div>
-            <label for="endDateInput" class="block font-medium text-[var(--muted)] mb-1">EXAM DATE</label>
-            <input type="date" id="endDateInput" value="${state.settings.endDate}"
-              class="w-full px-2.5 py-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] focus:outline-none focus:border-[var(--text)]" />
-          </div>
-        </div>
-        <button id="saveDatesBtn" class="mt-3 w-full py-2 rounded-[2px] bg-[var(--text)] text-[var(--surface)] font-bold text-xs hover:opacity-90 transition-opacity touch-manipulation active:scale-[0.99]">
-          SAVE TIMELINE
-        </button>
-      </section>
-
-      <!-- Section: Display Mode -->
-      <section class="ledger-card p-4" aria-label="Visual appearance mode">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--muted)] mb-3">APPEARANCE THEME</h2>
-        <div class="flex gap-2">
-          <button data-theme-choice="light" class="theme-btn flex-1 py-2 rounded-[2px] text-xs font-bold border transition-colors touch-manipulation ${state.settings.theme === 'light' ? 'bg-[var(--text)] text-[var(--surface)] border-[var(--text)]' : 'bg-[var(--raised)] text-[var(--text)] border-[var(--border)] hover:border-[var(--control)]'}">
-            LIGHT
-          </button>
-          <button data-theme-choice="dark" class="theme-btn flex-1 py-2 rounded-[2px] text-xs font-bold border transition-colors touch-manipulation ${state.settings.theme === 'dark' ? 'bg-[var(--text)] text-[var(--surface)] border-[var(--text)]' : 'bg-[var(--raised)] text-[var(--text)] border-[var(--border)] hover:border-[var(--control)]'}">
-            DARK
-          </button>
-          <button data-theme-choice="system" class="theme-btn flex-1 py-2 rounded-[2px] text-xs font-bold border transition-colors touch-manipulation ${state.settings.theme === 'system' ? 'bg-[var(--text)] text-[var(--surface)] border-[var(--text)]' : 'bg-[var(--raised)] text-[var(--text)] border-[var(--border)] hover:border-[var(--control)]'}">
-            AUTO
+          <button
+            id="btn-toggle-emergency"
+            class="px-3 py-1.5 border shrink-0 ${isEmergency ? 'border-red-500 bg-red-500 text-black font-bold text-xs' : 'border-neutral-700 bg-black text-white text-xs'} active:scale-95"
+          >
+            ${isEmergency ? 'ACTIVE (RED)' : 'OFF'}
           </button>
         </div>
-      </section>
+      </div>
 
-      <!-- Section: Domino Task Blocks (Reorder & Edit) -->
-      <section class="ledger-card p-4" aria-label="Domino pillars editor">
-        <div class="flex items-center justify-between mb-3 border-b border-[var(--rule)] pb-2">
+      <!-- Streak Shield Bank -->
+      <div class="border-2 border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
+        <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--text)]">DOMINO PILLARS</h2>
-            <p class="text-[10px] text-[var(--muted)] mt-0.5 font-sans">Use arrows to reorder, click edit to modify durations or names.</p>
+            <div class="text-xs font-bold text-white">STREAK SHIELDS (🛡️)</div>
+            <div class="text-[10px] text-neutral-400">Current Shields: ${state.shields || 0} / 3 (+1 every 7-day streak)</div>
           </div>
-          <button id="resetDominosBtn" class="text-[11px] font-bold text-[var(--muted)] hover:text-[var(--text)] transition-colors">
-            DEFAULTS
-          </button>
+          <div class="flex gap-1.5">
+            <button id="btn-add-shield" class="px-2.5 py-1.5 border border-white text-xs font-bold active:bg-white active:text-black">
+              +1 SHIELD
+            </button>
+          </div>
         </div>
-        
-        <div id="dominoSettingsList" class="space-y-2"></div>
-        
-        <button id="addDominoBtn" class="mt-3 w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-[2px] border border-dashed border-[var(--control)] text-xs font-bold text-[var(--text)] hover:bg-[var(--raised)] transition-colors touch-manipulation">
-          <span class="w-3.5 h-3.5">${icon('plus')}</span>
-          APPEND NEW DOMINO UNIT
-        </button>
-      </section>
+      </div>
 
-      <!-- Section: State Backup Archive -->
-      <div id="backupSection"></div>
+      <!-- Domino Pillars & Badge Editor -->
+      <div class="border-2 border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
+        <div class="flex items-center justify-between mb-2 pb-2 border-b border-neutral-800">
+          <div class="text-xs font-bold text-white uppercase">DOMINO PILLARS & BADGES</div>
+          <button id="btn-reset-blocks" class="text-[10px] text-neutral-400 underline">Reset Defaults</button>
+        </div>
 
-      <!-- Section: System Wipe -->
-      <section class="ledger-card p-4 border-[var(--negative)]">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--negative)] mb-1">DATA RESET TERMINAL</h2>
-        <p class="text-xs text-[var(--muted)] mb-3 font-sans">Purges all local historical logs, active streak records, and quality scores back to factory reset.</p>
-        <button id="resetAllBtn" class="w-full py-2 rounded-[2px] bg-[var(--raised)] border border-[var(--negative)] text-[var(--negative)] text-xs font-bold hover:bg-[var(--negative)] hover:text-white transition-colors touch-manipulation active:scale-[0.99]">
-          PURGE ALL TRACKER DATA
-        </button>
-      </section>
-    </div>
+        <div class="flex flex-col gap-3">
+          ${blocks.map((b) => {
+            const isMand = isDominoTask(b);
+            return `
+              <div class="border border-neutral-800 bg-black p-2.5" data-block-id="${b.id}">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <input
+                    type="text"
+                    data-edit-badge="${b.id}"
+                    value="${b.badge}"
+                    class="w-28 bg-neutral-900 border ${isMand ? 'border-[#FF69AF] text-[#FF69AF]' : 'border-neutral-700 text-white'} text-[11px] px-2 py-1 font-bold uppercase focus:outline-none"
+                    placeholder="Badge (e.g. DOMINO 1)"
+                  />
+                  <select
+                    data-edit-cat="${b.id}"
+                    class="bg-neutral-900 border border-neutral-700 text-[11px] text-white px-2 py-1 focus:outline-none"
+                  >
+                    <option value="STUDY" ${b.category === 'STUDY' ? 'selected' : ''}>STUDY</option>
+                    <option value="WORK" ${b.category === 'WORK' ? 'selected' : ''}>WORK</option>
+                    <option value="WALK" ${b.category === 'WALK' ? 'selected' : ''}>WALK</option>
+                    <option value="REST" ${b.category === 'REST' ? 'selected' : ''}>REST</option>
+                  </select>
+                </div>
 
-    <!-- Edit Domino Modal Placeholder -->
-    <div id="editDominoModalContainer"></div>
+                <div class="mb-2">
+                  <input
+                    type="text"
+                    data-edit-name="${b.id}"
+                    value="${b.name}"
+                    class="w-full bg-neutral-900 border border-neutral-700 text-xs text-white px-2 py-1 focus:outline-none font-bold"
+                    placeholder="Block Name"
+                  />
+                </div>
+
+                <div class="flex items-center justify-between text-[11px] text-neutral-400">
+                  <div class="flex items-center gap-1.5">
+                    <span>Floor (Hrs):</span>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0.5"
+                      max="12"
+                      data-edit-target="${b.id}"
+                      value="${(b.targetMins / 60).toFixed(1)}"
+                      class="w-16 bg-neutral-900 border border-neutral-700 text-white text-center py-0.5 focus:outline-none font-mono"
+                    />
+                  </div>
+                  <span class="${isMand ? 'text-[#FF69AF] font-bold' : 'text-neutral-500'}">
+                    ${isMand ? '[MANDATORY DOMINO]' : '[ROUTINE]'}
+                  </span>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- State Backup & JSON Restore Controls -->
+      <div class="border-2 border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
+        <div class="text-xs font-bold text-white uppercase mb-2">STATE BACKUP & RESTORE</div>
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <button id="btn-backup-json" class="h-11 border border-white bg-black text-xs font-bold uppercase active:bg-white active:text-black">
+            EXPORT JSON
+          </button>
+          <label class="h-11 border border-neutral-700 bg-black text-xs font-bold uppercase flex items-center justify-center cursor-pointer hover:border-white">
+            IMPORT JSON
+            <input type="file" id="file-import-json" accept=".json" class="hidden" />
+          </label>
+        </div>
+        <div class="text-[10px] text-neutral-500 leading-tight">
+          All records persist locally. Importing a backup replaces current browser storage.
+        </div>
+      </div>
+
+      <!-- Factory Reset -->
+      <button id="btn-factory-reset" class="w-full h-11 border border-red-800 bg-black text-red-400 text-xs uppercase tracking-widest active:bg-red-900 active:text-white">
+        ⚠ FACTORY RESET ALL DATA
+      </button>
+    </section>
   `;
 
-  // Render Domino Items with Reordering and Editing
-  renderDominoEditorItems(container, dominos, onBack);
-
-  // Render Backup Controls
-  renderBackupControls(container.querySelector('#backupSection'));
-
-  // Wire Top Actions
-  container.querySelector('#settingsBackBtn').addEventListener('click', () => {
-    if (onBack) onBack();
-  });
-
-  container.querySelector('#saveDatesBtn').addEventListener('click', () => {
-    const start = container.querySelector('#startDateInput').value;
-    const end = container.querySelector('#endDateInput').value;
-    if (start && end && start < end) {
-      updateSettings({ startDate: start, endDate: end });
-      showToast('Calendar targets updated.', 'success');
-    } else {
-      showToast('Invalid target range.', 'error');
-    }
-  });
-
-  container.querySelectorAll('.theme-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const choice = btn.dataset.themeChoice;
-      updateSettings({ theme: choice });
-      applyTheme();
-      renderSettings(container, onBack);
-    });
-  });
-
-  container.querySelector('#resetDominosBtn').addEventListener('click', () => {
-    updateSettings({ customDominos: null });
-    renderSettings(container, onBack);
-    showToast('Domino blocks reset to default blueprint.', 'success');
-  });
-
-  container.querySelector('#addDominoBtn').addEventListener('click', () => {
-    showEditDominoModal(null, (newDomino) => {
-      const current = [...getDominos()];
-      current.push(newDomino);
-      updateSettings({ customDominos: current });
-      renderSettings(container, onBack);
-      showToast(`Added ${newDomino.title}.`, 'success');
-    });
-  });
-
-  container.querySelector('#resetAllBtn').addEventListener('click', () => {
-    if (confirm('CRITICAL ACTION: Reset all tracking logs, streaks, and custom domino settings?')) {
-      resetState();
-      showToast('All state data purged.', 'info');
-      if (onBack) onBack();
-    }
-  });
+  bindSettingsEvents(container);
 }
 
-function renderDominoEditorItems(container, dominos, onBack) {
-  const dominoList = container.querySelector('#dominoSettingsList');
-  dominoList.innerHTML = '';
-
-  dominos.forEach((d, index) => {
-    const isMandatory = isDominoTask(d);
-    const item = document.createElement('div');
-    item.className = 'flex items-center gap-2 p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]';
-    
-    item.innerHTML = `
-      <!-- Move Up/Down Controls -->
-      <div class="flex flex-col gap-0.5">
-        <button class="move-up-btn w-5 h-4 flex items-center justify-center text-[10px] text-[var(--muted)] hover:text-[var(--text)] disabled:opacity-20" ${index === 0 ? 'disabled' : ''} title="Move up">
-          ▲
-        </button>
-        <button class="move-down-btn w-5 h-4 flex items-center justify-center text-[10px] text-[var(--muted)] hover:text-[var(--text)] disabled:opacity-20" ${index === dominos.length - 1 ? 'disabled' : ''} title="Move down">
-          ▼
-        </button>
-      </div>
-
-      <!-- Domino Details -->
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-1.5 flex-wrap">
-          <span class="text-[10px] font-bold px-1 py-0.5 bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] rounded-[1px]">${d.badge}</span>
-          <span class="text-[9px] font-bold px-1 py-0.2 rounded-[1px] ${isMandatory ? 'bg-[var(--text)] text-[var(--surface)]' : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--muted)]'} uppercase tracking-wider">
-            ${isMandatory ? 'MANDATORY TIMED' : 'ROUTINE'}
-          </span>
-          <p class="text-xs font-bold text-[var(--text)] truncate">${d.title}</p>
-        </div>
-        <p class="text-[10px] text-[var(--muted)] mt-0.5 font-sans">${formatMins(d.normalMins)} standard · ${d.emergencyMins}m emergency floor</p>
-      </div>
-
-      <!-- Edit & Delete Triggers -->
-      <div class="flex items-center gap-1">
-        <button class="edit-btn px-2 py-1 text-[11px] font-bold rounded-[2px] bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] hover:border-[var(--control)] transition-colors" title="Edit Domino">
-          EDIT
-        </button>
-        <button class="delete-btn px-2 py-1 text-[11px] font-bold rounded-[2px] bg-[var(--surface)] border border-[var(--border)] text-[var(--negative)] hover:bg-[var(--negative)] hover:text-white transition-colors" title="Delete Domino">
-          DEL
-        </button>
-      </div>
-    `;
-
-    // Move Up
-    item.querySelector('.move-up-btn').addEventListener('click', () => {
-      if (index > 0) {
-        const next = [...dominos];
-        const [moved] = next.splice(index, 1);
-        next.splice(index - 1, 0, moved);
-        updateSettings({ customDominos: next });
-        renderSettings(container, onBack);
-      }
-    });
-
-    // Move Down
-    item.querySelector('.move-down-btn').addEventListener('click', () => {
-      if (index < dominos.length - 1) {
-        const next = [...dominos];
-        const [moved] = next.splice(index, 1);
-        next.splice(index + 1, 0, moved);
-        updateSettings({ customDominos: next });
-        renderSettings(container, onBack);
-      }
-    });
-
-    // Edit
-    item.querySelector('.edit-btn').addEventListener('click', () => {
-      showEditDominoModal(d, (updated) => {
-        const next = [...dominos];
-        next[index] = { ...d, ...updated };
-        updateSettings({ customDominos: next });
-        renderSettings(container, onBack);
-        showToast(`Saved ${updated.title}.`, 'success');
-      });
-    });
-
-    // Delete
-    item.querySelector('.delete-btn').addEventListener('click', () => {
-      if (confirm(`Remove "${d.title}" from domino schedule?`)) {
-        const next = dominos.filter((_, i) => i !== index);
-        updateSettings({ customDominos: next });
-        renderSettings(container, onBack);
-        showToast('Domino removed.', 'info');
-      }
-    });
-
-    dominoList.appendChild(item);
-  });
+export function renderSettings(container) {
+  renderSettingsView(container);
 }
 
-/**
- * Edit / Create Domino Modal
- */
-function showEditDominoModal(existing, onSave) {
-  const container = document.getElementById('editDominoModalContainer');
-  if (!container) return;
+function bindSettingsEvents(container) {
+  container.querySelector('#settings-exam-countdown')?.addEventListener('click', () => {
+    const cd = getExamCountdown();
+    playRelayClick();
+    showInAppToast(cd.detailed);
+  });
 
-  const isEdit = !!existing;
-  const initial = existing || {
-    id: `custom_${Date.now()}`,
-    badge: 'DOMINO',
-    title: '',
-    subtitle: '',
-    offset: 'Wake + 0:00',
-    normalMins: 60,
-    emergencyMins: 30,
-    desc: '',
-    icon: 'document',
-    color: 'blue'
-  };
+  // Toggle Emergency Mode with 2-consecutive-days rule
+  container.querySelector('#btn-toggle-emergency')?.addEventListener('click', () => {
+    const state = getState();
+    if (!state.records[activeDateStr]) {
+      state.records[activeDateStr] = { durations: {}, completed: [], logs: [], emergency: false };
+    }
+    const currentEmergency = !!state.records[activeDateStr].emergency;
 
-  const modal = document.createElement('div');
-  modal.className = 'fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 font-mono';
-  modal.innerHTML = `
-    <div class="w-full max-w-md bg-[var(--surface)] border border-[var(--border)] p-5 shadow-2xl rounded-[2px] space-y-3.5">
-      <div class="flex items-center justify-between border-b border-[var(--rule)] pb-2.5">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-[var(--text)]">
-          ${isEdit ? 'EDIT DOMINO SPECIFICATION' : 'NEW DOMINO SPECIFICATION'}
-        </h3>
-        <button id="closeEditModalBtn" class="text-xs text-[var(--muted)] hover:text-[var(--text)]">✕</button>
-      </div>
-
-      <div class="space-y-2.5 text-xs">
-        <div>
-          <label class="block text-[11px] text-[var(--muted)] mb-1">TITLE</label>
-          <input type="text" id="editTitleInput" value="${initial.title}" placeholder="e.g. Speed Sketching Drills"
-            class="w-full px-2.5 py-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] focus:outline-none focus:border-[var(--text)]" />
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[11px] text-[var(--muted)] mb-1">BADGE CODE</label>
-            <input type="text" id="editBadgeInput" value="${initial.badge}" placeholder="DOMINO 1"
-              class="w-full px-2.5 py-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] focus:outline-none focus:border-[var(--text)]" />
-            <p class="text-[9px] text-[var(--muted)] mt-1 font-sans">Include "DOMINO" (e.g. DOMINO 5) for mandatory timed task.</p>
-          </div>
-          <div>
-            <label class="block text-[11px] text-[var(--muted)] mb-1">TIME OFFSET</label>
-            <input type="text" id="editOffsetInput" value="${initial.offset}" placeholder="Wake + 2:00"
-              class="w-full px-2.5 py-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] focus:outline-none focus:border-[var(--text)]" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[11px] text-[var(--muted)] mb-1">STANDARD FLOOR (MINS)</label>
-            <input type="number" id="editNormalMinsInput" value="${initial.normalMins}" min="5" step="5"
-              class="w-full px-2.5 py-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] focus:outline-none focus:border-[var(--text)]" />
-          </div>
-          <div>
-            <label class="block text-[11px] text-[var(--muted)] mb-1">BAD DAY FLOOR (MINS)</label>
-            <input type="number" id="editEmergencyMinsInput" value="${initial.emergencyMins}" min="5" step="5"
-              class="w-full px-2.5 py-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] focus:outline-none focus:border-[var(--text)]" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-[11px] text-[var(--muted)] mb-1">SUBTITLE / FOCUS</label>
-          <input type="text" id="editSubtitleInput" value="${initial.subtitle || ''}" placeholder="e.g. Perspective & Proportion"
-            class="w-full px-2.5 py-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] focus:outline-none focus:border-[var(--text)]" />
-        </div>
-
-        <div>
-          <label class="block text-[11px] text-[var(--muted)] mb-1">INSTRUCTION / DETAILS</label>
-          <textarea id="editDescInput" rows="2" placeholder="Domino objectives and constraints..."
-            class="w-full px-2.5 py-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] focus:outline-none focus:border-[var(--text)]">${initial.desc || ''}</textarea>
-        </div>
-      </div>
-
-      <div class="flex gap-2 pt-2 border-t border-[var(--rule)]">
-        <button id="cancelEditBtn" class="flex-1 py-2 text-xs font-bold rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] hover:bg-[var(--border)]">
-          CANCEL
-        </button>
-        <button id="confirmEditBtn" class="flex-1 py-2 text-xs font-bold rounded-[2px] bg-[var(--text)] text-[var(--surface)] hover:opacity-90">
-          SAVE SPEC
-        </button>
-      </div>
-    </div>
-  `;
-
-  container.innerHTML = '';
-  container.appendChild(modal);
-
-  const closeModal = () => {
-    container.innerHTML = '';
-  };
-
-  modal.querySelector('#closeEditModalBtn').addEventListener('click', closeModal);
-  modal.querySelector('#cancelEditBtn').addEventListener('click', closeModal);
-
-  modal.querySelector('#confirmEditBtn').addEventListener('click', () => {
-    const title = modal.querySelector('#editTitleInput').value.trim();
-    if (!title) {
-      alert('Domino title is required');
-      return;
+    if (!currentEmergency) {
+      // Check yesterday
+      const yesterday = new Date(activeDateStr + 'T00:00:00');
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().slice(0, 10);
+      if (state.records[yesterdayStr]?.emergency) {
+        playRelayClick();
+        showInAppToast('RULE: Emergency Mode cannot be active 2 consecutive days!', true);
+        return;
+      }
     }
 
-    const payload = {
-      id: initial.id,
-      title,
-      badge: modal.querySelector('#editBadgeInput').value.trim() || 'DOMINO',
-      offset: modal.querySelector('#editOffsetInput').value.trim() || 'Wake + 0:00',
-      normalMins: parseInt(modal.querySelector('#editNormalMinsInput').value, 10) || 60,
-      emergencyMins: parseInt(modal.querySelector('#editEmergencyMinsInput').value, 10) || 30,
-      subtitle: modal.querySelector('#editSubtitleInput').value.trim(),
-      desc: modal.querySelector('#editDescInput').value.trim(),
-      icon: initial.icon || 'document',
-      color: initial.color || 'blue'
+    state.records[activeDateStr].emergency = !currentEmergency;
+    saveState(state);
+    playRelayClick();
+    renderSettingsView(container);
+    showInAppToast(state.records[activeDateStr].emergency ? 'EMERGENCY MODE ACTIVATED (-50% Floors)' : 'Emergency Mode Deactivated');
+  });
+
+  // Add Shield
+  container.querySelector('#btn-add-shield')?.addEventListener('click', () => {
+    const state = getState();
+    state.shields = Math.min(3, (state.shields || 0) + 1);
+    saveState(state);
+    playRelayClick();
+    renderSettingsView(container);
+    showInAppToast(`Shield Added (${state.shields}/3)`);
+  });
+
+  // Reset Blocks to Default
+  container.querySelector('#btn-reset-blocks')?.addEventListener('click', () => {
+    if (confirm('Reset all Domino pillars and targets to factory defaults?')) {
+      saveBlocks(structuredClone(DEFAULT_BLOCKS));
+      playRelayClick();
+      renderSettingsView(container);
+      showInAppToast('Domino pillars reset to default');
+    }
+  });
+
+  // Live auto-save on block input changes
+  container.querySelectorAll('[data-block-id]').forEach(wrapper => {
+    const id = wrapper.getAttribute('data-block-id');
+    const badgeInput = wrapper.querySelector(`[data-edit-badge="${id}"]`);
+    const nameInput = wrapper.querySelector(`[data-edit-name="${id}"]`);
+    const catSelect = wrapper.querySelector(`[data-edit-cat="${id}"]`);
+    const targetInput = wrapper.querySelector(`[data-edit-target="${id}"]`);
+
+    const updateBlock = () => {
+      const blocks = getBlocks();
+      const b = blocks.find(x => x.id === id);
+      if (b) {
+        b.badge = badgeInput.value.trim() || 'DOMINO';
+        b.name = nameInput.value.trim() || 'Unnamed Block';
+        b.category = catSelect.value;
+        const hrs = parseFloat(targetInput.value);
+        if (!isNaN(hrs) && hrs > 0) {
+          b.targetMins = Math.round(hrs * 60);
+        }
+        saveBlocks(blocks);
+      }
     };
 
-    closeModal();
-    onSave(payload);
+    badgeInput?.addEventListener('input', updateBlock);
+    nameInput?.addEventListener('input', updateBlock);
+    catSelect?.addEventListener('change', updateBlock);
+    targetInput?.addEventListener('input', updateBlock);
+  });
+
+  // Export JSON Backup
+  container.querySelector('#btn-backup-json')?.addEventListener('click', () => {
+    playRelayClick();
+    const fullBackup = {
+      state: getState(),
+      blocks: getBlocks(),
+      exportedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(fullBackup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ceed-domino-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showInAppToast('JSON Backup Created');
+  });
+
+  // Import JSON Restore
+  container.querySelector('#file-import-json')?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        if (parsed.state) localStorage.setItem('ceed_v2_state', JSON.stringify(parsed.state));
+        if (parsed.blocks) localStorage.setItem('ceed_v2_blocks', JSON.stringify(parsed.blocks));
+        playRelayClick();
+        showInAppToast('Backup successfully restored!');
+        renderSettingsView(container);
+      } catch (err) {
+        showInAppToast('Invalid JSON backup file.', true);
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  // Factory Reset
+  container.querySelector('#btn-factory-reset')?.addEventListener('click', () => {
+    if (confirm('WARNING: This will wipe all local progress, logs, and streak history. Are you absolutely sure?')) {
+      localStorage.clear();
+      playRelayClick();
+      window.location.hash = '#/';
+      window.location.reload();
+    }
   });
 }

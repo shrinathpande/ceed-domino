@@ -1,477 +1,344 @@
-/**
- * Studio Proctor HUD — CEED 2027 Part B Studio Exam Terminal.
- * Optimized for iPhone 12 & Mobile:
- * 1. Sticky Focus HUD: 120m Proctor Timer & Segmented Q1-Q5 Pills
- * 2. 5 Mandatory Studio Prompts with IIT Bombay evaluation criteria checklists
- * 3. Game Theory Reference Guide & Scoring Matrix
- * 4. Automated 24-minute slot transitions with synthesized audio and haptic feedback
- */
+// src/views/studio-proctor.js
 import partBData from '../data/part_b_questions.json';
-import { ensureDayRecord, setDominoDuration } from '../core/state.js';
-import { toggleDomino } from '../core/streak.js';
-import { getDayIndex, getPhaseLabel, getCurrentDateStr } from '../utils/dates.js';
-import { icon } from '../icons/index.js';
-import { playDing } from '../utils/sound.js';
-import { vibrateTap, vibrateCompletion, showNotification } from '../core/notifications.js';
-import { showToast } from '../components/header.js';
+import { logHours, getDayRecord, saveState, getState } from '../core/state.js';
+import { playRelayClick } from '../utils/sound.js';
+import { getDayIndex, getExamCountdown } from '../utils/dates.js';
 
-let _activeDate = null;
-let _currentTab = 'partB'; // 'partB' | 'gameTheory'
-let _partBSlot = 1; // 1..5
-let _container = null;
-let _onBack = null;
+let activeDayIndex = 0;       // 0 to 86 (Day 1 to 87)
+let activeQuestionIndex = 0;  // 0 to 4 (Q1 to Q5)
+let studioMode = 'DRILL';     // 'DRILL' (24m) or 'EXAM' (120m)
+let showTrendDrawer = false;
+let showChecklistDrawer = true;
+let oledDeskMode = false;
+let timerInterval = null;
+let timerState = null;        // { startedAt, durationSec }
 
-// Proctor Timer State
-let _proctorInterval = null;
-let _proctorTotalSeconds = 120 * 60; // 120 minutes
-let _proctorRemainingSeconds = 120 * 60;
-let _isProctorRunning = false;
-let _lastSlotNotified = 1;
+const DEFAULT_CHECKLIST = [
+  '1. Thumbnail & Perspective Grid (3m)',
+  '2. Primary Form & Human Scale (8m)',
+  '3. Line Weight & Material Shading (8m)',
+  '4. Callouts & Design Notes (5m)'
+];
 
-/** Render the Studio Proctor View */
-export function renderStudioProctor(container, onBack, initialDate) {
-  _container = container;
-  _onBack = onBack;
-  _activeDate = initialDate || _activeDate || getCurrentDateStr();
-
-  drawView();
+function showInAppToast(msg) {
+  let toast = document.getElementById('ceed-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'ceed-toast';
+    toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 text-xs font-mono font-bold tracking-tight border-2 border-white bg-black text-white shadow-2xl transition-all duration-300 pointer-events-none select-none max-w-[90vw] text-center';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 text-xs font-mono font-bold tracking-tight border-2 border-white bg-black text-white shadow-2xl transition-all duration-300 pointer-events-none select-none max-w-[90vw] text-center opacity-100 scale-100';
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.className += ' opacity-0 scale-95';
+  }, 3200);
 }
 
-function getDayInfo(dateStr) {
-  const dayIndex = getDayIndex(dateStr);
-  const dayNumber = Math.max(1, Math.min(88, dayIndex + 1));
-  const partB = partBData.find((p) => p.day === dayNumber) || partBData[0];
+export function renderStudioProctor(container, onBack = null, initialDate = null, questionBank = null) {
+  if (timerInterval) clearInterval(timerInterval);
 
-  return {
-    dayIndex,
-    dayNumber,
-    dateStr,
-    phase: getPhaseLabel(dayIndex),
-    partB,
+  const bank = (questionBank && questionBank.length > 0) ? questionBank : partBData;
+  const todayStr = (typeof initialDate === 'string' && initialDate) ? initialDate : new Date().toISOString().slice(0, 10);
+  const examCountdown = getExamCountdown();
+
+  // If activeDayIndex was not set manually, align with calendar day
+  if (activeDayIndex === 0) {
+    const calcIndex = getDayIndex(todayStr);
+    if (calcIndex >= 0 && calcIndex < 87) {
+      activeDayIndex = calcIndex;
+    }
+  }
+
+  const rawDayData = bank.find(p => p.day === (activeDayIndex + 1)) || bank[activeDayIndex] || bank[0];
+
+  // Map to normalized daySet schema
+  const daySet = {
+    day: rawDayData.day || (activeDayIndex + 1),
+    questions: (rawDayData.questions || [
+      { id: 'q1', code: 'SKETCH', title: rawDayData.title || 'Perspective Storytelling', marks: 20, mins: 24, prompt: rawDayData.prompt || 'Draw a two-point perspective interior view of a busy morning railway tea stall from a low eye level.', trend: rawDayData.examinerAngle || rawDayData.trend || 'Examiners reward foreground-midground-background depth and authentic Indian ergonomic postures.' },
+      { id: 'q2', code: 'PROD', title: 'Industrial Product Concept', marks: 20, mins: 24, prompt: 'Design a modular, spill-proof delivery crate for quick-commerce two-wheeler riders carrying fragile fresh produce.', trend: 'Focus on 3 exploded callouts: latching mechanism, ventilation slots, and one-handed operation.' },
+      { id: 'q3', code: 'VCD', title: 'Visual Communication Campaign', marks: 20, mins: 24, prompt: 'Create a 3-frame storyboard and poster layout for an urban night-walk safety initiative.', trend: 'High-contrast silhouette hierarchy and clear typographic grid win maximum marks.' },
+      { id: 'q4', code: 'ANIM', title: 'Keyframe Character Acting', marks: 20, mins: 24, prompt: 'Sketch 4 sequential keyframes of an exhausted athlete lifting a heavy steel gate.', trend: 'Exaggerate anticipation and weight transfer through spine line-of-action.' },
+      { id: 'q5', code: 'IXD', title: 'Hardware-Software Interface', marks: 20, mins: 24, prompt: 'Design a tactile diagnostic handheld interface for field agricultural soil testing in bright sunlight.', trend: 'Prioritize physical button ergonomics, high-contrast E-ink/AMOLED states, and error recovery.' }
+    ]).map((qItem, idx) => ({
+      id: qItem.id || `q${idx + 1}`,
+      code: qItem.code || (idx === 0 ? 'SKETCH' : idx === 1 ? 'PROD' : idx === 2 ? 'VCD' : idx === 3 ? 'ANIM' : 'IXD'),
+      title: qItem.title || `Part B Challenge ${idx + 1}`,
+      marks: qItem.marks || 20,
+      mins: qItem.mins || 24,
+      prompt: qItem.prompt || qItem.problemStatement || 'Execute the design prompt with high spatial and human ergonomic fidelity.',
+      trend: qItem.trend || qItem.examinerAngle || 'Prioritize speed, primary form, human scale, and functional callouts.'
+    }))
   };
-}
 
-function drawView() {
-  const dayInfo = getDayInfo(_activeDate);
-  const day = ensureDayRecord(_activeDate);
-  const isD3Done = !!day.completed['d3'];
+  const q = daySet.questions[activeQuestionIndex] || daySet.questions[0];
 
-  _container.innerHTML = `
-    <div class="max-w-xl mx-auto px-3 pt-2 space-y-2.5 pb-28 font-sans">
-      <!-- Top Navigation Bar -->
-      <div class="flex items-center justify-between border-b border-[var(--rule)] pb-2 font-mono text-xs">
-        <button id="proctorBackBtn" class="inline-flex items-center gap-1 font-bold text-[var(--chart-accent)] hover:opacity-80 touch-manipulation">
-          <span class="w-3.5 h-3.5">${icon('arrowLeft')}</span>
-          DASHBOARD
+  // Fullscreen OLED Desk Clock Mode for physical paper sketching
+  if (oledDeskMode) {
+    container.innerHTML = `
+      <div class="fixed inset-0 bg-black z-50 flex flex-col justify-between p-6 font-mono text-white select-none">
+        <div class="flex justify-between items-center text-xs text-neutral-400">
+          <span>DAY ${daySet.day} // ${q.code}</span>
+          <button id="btn-exit-oled" class="border border-neutral-700 px-3 py-1.5 text-white active:bg-white active:text-black">EXIT OLED</button>
+        </div>
+        <div class="my-auto text-center">
+          <div id="studio-timer-display" class="text-7xl font-bold tracking-tighter text-[#FF69AF]">24:00</div>
+          <div class="text-xs text-neutral-300 mt-4 max-w-xs mx-auto line-clamp-2">${q.prompt}</div>
+        </div>
+        <button id="btn-complete-sprint" class="w-full h-12 border-2 border-[#FF69AF] text-[#FF69AF] font-bold text-xs uppercase active:bg-[#FF69AF] active:text-black">
+          FINISH & LOG TO STUDY DOMINO
+        </button>
+      </div>
+    `;
+    bindStudioEvents(container, bank, daySet, q, todayStr);
+    startTickerLoop(container);
+    return;
+  }
+
+  container.innerHTML = `
+    <section class="w-full max-w-[390px] mx-auto px-3 pt-2 pb-24 font-mono text-white select-none">
+      <!-- ZONE 1: Sticky Top HUD Bar with Countdown -->
+      <div class="border-2 border-white bg-[#0a0a0a] px-2.5 py-2 flex items-center justify-between gap-1.5 mb-2">
+        <button id="btn-day-cycle" class="border border-neutral-700 px-2 py-1 text-xs font-bold active:bg-white active:text-black truncate" title="Jump to Day">
+          D${String(daySet.day).padStart(2, '0')}/87 ▾
         </button>
 
-        <div class="flex items-center gap-1.5">
-          <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] uppercase tracking-wider">
-            DAY ${dayInfo.dayNumber} OF 87
-          </span>
-          <span class="text-[10px] text-[var(--muted)] hidden sm:inline">${dayInfo.phase}</span>
+        <button id="btn-mode-toggle" class="border border-neutral-700 px-1.5 py-1 text-[10px] text-neutral-300">
+          ${studioMode === 'DRILL' ? '24M DRILL' : '120M EXAM'}
+        </button>
+
+        <button
+          id="studio-exam-countdown"
+          class="text-[10px] font-bold text-white bg-black border border-neutral-700 px-1.5 py-0.5 active:border-[#FF69AF] active:text-[#FF69AF]"
+          title="${examCountdown.detailed}"
+        >
+          ${examCountdown.compact}
+        </button>
+
+        <div id="studio-timer-display" class="text-xs font-bold px-1.5 py-1 border ${timerState ? 'border-[#FF69AF] text-[#FF69AF]' : 'border-neutral-800 text-white'}">
+          ${studioMode === 'DRILL' ? '24:00' : '120:00'}
         </div>
       </div>
 
-      <!-- Mode Selector Tabs (Compact for iPhone 12) -->
-      <nav class="flex border-b border-[var(--rule)] font-mono text-xs" role="tablist">
-        <button data-tab="partB" class="proctor-tab flex-1 py-2 px-2 text-center font-bold border-b-2 transition-colors touch-manipulation ${
-          _currentTab === 'partB'
-            ? 'border-[var(--chart-accent)] text-[var(--text)] bg-[var(--raised)]'
-            : 'border-transparent text-[var(--muted)] hover:text-[var(--text)]'
-        }">
-          STUDIO HUD
-        </button>
-        <button data-tab="gameTheory" class="proctor-tab flex-1 py-2 px-2 text-center font-bold border-b-2 transition-colors touch-manipulation ${
-          _currentTab === 'gameTheory'
-            ? 'border-[var(--chart-accent)] text-[var(--text)] bg-[var(--raised)]'
-            : 'border-transparent text-[var(--muted)] hover:text-[var(--text)]'
-        }">
-          GAME THEORY
-        </button>
-      </nav>
-
-      <!-- Tab Content Area -->
-      <div id="tabContent"></div>
-    </div>
-  `;
-
-  // Bind top nav
-  _container.querySelector('#proctorBackBtn').addEventListener('click', () => {
-    if (_onBack) _onBack();
-  });
-
-  _container.querySelectorAll('.proctor-tab').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      _currentTab = btn.dataset.tab;
-      drawView();
-    });
-  });
-
-  // Render active tab
-  const tabContent = _container.querySelector('#tabContent');
-  if (_currentTab === 'partB') {
-    renderPartBTab(tabContent, dayInfo, isD3Done);
-  } else if (_currentTab === 'gameTheory') {
-    renderGameTheoryTab(tabContent);
-  }
-}
-
-// ----------------------------------------------------------------------
-// TAB 1: PART B STUDIO HUD (FOCUS MODE)
-// ----------------------------------------------------------------------
-function renderPartBTab(container, dayInfo, isD3Done) {
-  const questions = dayInfo.partB?.questions || [];
-  const activeQ = questions.find((q) => q.slot === _partBSlot) || questions[0];
-
-  const currentElapsed = _proctorTotalSeconds - _proctorRemainingSeconds;
-  const currentSlotIndex = Math.min(5, Math.floor(currentElapsed / (24 * 60)) + 1);
-
-  container.innerHTML = `
-    <div class="space-y-2.5">
-      <!-- Sticky Focus HUD: Proctor Clock & Slot Selector -->
-      <div class="sticky top-0 z-20 bg-[var(--ground)] pt-1 pb-2 space-y-2">
-        <!-- 120-Minute Master Proctor Clock Card -->
-        <section class="ledger-card p-3 font-mono shadow-sm">
-          <div class="flex items-center justify-between gap-2">
-            <div>
-              <span class="text-[9px] font-bold uppercase tracking-wider text-[var(--muted)] block">
-                120-MINUTE PROCTOR
-              </span>
-              <div class="text-2xl sm:text-3xl font-black text-[var(--text)] tabular-nums tracking-wide" id="proctorClock">
-                ${formatClock(_proctorRemainingSeconds)}
-              </div>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <button id="toggleProctorBtn" class="px-3 py-1.5 rounded-[2px] font-mono text-xs font-bold border transition-colors touch-manipulation active:scale-95 ${
-                _isProctorRunning
-                  ? 'bg-[var(--raised)] border-[var(--border)] text-[var(--text)]'
-                  : 'bg-[var(--text)] border-[var(--text)] text-[var(--surface)]'
-              }">
-                ${_isProctorRunning ? 'PAUSE' : 'START 120m'}
-              </button>
-              <button id="resetProctorBtn" class="p-1.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)] transition-colors touch-manipulation active:scale-95" title="Reset proctor timer">
-                <span class="w-4 h-4">${icon('timer')}</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 5-Slot Segmented Progress Rail -->
-          <div class="grid grid-cols-5 gap-1 h-1.5 bg-[var(--raised)] rounded-[1px] p-0.5 border border-[var(--border)] mt-2">
-            ${[1, 2, 3, 4, 5].map((s) => {
-              const isPast = currentSlotIndex > s;
-              const isCurrent = currentSlotIndex === s && _isProctorRunning;
-              return `<div class="h-full rounded-[1px] ${
-                isPast
-                  ? 'bg-[var(--text)]'
-                  : isCurrent
-                  ? 'bg-[var(--chart-accent)] animate-pulse'
-                  : 'bg-[var(--border)]'
-              }"></div>`;
-            }).join('')}
-          </div>
-        </section>
-
-        <!-- Segmented Question Pills (Q1 to Q5) -->
-        <div class="grid grid-cols-5 gap-1 font-mono text-xs">
-          ${questions.map((q) => {
-            const isSelected = q.slot === _partBSlot;
-            const isCurrentSlot = currentSlotIndex === q.slot && _isProctorRunning;
-            return `
-              <button data-slot="${q.slot}" class="slot-select-btn py-1.5 px-0.5 text-center rounded-[2px] border transition-all touch-manipulation active:scale-95 ${
-                isSelected
-                  ? 'bg-[var(--text)] border-[var(--text)] text-[var(--surface)] font-bold shadow-sm'
-                  : isCurrentSlot
-                  ? 'bg-[var(--surface)] border-[var(--chart-accent)] text-[var(--chart-accent)] font-bold'
-                  : 'bg-[var(--surface)] border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)]'
-              }">
-                <span class="block text-[11px] font-bold">Q${q.slot}</span>
-                <span class="block text-[8px] opacity-75 uppercase tracking-tighter">24m</span>
-              </button>
-            `;
-          }).join('')}
-        </div>
+      <!-- ZONE 2: 5-Pill Question Deck Switcher -->
+      <div class="grid grid-cols-5 gap-1 mb-2">
+        ${daySet.questions.map((item, idx) => {
+          const isCurrent = idx === activeQuestionIndex;
+          return `
+            <button
+              data-q-idx="${idx}"
+              class="h-11 border-2 ${isCurrent ? 'border-[#FF69AF] bg-[#FF69AF] text-black font-bold' : 'border-neutral-800 bg-[#0a0a0a] text-neutral-300'} flex flex-col items-center justify-center text-[10px] leading-tight"
+            >
+              <span>Q${idx + 1}</span>
+              <span class="text-[9px] truncate max-w-full px-0.5">${item.code}</span>
+            </button>
+          `;
+        }).join('')}
       </div>
 
-      <!-- Active Question Prompt Card -->
-      ${activeQ ? `
-        <article class="ledger-card p-3.5 space-y-3 border-l-4 border-l-[var(--chart-accent)]">
-          <!-- Header -->
-          <div class="flex items-start justify-between gap-2 font-mono">
-            <div>
-              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] uppercase tracking-wider">
-                QUESTION ${activeQ.slot} · 20 MARKS
-              </span>
-              <h3 class="text-sm font-bold text-[var(--text)] mt-1.5 leading-snug">${activeQ.title}</h3>
-            </div>
-            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--muted)] tabular-nums shrink-0">
-              24 MINS
-            </span>
-          </div>
+      <!-- ZONE 3: Single Focused Question Card -->
+      <div class="border-2 border-neutral-800 bg-[#0a0a0a] p-3 mb-2">
+        <div class="flex items-center justify-between text-[10px] text-neutral-400 border-b border-neutral-800 pb-2 mb-2">
+          <span class="text-[#FF69AF] font-bold truncate pr-1">Q${activeQuestionIndex + 1} // ${q.title.toUpperCase()}</span>
+          <span class="shrink-0">${q.marks}M • ${q.mins}m</span>
+        </div>
 
-          <!-- Prompt Stem / Scenario / Task -->
-          <div class="text-xs sm:text-sm text-[var(--text)] leading-relaxed whitespace-pre-line bg-[var(--raised)] p-3 rounded-[2px] border border-[var(--border)] font-sans select-text">
-            ${activeQ.prompt}
-          </div>
-
-          <!-- Official Evaluation Criteria (Checklist for candidate) -->
-          ${activeQ.criteria && activeQ.criteria.length > 0 ? `
-            <div class="space-y-1.5 pt-2 border-t border-[var(--rule)]">
-              <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--muted)] block">
-                IIT BOMBAY EVALUATION CRITERIA (5 MARKS EACH)
-              </span>
-              <div class="space-y-1.5 font-sans text-xs">
-                ${activeQ.criteria.map((c) => `
-                  <div class="flex items-start gap-2 p-2 rounded-[2px] bg-[var(--surface)] border border-[var(--border)]">
-                    <span class="w-3.5 h-3.5 text-[var(--chart-accent)] shrink-0 mt-0.5">${icon('check')}</span>
-                    <span class="text-[var(--text)] text-[11px] leading-relaxed">${c}</span>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          ` : ''}
-
-          <!-- Touch-friendly Prev / Next Slot Controls -->
-          <div class="flex items-center justify-between pt-2 border-t border-[var(--rule)] font-mono text-xs">
-            <button id="prevSlotBtn" class="px-2.5 py-1.5 rounded-[2px] border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--raised)] active:scale-95 transition-all text-[11px] font-bold ${
-              _partBSlot <= 1 ? 'opacity-30 pointer-events-none' : ''
-            }">
-              ← PREV Q
-            </button>
-            <span class="text-[10px] font-bold text-[var(--muted)]">SLOT ${_partBSlot} OF 5</span>
-            <button id="nextSlotBtn" class="px-2.5 py-1.5 rounded-[2px] border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--raised)] active:scale-95 transition-all text-[11px] font-bold ${
-              _partBSlot >= 5 ? 'opacity-30 pointer-events-none' : ''
-            }">
-              NEXT Q →
-            </button>
-          </div>
-        </article>
-      ` : ''}
-
-      <!-- Complete Session Action Button -->
-      <button id="completeStudioBtn" class="w-full py-3 rounded-[2px] bg-[var(--text)] hover:opacity-90 text-[var(--surface)] font-mono text-xs font-bold tracking-wider uppercase transition-transform active:scale-[0.99] touch-manipulation flex items-center justify-center gap-2">
-        <span class="w-4 h-4">${icon('check')}</span>
-        ${isD3Done ? 'DOMINO 3 COMPLETED' : 'COMPLETE 120m STUDIO SESSION'}
-      </button>
-    </div>
-  `;
-
-  // Bind slot buttons
-  container.querySelectorAll('.slot-select-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      vibrateTap();
-      _partBSlot = parseInt(btn.dataset.slot, 10);
-      drawView();
-    });
-  });
-
-  const prevBtn = container.querySelector('#prevSlotBtn');
-  if (prevBtn) {
-    prevBtn.addEventListener('click', () => {
-      if (_partBSlot > 1) {
-        vibrateTap();
-        _partBSlot--;
-        drawView();
-      }
-    });
-  }
-
-  const nextBtn = container.querySelector('#nextSlotBtn');
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-      if (_partBSlot < 5) {
-        vibrateTap();
-        _partBSlot++;
-        drawView();
-      }
-    });
-  }
-
-  // Bind Proctor Clock Controls
-  const toggleBtn = container.querySelector('#toggleProctorBtn');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      vibrateTap();
-      if (_isProctorRunning) {
-        stopProctorClock();
-      } else {
-        startProctorClock();
-      }
-      drawView();
-    });
-  }
-
-  const resetBtn = container.querySelector('#resetProctorBtn');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', () => {
-      if (confirm('Reset the 120-minute Studio Proctor timer back to 02:00:00?')) {
-        stopProctorClock();
-        _proctorRemainingSeconds = _proctorTotalSeconds;
-        _lastSlotNotified = 1;
-        drawView();
-      }
-    });
-  }
-
-  // Bind Complete Session Button
-  const completeBtn = container.querySelector('#completeStudioBtn');
-  if (completeBtn) {
-    completeBtn.addEventListener('click', () => {
-      stopProctorClock();
-      const day = ensureDayRecord(_activeDate);
-      if (!day.completed['d3']) {
-        toggleDomino('d3', _activeDate);
-      }
-      const elapsedMins = Math.max(1, Math.round((_proctorTotalSeconds - _proctorRemainingSeconds) / 60));
-      const loggedMins = elapsedMins >= 10 ? elapsedMins : 120;
-      setDominoDuration('d3', _activeDate, loggedMins);
-      playDing();
-      vibrateCompletion();
-      showToast(`Domino 3 Completed! (${loggedMins}m logged)`, 'success');
-      setTimeout(() => {
-        if (_onBack) _onBack();
-      }, 500);
-    });
-  }
-}
-
-// ----------------------------------------------------------------------
-// TAB 2: GAME THEORY BLUEPRINT (COMPACT FOR MOBILE)
-// ----------------------------------------------------------------------
-function renderGameTheoryTab(container) {
-  container.innerHTML = `
-    <div class="space-y-3 font-sans text-xs">
-      <article class="ledger-card p-3.5 space-y-2.5">
-        <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--chart-accent)] block">
-          MATHEMATICAL BLUEPRINT: 24m × 5 QUESTIONS
-        </span>
-        <h3 class="text-sm font-bold text-[var(--text)] font-mono">
-          Strict 24-Minute Execution Protocol
-        </h3>
-        <p class="text-[var(--muted)] leading-relaxed">
-          Part B carries 100 marks across 5 questions. Enforce strict 24-minute boundaries:
+        <p class="text-xs leading-relaxed text-white font-sans mb-3">
+          ${q.prompt}
         </p>
 
-        <div class="space-y-1.5 pt-1 font-mono text-[11px]">
-          <div class="flex items-center justify-between p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <span class="text-[var(--muted)]">00–24m</span>
-            <span class="font-bold text-[var(--text)]">Q1: Sketching (POV, Tone)</span>
-            <span class="text-[var(--chart-accent)] font-bold">20m</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <span class="text-[var(--muted)]">24–48m</span>
-            <span class="font-bold text-[var(--text)]">Q2: Creativity (4-Frames)</span>
-            <span class="text-[var(--chart-accent)] font-bold">20m</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <span class="text-[var(--muted)]">48–72m</span>
-            <span class="font-bold text-[var(--text)]">Q3: Visual Icons (4 B&W)</span>
-            <span class="text-[var(--chart-accent)] font-bold">20m</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <span class="text-[var(--muted)]">72–96m</span>
-            <span class="font-bold text-[var(--text)]">Q4: Form 3D Product</span>
-            <span class="text-[var(--chart-accent)] font-bold">20m</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <span class="text-[var(--muted)]">96–120m</span>
-            <span class="font-bold text-[var(--text)]">Q5: Problem ID & Solutions</span>
-            <span class="text-[var(--chart-accent)] font-bold">20m</span>
-          </div>
+        <!-- Collapsible Trend Drawer -->
+        <div class="border border-neutral-800 bg-black mb-2">
+          <button id="btn-toggle-trend" class="w-full px-2.5 py-2 text-left text-[11px] flex justify-between items-center text-neutral-300">
+            <span>GAME THEORY & EXAMINER TREND</span>
+            <span>${showTrendDrawer ? '−' : '+'}</span>
+          </button>
+          ${showTrendDrawer ? `
+            <div class="px-2.5 pb-2.5 text-[11px] text-neutral-400 border-t border-neutral-900 pt-2 leading-relaxed">
+              ${q.trend}
+            </div>
+          ` : ''}
         </div>
-      </article>
 
-      <article class="ledger-card p-3.5 space-y-2 font-mono">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] block">
-          IIT BOMBAY EVALUATION CRITERIA MATRIX
-        </span>
-        <div class="space-y-1.5 text-xs">
-          <div class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <strong class="text-[var(--text)] block text-[11px] mb-0.5">Q1 Sketching (20m):</strong>
-            <span class="text-[var(--muted)] text-[10px] font-sans">POV adherence (5m) · Proportions (5m) · Line-weight (5m) · Lighting (5m)</span>
-          </div>
-          <div class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <strong class="text-[var(--text)] block text-[11px] mb-0.5">Q2 Creativity (20m):</strong>
-            <span class="text-[var(--muted)] text-[10px] font-sans">Originality (5m) · Stimulus twist (5m) · Narrative punch (5m) · Witty title (5m)</span>
-          </div>
-          <div class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <strong class="text-[var(--text)] block text-[11px] mb-0.5">Q3 Visual Sensitivity (20m):</strong>
-            <span class="text-[var(--muted)] text-[10px] font-sans">System consistency (5m) · Semantic legibility (5m) · Figure-ground (5m) · Edges (5m)</span>
-          </div>
-          <div class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <strong class="text-[var(--text)] block text-[11px] mb-0.5">Q4 Form Sensitivity (20m):</strong>
-            <span class="text-[var(--muted)] text-[10px] font-sans">Form DNA (5m) · Function synthesis (5m) · 3D shading (5m) · Parting lines (5m)</span>
-          </div>
-          <div class="p-2 rounded-[2px] bg-[var(--raised)] border border-[var(--border)]">
-            <strong class="text-[var(--text)] block text-[11px] mb-0.5">Q5 Problem ID (20m):</strong>
-            <span class="text-[var(--muted)] text-[10px] font-sans">Depth & empathy (5m) · HMW framing (5m) · Ingenuity (5m) · Visual callouts (5m)</span>
-          </div>
+        <!-- Collapsible Drawing Checklist -->
+        <div class="border border-neutral-800 bg-black">
+          <button id="btn-toggle-checklist" class="w-full px-2.5 py-2 text-left text-[11px] flex justify-between items-center text-neutral-300">
+            <span>24-MINUTE EXECUTION CHECKLIST</span>
+            <span>${showChecklistDrawer ? '−' : '+'}</span>
+          </button>
+          ${showChecklistDrawer ? `
+            <div class="px-2.5 pb-2.5 pt-1 border-t border-neutral-900 flex flex-col gap-1.5">
+              ${DEFAULT_CHECKLIST.map(step => `
+                <label class="flex items-center gap-2 text-[11px] text-neutral-300 py-0.5 cursor-pointer">
+                  <input type="checkbox" class="accent-[#FF69AF] w-4 h-4 cursor-pointer" />
+                  <span>${step}</span>
+                </label>
+              `).join('')}
+            </div>
+          ` : ''}
         </div>
-      </article>
-    </div>
+      </div>
+
+      <!-- ZONE 4: Thumb-Zone Action Bar & Direct Study Domino Logger -->
+      <div class="grid grid-cols-2 gap-2 mb-2">
+        <button
+          id="btn-start-stop"
+          class="h-12 border-2 ${timerState ? 'border-[#FF69AF] bg-[#FF69AF] text-black' : 'border-white bg-white text-black'} font-bold text-xs uppercase active:scale-95 transition-transform"
+        >
+          ${timerState ? 'STOP SPRINT' : 'START TIMER'}
+        </button>
+
+        <button
+          id="btn-oled-mode"
+          class="h-12 border-2 border-neutral-700 bg-[#0a0a0a] text-white font-bold text-xs uppercase active:bg-white active:text-black"
+        >
+          OLED DESK CLOCK
+        </button>
+      </div>
+
+      <!-- Direct Study / Paperwork Domino Sync Bar -->
+      <div class="border-2 border-neutral-800 bg-[#0a0a0a] p-2.5">
+        <div class="text-[10px] text-neutral-400 uppercase mb-2">
+          LOG PART B SESSION DIRECTLY TO STUDY / PAPERWORK DOMINO:
+        </div>
+        <div class="grid grid-cols-3 gap-1.5">
+          <button data-log-studio="30" class="h-11 border border-neutral-700 text-xs font-bold active:bg-[#FF69AF] active:text-black">+30M STUDY</button>
+          <button data-log-studio="60" class="h-11 border border-neutral-700 text-xs font-bold active:bg-[#FF69AF] active:text-black">+1H STUDY</button>
+          <button data-log-studio="120" class="h-11 border border-[#FF69AF] text-[#FF69AF] text-xs font-bold active:bg-[#FF69AF] active:text-black">+2H SPRINT</button>
+        </div>
+      </div>
+    </section>
   `;
+
+  bindStudioEvents(container, bank, daySet, q, todayStr);
+  startTickerLoop(container);
 }
 
-// ----------------------------------------------------------------------
-// PROCTOR TIMER ENGINE
-// ----------------------------------------------------------------------
-function startProctorClock() {
-  if (_proctorInterval) clearInterval(_proctorInterval);
-  _isProctorRunning = true;
-
-  _proctorInterval = setInterval(() => {
-    if (_proctorRemainingSeconds > 0) {
-      _proctorRemainingSeconds--;
-
-      // Check for 24-minute slot transitions: 96m left, 72m left, 48m left, 24m left, 0m left
-      const elapsed = _proctorTotalSeconds - _proctorRemainingSeconds;
-      const currentSlot = Math.min(5, Math.floor(elapsed / (24 * 60)) + 1);
-
-      if (currentSlot !== _lastSlotNotified && elapsed % (24 * 60) === 0) {
-        _lastSlotNotified = currentSlot;
-        _partBSlot = currentSlot;
-        playDing();
-        vibrateCompletion();
-        showNotification(`Slot ${currentSlot} Started!`, {
-          body: `Switch to Question ${currentSlot} now. 24 minutes on clock.`,
-        });
-        showToast(`🔔 Slot ${currentSlot} Started! Switch questions now.`, 'warning');
-        drawView();
-      }
-
-      // Update timer display without full re-render
-      const clockEl = document.querySelector('#proctorClock');
-      if (clockEl) {
-        clockEl.textContent = formatClock(_proctorRemainingSeconds);
-      }
-    } else {
-      stopProctorClock();
-      playDing();
-      vibrateCompletion();
-      showNotification('120-Minute Studio Session Finished!', {
-        body: 'Studio time complete. Great work.',
-      });
-      showToast('120-Minute Studio Time Expired!', 'info');
-      const day = ensureDayRecord(_activeDate);
-      if (!day.completed['d3']) {
-        toggleDomino('d3', _activeDate);
-      }
-      setDominoDuration('d3', _activeDate, 120);
-    }
-  }, 1000);
+function startTickerLoop(container) {
+  if (!timerState) return;
+  const updateDisplay = () => {
+    const el = container.querySelector('#studio-timer-display');
+    if (!el) return;
+    const elapsedSec = Math.floor((Date.now() - timerState.startedAt) / 1000);
+    const remainingSec = Math.max(0, timerState.durationSec - elapsedSec);
+    const m = String(Math.floor(remainingSec / 60)).padStart(2, '0');
+    const s = String(remainingSec % 60).padStart(2, '0');
+    el.textContent = `${m}:${s}`;
+  };
+  updateDisplay();
+  timerInterval = setInterval(updateDisplay, 1000);
 }
 
-function stopProctorClock() {
-  if (_proctorInterval) {
-    clearInterval(_proctorInterval);
-    _proctorInterval = null;
+function bindStudioEvents(container, questionBank, daySet, q, todayStr) {
+  container.querySelector('#studio-exam-countdown')?.addEventListener('click', () => {
+    const cd = getExamCountdown();
+    playRelayClick();
+    showInAppToast(cd.detailed);
+  });
+
+  // Switch Q1-Q5 tabs
+  container.querySelectorAll('[data-q-idx]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeQuestionIndex = Number(btn.getAttribute('data-q-idx'));
+      playRelayClick();
+      renderStudioProctor(container, null, todayStr, questionBank);
+    });
+  });
+
+  // Cycle Day 1-87
+  const dayBtn = container.querySelector('#btn-day-cycle');
+  if (dayBtn) {
+    dayBtn.addEventListener('click', () => {
+      const input = prompt('Jump to Studio Day (1 - 87):', String(activeDayIndex + 1));
+      const num = Number(input);
+      if (num >= 1 && num <= 87) {
+        activeDayIndex = num - 1;
+        playRelayClick();
+        renderStudioProctor(container, null, todayStr, questionBank);
+      }
+    });
   }
-  _isProctorRunning = false;
-}
 
-function formatClock(totalSeconds) {
-  const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-  const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-  const s = String(totalSeconds % 60).padStart(2, '0');
-  return `${h}:${m}:${s}`;
+  // Toggle 24m Drill vs 120m Exam
+  const modeBtn = container.querySelector('#btn-mode-toggle');
+  if (modeBtn) {
+    modeBtn.addEventListener('click', () => {
+      studioMode = studioMode === 'DRILL' ? 'EXAM' : 'DRILL';
+      timerState = null;
+      playRelayClick();
+      renderStudioProctor(container, null, todayStr, questionBank);
+    });
+  }
+
+  // Expand/collapse Trend & Checklist drawers
+  container.querySelector('#btn-toggle-trend')?.addEventListener('click', () => {
+    showTrendDrawer = !showTrendDrawer;
+    playRelayClick();
+    renderStudioProctor(container, null, todayStr, questionBank);
+  });
+
+  container.querySelector('#btn-toggle-checklist')?.addEventListener('click', () => {
+    showChecklistDrawer = !showChecklistDrawer;
+    playRelayClick();
+    renderStudioProctor(container, null, todayStr, questionBank);
+  });
+
+  // Start / Stop Sprint Timer
+  container.querySelector('#btn-start-stop')?.addEventListener('click', () => {
+    if (timerState) {
+      const elapsedMins = Math.max(1, Math.round((Date.now() - timerState.startedAt) / 60000));
+      timerState = null;
+      logHours(todayStr, 'd2', elapsedMins, `Part B Studio (${q.code})`);
+      showInAppToast(`Logged ${elapsedMins}m to Domino 2`);
+    } else {
+      timerState = {
+        startedAt: Date.now(),
+        durationSec: studioMode === 'DRILL' ? 24 * 60 : 120 * 60
+      };
+      playRelayClick();
+    }
+    renderStudioProctor(container, null, todayStr, questionBank);
+  });
+
+  // OLED Desk Clock Toggle
+  container.querySelector('#btn-oled-mode')?.addEventListener('click', () => {
+    if (!timerState) {
+      timerState = {
+        startedAt: Date.now(),
+        durationSec: studioMode === 'DRILL' ? 24 * 60 : 120 * 60
+      };
+    }
+    oledDeskMode = true;
+    playRelayClick();
+    renderStudioProctor(container, null, todayStr, questionBank);
+  });
+
+  container.querySelector('#btn-exit-oled')?.addEventListener('click', () => {
+    oledDeskMode = false;
+    playRelayClick();
+    renderStudioProctor(container, null, todayStr, questionBank);
+  });
+
+  container.querySelector('#btn-complete-sprint')?.addEventListener('click', () => {
+    const elapsedMins = timerState
+      ? Math.max(24, Math.round((Date.now() - timerState.startedAt) / 60000))
+      : 24;
+    timerState = null;
+    oledDeskMode = false;
+    logHours(todayStr, 'd2', elapsedMins, `Part B Studio (${q.code})`);
+    showInAppToast(`Finished! Logged ${elapsedMins}m to Domino 2`);
+    renderStudioProctor(container, null, todayStr, questionBank);
+  });
+
+  // Quick-log Studio minutes directly into Study Domino ('d2')
+  container.querySelectorAll('[data-log-studio]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mins = Number(btn.getAttribute('data-log-studio'));
+      logHours(todayStr, 'd2', mins, `Part B Studio (${q.code})`);
+      showInAppToast(`+${mins}m logged to Domino 2`);
+      renderStudioProctor(container, null, todayStr, questionBank);
+    });
+  });
 }

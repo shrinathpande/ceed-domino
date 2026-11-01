@@ -59,13 +59,14 @@
   }
 
   /* Full Emergency Mode: Red industrial alert shift */
+  html.emergency-mode,
   body.emergency-active-theme {
-    --ground: #1a0808 !important;
-    --surface: #260f0f !important;
-    --raised: #361717 !important;
-    --border: #522020 !important;
-    --rule: #441717 !important;
-    --control: #6b2828 !important;
+    --ground: #120404 !important;
+    --surface: #1f0808 !important;
+    --raised: #2a0b0b !important;
+    --border: #4d1515 !important;
+    --rule: #3b1010 !important;
+    --control: #5c1a1a !important;
     --text: #fee2e2 !important;
     --muted: #fca5a5 !important;
     --accent: #ef4444 !important;
