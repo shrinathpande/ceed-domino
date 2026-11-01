@@ -866,4 +866,37 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 16. Emil Design Engineering Polish: Calendar Timezone Fix, Below-Card Active Timer & Stacked Studio Architecture
+
+### 16.1 Calendar Local Date Bug Resolution (`src/utils/dates.js` & `src/views/dashboard.js`)
+- Fixed UTC date shift bug where `new Date('YYYY-MM-DD').toISOString()` converted local Indian Standard Time (UTC+5:30) midnight to previous day's UTC date.
+- Implemented `formatDateLocal()` strictly extracting local year, month, and day for all date calculations and comparisons.
+- Added explicit visual `Today` indicator dot on the circular day button and header metadata row with "Jump to Today →" action button.
+
+### 16.2 Closed-Card Active Timer Module (`src/views/dashboard.js`)
+- Solved closed-card timer visibility: when a domino session timer is active, a dedicated **Active Session Module** renders directly below the closed card.
+- Features real-time elapsed timer (`mm:ss`), pulsing emerald status dot, and dedicated `Stop & Log` quick-action button without needing to expand the card drawer.
+- Added real-time progress bar along the bottom perimeter of the closed card face.
+
+### 16.3 Fluid Tactile Time Slider & Presets (`src/views/dashboard.js`)
+- Replaced primitive static slot boxes with a modern, smooth range scrubber (0.0h to 6.0h at 15-minute intervals).
+- Integrated quick preset chips: `Reset (0h)`, `Target Floor`, `+30m`, `+1.0h`, and `Max (4h)`.
+- Stepper buttons (`–15m` / `+15m`) with immediate tabular readout.
+
+### 16.4 Status Indicator Re-Positioning & Compact Hierarchy (`src/components/status-pill.js` & `src/views/dashboard.js`)
+- Moved status indicator **below the domino title text** for immediate task-first visual scannability.
+- Added compact status pill variant (`renderStatusPill(status, isCompact=true)`) with refined 11px SVG glyphs and typography.
+
+### 16.5 Glitch-Free Stats Matrix (`src/views/stats.js`)
+- Replaced non-existent Tailwind utility class with explicit inline CSS Grid: `style="display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 4.5px;"`.
+- Ensured glitch-free 13-column 87-day heatmap matrix across all mobile viewports with interactive cell tap and HUD readout.
+
+### 16.6 Stacked Studio Proctor Architecture (`src/views/studio-proctor.js`)
+- Replaced cramped 82%/18% horizontal side-by-side flex split with an ergonomic vertical stack:
+  - **Card 1 (Top)**: Full-width Question Prompt with scenario, category, marks/time, and mandatory deliverables well.
+  - **Card 2 (Directly Below)**: Examiner Strategy callout well & 24-minute pacing checklist with interactive checkboxes.
+  - **Bottom Action Bar**: High-contrast 24:00 timer, OLED fullscreen mode, and Start/Pause drill toggle.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

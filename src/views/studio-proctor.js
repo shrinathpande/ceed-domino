@@ -6,7 +6,6 @@ import { startLockScreenTimer, stopLockScreenTimer } from '../utils/lockscreen-t
 
 let studioDayIndex = 10; // 0-indexed (Day 11 default)
 let activeQIndex = 0;
-let activePane = 'PROMPT'; // 'PROMPT' | 'STRATEGY'
 let isOledFullscreen = false;
 let drillRunning = false;
 let drillSecondsRemaining = 24 * 60;
@@ -90,13 +89,11 @@ export function renderStudioProctor(container) {
     return;
   }
 
-  const isPromptActive = activePane === 'PROMPT';
-
   container.innerHTML = `
-    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-28 select-none">
+    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-28 space-y-3.5 select-none">
 
       <!-- Day Stepper & Q1-Q5 Pill Switcher -->
-      <div class="flex items-center justify-between gap-2 mb-4">
+      <div class="flex items-center justify-between gap-2">
         <div class="recessed-well !py-2 !px-3 flex items-center gap-3">
           <button type="button" id="studio-prev-day" class="text-[#A1A1AA] hover:text-white btn-tactile text-sm" aria-label="Previous Day">‹</button>
           <span class="text-[13px] font-medium text-[#F4F4F6] tabular-nums">Day ${studioDayIndex + 1} of 87</span>
@@ -118,122 +115,75 @@ export function renderStudioProctor(container) {
         </div>
       </div>
 
-      <!-- Reference 8 (Jose Maria UI): Asymmetric Horizontal Peek Card Layout (82% / 18%) -->
-      <div class="flex items-stretch gap-2.5 h-[470px] mb-4">
-        
-        <!-- Left Pane: Question Prompt -->
-        <div
-          id="pane-prompt"
-          style="flex: ${isPromptActive ? '82' : '18'};"
-          class="transition-all duration-300 ease-out overflow-hidden ${
-            isPromptActive
-              ? 'bento-card flex flex-col justify-between'
-              : 'rounded-[26px] bg-[#2A282E] border border-[#3A3740] flex items-center justify-center cursor-pointer'
-          }"
-        >
-          ${isPromptActive ? `
-            <div class="overflow-y-auto pr-1">
-              <div class="flex items-center justify-between gap-2 mb-3">
-                <span class="status-pill-beveled pill-inprogress">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 15 15 9"/><path d="M10 9h5v5"/></svg>
-                  <span>${q.marks || 20} Marks • ${q.timeMins || 24}m</span>
-                </span>
-                <span class="text-[11px] font-semibold tracking-[0.06em] uppercase text-[#71717A]">${q.shortTitle || q.category || 'SKETCH'}</span>
-              </div>
-
-              <h2 class="text-[19px] font-semibold text-[#F4F4F6] leading-snug mb-3">
-                ${q.title || 'Part B Studio Problem'}
-              </h2>
-
-              <p class="text-[13.5px] text-[#D4D4D8] leading-[1.58] mb-3.5">
-                ${scenario}
-              </p>
-
-              <!-- Structured Task Callout Well -->
-              <div class="recessed-well border-l-2 !border-l-[#C8F560]">
-                <div class="text-[11px] font-semibold uppercase tracking-wider text-[#C8F560] mb-1">Mandatory Deliverables:</div>
-                <p class="text-[13px] text-[#A1A1AA] leading-relaxed">
-                  ${task}
-                </p>
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between pt-3 border-t border-white/[0.06] text-[12px] text-[#71717A]">
-              <span>Standard 24m IIT Slot</span>
-              <button type="button" id="jump-strategy" class="text-[#F4F4F6] font-medium hover:underline flex items-center gap-1">
-                Strategy & checklist →
-              </button>
-            </div>
-          ` : `
-            <span class="-rotate-90 whitespace-nowrap text-[14px] font-medium text-[#E4E4E7] tracking-tight">
-              Question Prompt
-            </span>
-          `}
+      <!-- CARD 1: Question Prompt (Clean Stacked Card) -->
+      <section class="bento-card">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span class="status-pill-beveled pill-inprogress !py-1 !px-2.5 !text-[11.5px]">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 15 15 9"/><path d="M10 9h5v5"/></svg>
+            <span>${q.marks || 20} Marks • ${q.timeMins || 24}m</span>
+          </span>
+          <span class="text-[11px] font-semibold tracking-wider uppercase text-[#71717A]">
+            ${q.shortTitle || q.category || 'SKETCH'}
+          </span>
         </div>
 
-        <!-- Right Pane: Examiner Strategy & 24m Pacing Checklist (Reference 8 Warm Stone Peek Tab) -->
-        <div
-          id="pane-strategy"
-          style="flex: ${!isPromptActive ? '82' : '18'};"
-          class="transition-all duration-300 ease-out overflow-hidden ${
-            !isPromptActive
-              ? 'bento-card flex flex-col justify-between'
-              : 'rounded-[26px] bg-[#2A282E] border border-[#3A3740] flex items-center justify-center cursor-pointer hover:bg-[#323038]'
-          }"
-        >
-          ${!isPromptActive ? `
-            <div class="overflow-y-auto pr-1">
-              <div class="flex items-center justify-between mb-3">
-                <span class="status-pill-beveled pill-pending">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                  <span>Examiner Strategy</span>
-                </span>
-                <span class="text-[11px] text-[#71717A]">Rubric Protocol</span>
-              </div>
+        <h2 class="text-[19px] font-semibold text-[#F4F4F6] leading-snug mb-2.5">
+          ${q.title || 'Part B Studio Problem'}
+        </h2>
 
-              <div class="recessed-well mb-3.5 border-l-2 !border-l-[#F59E0B]">
-                <div class="text-[12px] font-semibold text-[#F4F4F6] mb-1">High-Scoring Angle</div>
-                <p class="text-[13px] text-[#A1A1AA] leading-relaxed">
-                  ${strategy}
-                </p>
-              </div>
+        <p class="text-[13.5px] text-[#D4D4D8] leading-[1.58] mb-3.5">
+          ${scenario}
+        </p>
 
-              <div class="text-[11px] font-semibold uppercase tracking-wider text-[#71717A] mb-2">24-Minute Pacing Protocol</div>
-              <div class="space-y-2">
-                ${[
-                  '1. 3-Min Thumbnail & Perspective Grid',
-                  '2. Primary Form & Human Scale (8m)',
-                  '3. Line Weight Hierarchy & Shadows (8m)',
-                  '4. Annotated Callouts & Details (5m)'
-                ].map(step => `
-                  <label class="recessed-well !py-2.5 !px-3 flex items-center gap-2.5 text-[13px] text-[#E4E4E7] cursor-pointer">
-                    <input type="checkbox" class="w-4 h-4 accent-[#C8F560] rounded" />
-                    <span>${step}</span>
-                  </label>
-                `).join('')}
-              </div>
-            </div>
+        <!-- Structured Task Callout Well -->
+        <div class="recessed-well border-l-2 !border-l-[#C8F560]">
+          <div class="text-[10.5px] font-bold uppercase tracking-wider text-[#C8F560] mb-1">Mandatory Deliverables:</div>
+          <p class="text-[13px] text-[#A1A1AA] leading-relaxed">
+            ${task}
+          </p>
+        </div>
+      </section>
 
-            <div class="flex items-center justify-between pt-3 border-t border-white/[0.06] text-[12px] text-[#71717A]">
-              <span>Rubric Check</span>
-              <button type="button" id="jump-prompt" class="text-[#F4F4F6] font-medium hover:underline flex items-center gap-1">
-                ← Prompt tab
-              </button>
-            </div>
-          ` : `
-            <span class="-rotate-90 whitespace-nowrap text-[14px] font-medium text-[#E4E4E7] tracking-tight">
-              Strategy & Checklist
-            </span>
-          `}
+      <!-- CARD 2 (Right Below It): Strategy & 24m Pacing Checklist -->
+      <section class="bento-card">
+        <div class="flex items-center justify-between mb-3">
+          <span class="status-pill-beveled pill-pending !py-1 !px-2.5 !text-[11.5px]">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Examiner Strategy & Rubric</span>
+          </span>
+          <span class="text-[11px] text-[#71717A]">IIT Bombay</span>
         </div>
 
-      </div>
+        <div class="recessed-well mb-3.5 border-l-2 !border-l-[#F59E0B]">
+          <div class="text-[11.5px] font-semibold text-[#F4F4F6] mb-1">High-Scoring Angle</div>
+          <p class="text-[12.5px] text-[#A1A1AA] leading-relaxed">
+            ${strategy}
+          </p>
+        </div>
 
-      <!-- Reference 7: Recessed Bottom Scheduler Bar -->
+        <div class="text-[11px] font-semibold uppercase tracking-wider text-[#71717A] mb-2">
+          24-Minute Pacing Protocol (Checklist)
+        </div>
+        <div class="space-y-2">
+          ${[
+            '1. 3-Min Thumbnail & Perspective Horizon (0–3m)',
+            '2. Primary Form & Human Scale (3–11m)',
+            '3. Line Weight Hierarchy & Cast Shadows (11–19m)',
+            '4. Annotated Callouts & Functional Detailing (19–24m)'
+          ].map(step => `
+            <label class="recessed-well !py-2.5 !px-3 flex items-center gap-2.5 text-[12.5px] text-[#E4E4E7] cursor-pointer hover:bg-white/[0.02]">
+              <input type="checkbox" class="w-4 h-4 accent-[#C8F560] rounded cursor-pointer" />
+              <span>${step}</span>
+            </label>
+          `).join('')}
+        </div>
+      </section>
+
+      <!-- Bottom Scheduler Action Bar -->
       <div class="recessed-well !rounded-[24px] !p-3.5 flex items-center justify-between gap-2">
         <div class="flex items-baseline gap-2 pl-1">
           <span class="text-[28px] font-semibold text-[#F4F4F6] tabular-nums leading-none">${timeStr}</span>
-          <span class="text-[12px] text-[#71717A]">countdown</span>
+          <span class="text-[12px] text-[#71717A]">timer</span>
         </div>
 
         <div class="flex items-center gap-2">
@@ -262,52 +212,39 @@ export function renderStudioProctor(container) {
     </div>
   `;
 
-  container.querySelector('#pane-prompt')?.addEventListener('click', () => {
-    if (activePane !== 'PROMPT') {
-      activePane = 'PROMPT';
-      playRelayClick();
-      renderStudioProctor(container);
-    }
-  });
-  container.querySelector('#pane-strategy')?.addEventListener('click', () => {
-    if (activePane !== 'STRATEGY') {
-      activePane = 'STRATEGY';
-      playRelayClick();
-      renderStudioProctor(container);
-    }
-  });
-  container.querySelector('#jump-strategy')?.addEventListener('click', e => {
-    e.stopPropagation();
-    activePane = 'STRATEGY';
-    playRelayClick();
-    renderStudioProctor(container);
-  });
-  container.querySelector('#jump-prompt')?.addEventListener('click', e => {
-    e.stopPropagation();
-    activePane = 'PROMPT';
-    playRelayClick();
-    renderStudioProctor(container);
-  });
   container.querySelectorAll('[data-q-idx]').forEach(btn => {
     btn.addEventListener('click', () => {
       activeQIndex = parseInt(btn.dataset.qIdx, 10);
+      drillSecondsRemaining = 24 * 60;
+      drillRunning = false;
+      if (drillInterval) clearInterval(drillInterval);
+      stopLockScreenTimer();
       playRelayClick();
       renderStudioProctor(container);
     });
   });
+
   container.querySelector('#studio-prev-day')?.addEventListener('click', () => {
     studioDayIndex = Math.max(0, studioDayIndex - 1);
     drillSecondsRemaining = 24 * 60;
+    drillRunning = false;
+    if (drillInterval) clearInterval(drillInterval);
+    stopLockScreenTimer();
     playRelayClick();
     renderStudioProctor(container);
   });
+
   container.querySelector('#studio-next-day')?.addEventListener('click', () => {
     const total = daysList.length || 87;
     studioDayIndex = Math.min(total - 1, studioDayIndex + 1);
     drillSecondsRemaining = 24 * 60;
+    drillRunning = false;
+    if (drillInterval) clearInterval(drillInterval);
+    stopLockScreenTimer();
     playRelayClick();
     renderStudioProctor(container);
   });
+
   container.querySelector('#btn-oled-mode')?.addEventListener('click', () => {
     isOledFullscreen = true;
     playRelayClick();

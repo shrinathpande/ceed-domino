@@ -22,22 +22,25 @@ export function getTotalDays() {
   return Math.round((end - start) / 86400000) + 1;
 }
 
+/** Format Date object to local YYYY-MM-DD */
+export function formatDateLocal(d) {
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 /** Get date string (YYYY-MM-DD) from day offset index */
 export function getDateStrFromOffset(dayIndex) {
   const start = getStartDate();
   const d = new Date(start);
   d.setDate(d.getDate() + dayIndex);
-  return d.toISOString().split('T')[0];
+  return formatDateLocal(d);
 }
 
 /** Get current date string clamped to start/end range */
 export function getCurrentDateStr() {
-  const now = new Date();
-  const yyyy = now.getFullYear();
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const dd = String(now.getDate()).padStart(2, '0');
-  const formatted = `${yyyy}-${mm}-${dd}`;
-
+  const formatted = formatDateLocal(new Date());
   const state = getState();
   if (formatted < state.settings.startDate) return state.settings.startDate;
   if (formatted > state.settings.endDate) return state.settings.endDate;
@@ -115,7 +118,7 @@ export function getExamCountdown() {
 }
 
 export function getTodayStr() {
-  return new Date().toISOString().slice(0, 10);
+  return formatDateLocal(new Date());
 }
 
 export function getCampaignDayNumber(dateStr) {
