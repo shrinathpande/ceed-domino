@@ -558,10 +558,11 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 **Date**: November 1, 2026  
 **Trigger**: Complete UX, UI, and motion overhaul executed via `frontend-design`, `ui-taste`, `grill-with-docs`, `web-design-guidelines`, and `impeccable`.
 
-### 8.1 Critical UX Bug Fixes (Clicking Resiliency)
+### 8.1 Critical UX Bug Fixes (Clicking Resiliency & Toast Dismissal)
 1. **iOS Safari `role="button"` Fix**: Cards converted into accessible touch targets with `role="button"`, `tabindex="0"`, and `min-h-[56px]`, eliminating dropped taps in mobile WebKit.
 2. **Schema Array Protection**: Implemented `normalizeDayRecord` in `src/core/state.js` guaranteeing `rec.completed` is always an `Array`. Prevents fatal `TypeError: rec.completed.includes is not a function` when inspecting legacy records.
 3. **Event Propagation Insulation**: All nested interactive buttons (`✓`, `🔒 TIMER`, `+0.5h`, `-5 Qs`, `35/35`) call `e.stopPropagation()` and feature dedicated spring scaling (`btn-tactile active:scale-96`), preventing accidental card collapse while logging.
+4. **Toast Auto-Dismissal & Tap-to-Close Fix**: Rewrote `showInAppToast` in `src/components/header.js` with direct inline transition transforms (`translate(-50%, -10px)`) and `display: none` cleanup after 2.8s. Added tap-to-dismiss and `✕` close button, ensuring countdown details popups never remain stuck on screen.
 
 ### 8.2 Three Selectable Themes
 1. **Cyber-Tactile OLED (`cyber`, Default)**: Pure AMOLED `#000000` ground, rich `#0c0c0c` charcoal surfaces, 10px pill curvatures, refined borders, spring motion (`cubic-bezier(0.16, 1, 0.3, 1)`), and `#FF69AF` accents.

@@ -10,15 +10,59 @@ export function showInAppToast(msg, isAlert = false) {
     toast.id = 'ceed-toast';
     document.body.appendChild(toast);
   }
-  toast.textContent = msg;
-  const alertStyles = isAlert
-    ? 'border-[#FF69AF] bg-black text-[#FF69AF]'
-    : 'border-white bg-black text-white';
-  toast.className = `fixed top-14 left-1/2 -translate-x-1/2 z-50 px-4 py-2 text-xs font-mono font-bold tracking-tight border-2 ${alertStyles} shadow-2xl transition-all duration-300 pointer-events-none select-none max-w-[92vw] text-center opacity-100 scale-100 rounded-lg`;
+
+  // Clear existing dismissal timers
   clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(() => {
-    toast.className += ' opacity-0 scale-95';
-  }, 3200);
+  clearTimeout(toast._removeTimeout);
+
+  const borderCol = isAlert ? '#FF69AF' : '#ffffff';
+  const textCol = isAlert ? '#FF69AF' : '#ffffff';
+
+  toast.innerHTML = `
+    <div style="flex: 1; padding-right: 8px;">${msg}</div>
+    <button style="background: transparent; border: none; color: ${textCol}; font-weight: bold; font-size: 13px; cursor: pointer; padding: 0 4px; line-height: 1;" aria-label="Dismiss">✕</button>
+  `;
+
+  toast.style.cssText = `
+    position: fixed;
+    top: 56px;
+    left: 50%;
+    transform: translate(-50%, 0) scale(1);
+    z-index: 9999;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-family: "Geist Mono", monospace;
+    font-weight: 700;
+    border: 2px solid ${borderCol};
+    background-color: #000000;
+    color: ${textCol};
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+    border-radius: 8px;
+    max-width: 92vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 1;
+    pointer-events: auto;
+    cursor: pointer;
+  `;
+
+  const dismiss = (e) => {
+    if (e) e.stopPropagation();
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, -10px) scale(0.95)';
+    toast.style.pointerEvents = 'none';
+    clearTimeout(toast._removeTimeout);
+    toast._removeTimeout = setTimeout(() => {
+      toast.style.display = 'none';
+    }, 250);
+  };
+
+  toast.onclick = dismiss;
+
+  // Auto-dismiss after 2.8 seconds
+  toast._timeout = setTimeout(dismiss, 2800);
 }
 
 export function renderHeader(container, activeRoute = '#/', currentDateStr = null) {
@@ -118,10 +162,17 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
     </div>
   `;
 
-  // Bind Header Controls
+  // Bind Header Controls: Tapping countdown button toggles details toast
   headerEl.querySelector('#btn-header-countdown')?.addEventListener('click', () => {
     playRelayClick();
-    showInAppToast(examCountdown.detailed);
+    const toast = document.getElementById('ceed-toast');
+    if (toast && toast.style.display !== 'none' && toast.style.opacity === '1') {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translate(-50%, -10px) scale(0.95)';
+      setTimeout(() => { toast.style.display = 'none'; }, 250);
+    } else {
+      showInAppToast(examCountdown.detailed);
+    }
   });
 
   headerEl.querySelector('#btn-header-theme')?.addEventListener('click', () => {
