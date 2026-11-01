@@ -151,18 +151,18 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
         </div>
       </div>
 
-      <!-- Reference 7: Ron Design Scheduler Matte Slate Top Sheet -->
+      <!-- Hero Planning Top Sheet - Saturated in Selected Soft Pastel Accent -->
       <section class="ron-top-sheet mb-4">
         <div class="flex items-start justify-between gap-4 mb-5">
-          <h1 class="text-[30px] font-medium tracking-tight text-[#F4F4F6] leading-none">
+          <h1 class="text-[30px] font-semibold tracking-tight text-[#09090B] leading-none">
             Planning
           </h1>
-          <div class="pl-4 border-l border-white/[0.1] text-right">
-            <div class="text-[15px] font-medium text-[#F4F4F6] leading-tight">CEED Campaign</div>
+          <div class="pl-4 border-l border-black/20 text-right">
+            <div class="text-[15px] font-semibold text-[#09090B] leading-tight">CEED Campaign</div>
             <button
               type="button"
               id="btn-hero-countdown"
-              class="text-[12px] text-[#71717A] hover:text-[#F4F4F6] tabular-nums mt-0.5 transition-colors cursor-pointer text-right block ml-auto"
+              class="text-[12px] text-black/70 hover:text-black font-medium tabular-nums mt-0.5 transition-colors cursor-pointer text-right block ml-auto"
               title="Tap for exact CEED exam timing & countdown"
             >
               Day ${dayNum} of 87 • ${countdown.days}d left
@@ -170,21 +170,21 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
           </div>
         </div>
 
-        <!-- 3-Part Chunky Pill Bar (Solid White + Barcode Hatch + Matte Slate) -->
+        <!-- 3-Part Chunky Pill Bar (Solid Ink + Barcode Hatch + Translucent Ink Well) -->
         <div class="flex items-center gap-1.5 h-[36px] mb-4">
           <div
             style="flex: ${solidFlex}"
-            class="h-full bg-[#F4F4F6] rounded-[11px] transition-all duration-300"
+            class="h-full bg-[#09090B] rounded-[9px] transition-all duration-300"
             title="Completed Hours"
           ></div>
           <div
             style="flex: ${hatchFlex}"
-            class="h-full bg-barcode-hatch rounded-[9px] transition-all duration-300"
+            class="h-full bg-barcode-hatch-dark rounded-[9px] transition-all duration-300"
             title="In-Progress / Queued Hours"
           ></div>
           <div
             style="flex: ${slateFlex}"
-            class="h-full bg-[#52525B]/60 rounded-[11px] transition-all duration-300"
+            class="h-full bg-black/15 rounded-[9px] transition-all duration-300"
             title="Remaining Target Floor"
           ></div>
         </div>
@@ -192,24 +192,24 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
         <!-- 3-Column Sub-Metrics with Micro-Glyph Prefixes -->
         <div class="grid grid-cols-3 gap-2 pt-1">
           <div>
-            <div class="text-[11px] text-[#A1A1AA] mb-1">Study logged</div>
+            <div class="text-[11.5px] font-medium text-black/65 mb-1">Study logged</div>
             <div class="flex items-start gap-1.5">
-              <span class="w-2.5 h-[3px] rounded-full bg-[#F4F4F6] mt-2"></span>
-              <span class="text-[20px] font-medium text-[#F4F4F6] tabular-nums leading-none">${studyHours.toFixed(1)}h</span>
+              <span class="w-2.5 h-[3px] rounded-full bg-[#09090B] mt-2"></span>
+              <span class="text-[20px] font-bold text-[#09090B] tabular-nums leading-none">${studyHours.toFixed(1)}h</span>
             </div>
           </div>
           <div>
-            <div class="text-[11px] text-[#A1A1AA] mb-1">Work & fitness</div>
+            <div class="text-[11.5px] font-medium text-black/65 mb-1">Work & fitness</div>
             <div class="flex items-start gap-1.5">
-              <span class="text-[11px] font-mono text-[#A1A1AA] leading-none mt-1">'''</span>
-              <span class="text-[20px] font-medium text-[#F4F4F6] tabular-nums leading-none">${workWalkHours.toFixed(1)}h</span>
+              <span class="text-[11px] font-mono text-black/70 font-bold leading-none mt-1">'''</span>
+              <span class="text-[20px] font-bold text-[#09090B] tabular-nums leading-none">${workWalkHours.toFixed(1)}h</span>
             </div>
           </div>
           <div>
-            <div class="text-[11px] text-[#A1A1AA] mb-1">Dominos locked</div>
+            <div class="text-[11.5px] font-medium text-black/65 mb-1">Dominos locked</div>
             <div class="flex items-start gap-1.5">
-              <span class="w-2.5 h-[3px] rounded-full bg-[#71717A] mt-2"></span>
-              <span class="text-[20px] font-medium text-[#F4F4F6] tabular-nums leading-none">${lockedCount} / ${mandatoryBlocks.length}</span>
+              <span class="w-2.5 h-[3px] rounded-full bg-black/40 mt-2"></span>
+              <span class="text-[20px] font-bold text-[#09090B] tabular-nums leading-none">${lockedCount} / ${mandatoryBlocks.length}</span>
             </div>
           </div>
         </div>

@@ -966,4 +966,18 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 19. Saturated Soft Pastel Planning Hero Card (`.ron-top-sheet`)
+
+### 19.1 Color Infusion in Planning Hero Card (`src/style.css` & `src/views/dashboard.js`)
+- Replaced the dull monochrome slate grey (`#1C1D22`) surface on `.ron-top-sheet` with the user's active theme accent color (`background-color: var(--domino-accent)`).
+- The whole Planning card now shines in the active soft pastel hue (defaulting to Soft Lavender `#C4B5FD`, and dynamically transitioning when selecting Soft Periwinkle `#A5C4FF`, Soft Sage Mint `#A7F3D0`, Soft Peach Butter `#FDE6B8`, Soft Blush Rose `#FBCFE8`, or Crisp Chalk White `#F4F4F6` in Config).
+- Infused deep ink `#09090B` typography across all card headings, campaign subtitles, and metric indicators, guaranteeing pristine WCAG AAA contrast against the pastel surface.
+- Re-engineered the 3-part progress bar for high-contrast visibility on pastel backgrounds:
+  - **Segment 1 (Completed)**: Solid pure ink pill (`#09090B`).
+  - **Segment 2 (In-Progress)**: Dark ink barcode hatch (`.bg-barcode-hatch-dark`) with repeating 2px ink lines.
+  - **Segment 3 (Remaining Floor)**: Translucent ink well (`rgba(0, 0, 0, 0.15)`).
+- Sub-metrics indicators updated with solid black dash, 3-tick ink marks, and bold deep-ink numerals.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*
