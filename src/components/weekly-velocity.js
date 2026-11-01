@@ -72,8 +72,8 @@ export function renderWeeklyVelocity(container, currentDateStr) {
   section.innerHTML = `
     <div class="flex items-center justify-between border-b border-[var(--rule)] pb-2.5 mb-3">
       <div>
-        <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--text)]">WEEKLY VELOCITY & BURNDOWN</h2>
-        <p class="text-[10px] text-[var(--muted)] mt-0.5 font-pixel-square">Week ${currentWeekNumber} of ${totalWeeks} · Days ${weekStartDay + 1}–${weekEndDay + 1}</p>
+        <h2 class="text-[13px] font-semibold text-[var(--text-primary)]">Weekly Velocity & Burndown</h2>
+        <p class="text-[11px] text-[var(--muted)] mt-0.5">Week ${currentWeekNumber} of ${totalWeeks} · Days ${weekStartDay + 1}–${weekEndDay + 1}</p>
       </div>
       <div class="text-right">
         <span class="text-xs font-bold text-[var(--text)] tabular-nums">${loggedHours}h / ${targetHours}h</span>

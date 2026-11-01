@@ -174,19 +174,19 @@ function createModalDOM() {
         <div class="grid grid-cols-5 gap-1 text-[11px]">
           <button data-delta="-30" class="quick-adjust-btn py-1 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] hover:bg-[var(--border)] transition-colors">-30m</button>
           <button data-delta="-15" class="quick-adjust-btn py-1 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] hover:bg-[var(--border)] transition-colors">-15m</button>
-          <button id="resetFloorBtn" class="py-1 rounded-[2px] bg-[var(--surface)] border border-[var(--chart-accent)] text-[var(--chart-accent)] font-bold hover:bg-[var(--raised)] transition-colors">FLOOR</button>
+          <button id="resetFloorBtn" class="py-1 rounded-[2px] bg-[var(--surface)] border border-[var(--chart-accent)] text-[var(--chart-accent)] font-semibold hover:bg-[var(--raised)] transition-colors">Floor</button>
           <button data-delta="15" class="quick-adjust-btn py-1 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] hover:bg-[var(--border)] transition-colors">+15m</button>
           <button data-delta="30" class="quick-adjust-btn py-1 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[var(--text)] hover:bg-[var(--border)] transition-colors">+30m</button>
         </div>
       </div>
 
       <!-- Feedback Banner -->
-      <div id="durationFeedbackBox" class="p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[11px] leading-relaxed font-pixel-square">
+      <div id="durationFeedbackBox" class="p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[11px] leading-relaxed">
       </div>
 
       <!-- Save Button -->
-      <button id="durationSaveBtn" class="w-full py-2.5 rounded-[2px] bg-[var(--text)] text-[var(--surface)] text-xs font-bold uppercase tracking-wider hover:opacity-90 active:scale-[0.99] transition-transform">
-        SAVE TIME LOG
+      <button id="durationSaveBtn" class="w-full py-2.5 rounded-[2px] bg-[var(--text)] text-[var(--surface)] text-[13px] font-semibold tracking-tight hover:opacity-90 active:scale-[0.99] transition-transform">
+        Save Time Log
       </button>
     </div>
   `;

@@ -106,7 +106,7 @@ export function renderStudioProctor(container) {
       <div id="oled-fullscreen" class="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center px-6 text-center select-none cursor-pointer">
         <div id="oled-fullscreen-digits" class="font-pixel-display text-[76px] text-[#F4F4F6] leading-none mb-6 tabular-nums">${timeStr}</div>
         <p class="text-[14px] text-[#A1A1AA] max-w-[320px] leading-relaxed line-clamp-3">${task || scenario}</p>
-        <span class="mt-8 text-[11px] uppercase tracking-widest text-[#52525B]">Tap anywhere to exit OLED clock</span>
+        <span class="mt-8 text-[12px] font-medium text-[#71717A]">Tap anywhere to exit OLED clock</span>
       </div>
     `;
     container.querySelector('#oled-fullscreen')?.addEventListener('click', () => {
@@ -119,7 +119,7 @@ export function renderStudioProctor(container) {
   }
 
   container.innerHTML = `
-    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-6 space-y-3.5 select-none">
+    <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 space-y-3.5 select-none">
 
       <!-- Day Stepper & Q1-Q5 Pill Switcher -->
       <div class="flex items-center justify-between gap-2">

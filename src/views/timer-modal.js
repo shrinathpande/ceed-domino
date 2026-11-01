@@ -191,8 +191,8 @@ function createModalDOM() {
 
       <!-- Ambient Header (Fullscreen Only) -->
       <div id="ambientHeader" class="hidden text-center pt-4">
-        <span class="text-xs uppercase tracking-widest text-[var(--muted)] font-bold">AMBIENT FOCUS MODE</span>
-        <p id="ambientSubtitle" class="text-xs text-[var(--text)] mt-1 font-pixel-square"></p>
+        <span class="text-[12px] font-semibold text-[var(--muted)]">Ambient Focus Mode</span>
+        <p id="ambientSubtitle" class="text-xs text-[var(--text)] mt-1"></p>
       </div>
 
       <!-- High Precision Time Display -->

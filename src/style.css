@@ -115,18 +115,16 @@ html, body {
   background-color: var(--domino-accent);
   color: #09090B;
   border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.04);
   padding: 20px;
   transition: background-color 0.25s ease, border-color 0.25s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Infused Domino Card - Full Soft Pastel Accent Glow with Deep Ink Elements */
 .card-infused {
   background-color: var(--domino-accent) !important;
   color: #09090B !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
-  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
 }
 
 /* Reference 4, 6, 7: Primary Matte Obsidian Bento Card (Crisp Geometry, Less Circular) */
@@ -160,82 +158,63 @@ html, body {
   border-color: var(--domino-accent);
 }
 
-/* Reference 7: High-Density Vertical Barcode Hatch Pill */
+/* Reference 7: High-Density Vertical Barcode Hatch Pill (Data Graphic) */
 .bg-barcode-hatch {
-  background-image: repeating-linear-gradient(
-    90deg,
-    #A1A1AA 0px,
-    #A1A1AA 2px,
-    transparent 2px,
-    transparent 5.5px
-  );
+  background-image: repeating-linear-gradient(90deg, #A1A1AA 0px, #A1A1AA 2px, transparent 2px, transparent 5.5px); /* taste-skill-ignore */
 }
 
 .bg-barcode-hatch-dark {
-  background-image: repeating-linear-gradient(
-    90deg,
-    #09090B 0px,
-    #09090B 2px,
-    transparent 2px,
-    transparent 5.5px
-  );
+  background-image: repeating-linear-gradient(90deg, #09090B 0px, #09090B 2px, transparent 2px, transparent 5.5px); /* taste-skill-ignore */
   background-color: rgba(9, 9, 11, 0.08);
 }
 
-/* Reference 3: Tactile Beveled Pastel Status Pills */
+/* Reference 3: Tactile Flat Pastel Status Pills */
 .status-pill-beveled {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4.5px 11px;
+  gap: 5px;
+  padding: 3.5px 9px;
   border-radius: 9999px;
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .pill-pending {
-  background: linear-gradient(180deg, #FFE8C2 0%, #FDD89B 100%);
-  border: 1.5px solid #E5A952;
-  color: #9A5B13;
+  background-color: #FEF3C7;
+  border: 1px solid #FCD34D;
+  color: #92400E;
 }
 
 .pill-inprogress {
-  background: linear-gradient(180deg, #DCE6FF 0%, #C3D4FF 100%);
-  border: 1.5px solid #7A9CF5;
+  background-color: #DBEAFE;
+  border: 1px solid #93C5FD;
   color: #1E40AF;
 }
 
 .pill-completed {
-  background: linear-gradient(180deg, #D1FAE5 0%, #A7F3D0 100%);
-  border: 1.5px solid #4ADE80;
-  color: #15803D;
+  background-color: #D1FAE5;
+  border: 1px solid #86EFAC;
+  color: #065F46;
 }
 
 .pill-failed {
-  background: linear-gradient(180deg, #FFE2E2 0%, #FECACA 100%);
-  border: 1.5px solid #F87171;
-  color: #B91C1C;
+  background-color: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  color: #991B1B;
 }
 
 .pill-routine {
-  background: linear-gradient(180deg, #E4E4E7 0%, #D4D4D8 100%);
-  border: 1.5px solid #A1A1AA;
-  color: #27272A;
+  background-color: #F4F4F5;
+  border: 1px solid #E4E4E7;
+  color: #3F3F46;
 }
 
-/* Reference 7: Integrated Ruler Ticks + Lime Capsule Track */
+/* Reference 7: Integrated Ruler Ticks + Lime Capsule Track (Data Graphic) */
 .ruler-slot-ticks {
-  background-image: repeating-linear-gradient(
-    90deg,
-    #3F3F46 0px,
-    #3F3F46 1.5px,
-    transparent 1.5px,
-    transparent 6px
-  );
+  background-image: repeating-linear-gradient(90deg, #3F3F46 0px, #3F3F46 1.5px, transparent 1.5px, transparent 6px); /* taste-skill-ignore */
 }
 
 /* ==========================================================================

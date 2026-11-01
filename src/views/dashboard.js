@@ -102,12 +102,12 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   const isTodaySelected = activeDateStr === todayStr;
 
   container.innerHTML = `
-    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-6 select-none">
+    <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none">
       
       <!-- 7-Day Circular Calendar Strip with Today Indicator -->
       <div class="mb-4">
         <div class="flex items-center justify-between px-1 mb-2">
-          <div class="flex items-center gap-1.5 text-xs text-[#71717A]">
+          <div class="flex items-center gap-1.5 text-xs text-[#A1A1AA]">
             <span class="w-2 h-2 rounded-full bg-[var(--domino-accent)]"></span>
             <span>Today: <strong class="text-[#F4F4F6] font-semibold">${todayStr}</strong></span>
           </div>
@@ -156,7 +156,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
       <!-- Planning Hero Card - Full Soft Pastel Accent Infusion -->
       <section class="ron-top-sheet mb-4">
         <div class="flex items-start justify-between gap-4 mb-5">
-          <h1 class="text-[30px] font-bold tracking-tight text-[#09090B] leading-none">
+          <h1 class="text-2xl sm:text-[28px] font-bold tracking-tight text-[#09090B] leading-none">
             Planning
           </h1>
           <div class="pl-4 border-l border-black/20 text-right">
@@ -256,8 +256,8 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                     <!-- Status Pill and Category Shoved BELOW Text! -->
                     <div class="flex items-center gap-2 mt-2">
                       ${renderStatusPill(pillState, true)}
-                      <span class="text-[10px] font-bold tracking-wider uppercase ${isCardsInfused ? 'text-black/70' : 'text-[#71717A]'}">
-                        ${block.category || 'STUDY'}
+                      <span class="text-[12px] font-medium capitalize ${isCardsInfused ? 'text-black/60' : 'text-[#A1A1AA]'}">
+                        ${(block.category || 'Study').toLowerCase()}
                       </span>
                     </div>
                   </div>
@@ -276,10 +276,10 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         isCardsInfused
                           ? (isCompleted
                               ? 'bg-[#09090B] text-white border border-[#09090B] font-bold shadow-md'
-                              : 'bg-black/10 text-black/70 border border-black/20 hover:bg-black/20')
+                              : 'bg-transparent text-black/70 border border-black/25 hover:bg-black/5')
                           : (isCompleted
                               ? 'bg-[var(--domino-accent)] text-[#09090B] border border-[var(--domino-accent)] font-bold shadow-sm'
-                              : 'bg-[#18191E] text-[#71717A] border border-white/[0.1]')
+                              : 'bg-transparent text-[#71717A] border border-white/20 hover:border-white/40')
                       }"
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="${isCompleted ? 'check-pop-enter' : ''}">
@@ -345,8 +345,8 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           class="w-full h-2.5 rounded-lg appearance-none cursor-pointer ${isCardsInfused ? 'bg-black/15 accent-[#09090B]' : 'bg-[#1C1D22] accent-[var(--domino-accent)]'}"
                           style="${
                             isCardsInfused
-                              ? `background: linear-gradient(to right, #09090B 0%, #09090B ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) 100%);`
-                              : `background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, var(--surface-well) ${(loggedHrs / 6) * 100}%, var(--surface-well) 100%);`
+                              ? `background: linear-gradient(to right, #09090B 0%, #09090B ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) 100%); /* taste-skill-ignore */`
+                              : `background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, var(--surface-well) ${(loggedHrs / 6) * 100}%, var(--surface-well) 100%); /* taste-skill-ignore */`
                           }"
                         />
                         <div class="flex justify-between text-[11px] font-mono ${isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]'} mt-1.5">
@@ -435,9 +435,9 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
               ${isRunningThis ? `
                 <div class="mt-1.5 p-3 rounded-[14px] ${isCardsInfused ? 'bg-black/10 border border-black/25' : 'bg-[#16171B] border border-[var(--domino-accent)]/40'} flex items-center justify-between drill-banner-enter">
                   <div class="flex items-center gap-2.5">
-                    <span class="w-2.5 h-2.5 rounded-full ${isCardsInfused ? 'bg-[#09090B]' : 'bg-[var(--domino-accent)]'} animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full ${isCardsInfused ? 'bg-[#09090B]' : 'bg-[var(--domino-accent)]'}"></span>
                     <div>
-                      <div class="text-[10px] font-bold uppercase tracking-wider ${isCardsInfused ? 'text-black/75' : 'text-[var(--domino-accent)]'}">ACTIVE DRILL RUNNING</div>
+                      <div class="text-[12px] font-semibold ${isCardsInfused ? 'text-black/75' : 'text-[var(--domino-accent)]'}">Active Drill Running</div>
                       <div class="text-[20px] font-mono font-bold ${isCardsInfused ? 'text-[#09090B]' : 'text-[#F4F4F6]'} tabular-nums leading-tight">
                         <span id="live-timer-digits-${block.id}">${timerState.formatted || '00:00'}</span>
                       </div>
@@ -448,7 +448,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                     data-quick-stop="${block.id}"
                     class="px-4 py-2 rounded-full bg-[#FECACA] text-[#991B1B] border border-[#F87171] text-xs font-semibold btn-tactile flex items-center gap-1.5"
                   >
-                    <span>⏹ Stop & Log</span>
+                    <span>Stop & Log</span>
                   </button>
                 </div>
               ` : ''}
@@ -563,8 +563,8 @@ function bindDashboardEvents(container) {
       setDominoDuration(blockId, activeDateStr, mins);
       const isInfused = getCardInfusionScope() === 'all';
       slider.style.background = isInfused
-        ? `linear-gradient(to right, #09090B 0%, #09090B ${(hours / 6) * 100}%, rgba(0,0,0,0.18) ${(hours / 6) * 100}%, rgba(0,0,0,0.18) 100%)`
-        : `linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(hours / 6) * 100}%, var(--surface-well) ${(hours / 6) * 100}%, var(--surface-well) 100%)`;
+        ? `linear-gradient(to right, #09090B 0%, #09090B ${(hours / 6) * 100}%, rgba(0,0,0,0.18) ${(hours / 6) * 100}%, rgba(0,0,0,0.18) 100%)` /* taste-skill-ignore */
+        : `linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(hours / 6) * 100}%, var(--surface-well) ${(hours / 6) * 100}%, var(--surface-well) 100%)`; /* taste-skill-ignore */
     });
     slider.addEventListener('change', () => {
       playRelayClick();

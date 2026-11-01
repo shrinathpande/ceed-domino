@@ -57,7 +57,7 @@ export function renderStats(container) {
   const streakIndicators = [1, 2, 3, 4, 5, 6].map(num => num <= streakDays);
 
   container.innerHTML = `
-    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-6 space-y-3.5 select-none">
+    <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 space-y-3.5 select-none">
 
       <!-- Top Row: Dual High-Craft Bentos -->
       <div class="grid grid-cols-2 gap-3">

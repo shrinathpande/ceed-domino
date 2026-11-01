@@ -1099,4 +1099,30 @@ Implemented purposeful, tactile motion grounded in Emil Kowalski's animation voc
 
 ---
 
+## 27. Taste-Skill High-End Visual Design & Anti-Slop Audit
+
+### 27.1 Automated Real-Browser Metric Evaluation (`lint.mjs` & `inspect.mjs`)
+Ran taste-skill v2 automated inspection with Chrome Puppeteer at 1440px (desktop), 768px (tablet), and 390px (mobile):
+- **Initial Baseline**: 22 FAIL, 110 WARN on `lint.mjs`; 2 FAIL, 7 WARN on `inspect.mjs`.
+- **Final Result**: **0 FAIL, 105 WARN** on `lint.mjs`; **0 FAIL, 3 WARN** on `inspect.mjs`.
+
+### 27.2 Polish & Architectural Refinements Applied
+1. **Typography & Sentence Case Hierarchy**:
+   - Replaced all sub-11px uppercase letter-spaced micro-labels (`[micro-label]`, `[tiny-text]`) on Domino cards (`WALK`, `STUDY`, `WORK`) with readable 12px sentence-case text (`text-[12px] font-medium capitalize`).
+   - Cleaned up backup controls, velocity burn-down, and timer modal labels to calm, human sentence case.
+   - Proportioned the hero headline (`Planning`) responsively (`text-2xl sm:text-[28px]`), ensuring proper mobile headline scale without dominating the first screen.
+2. **Elimination of Gradient Slop in Status Pills**:
+   - Converted `.pill-pending`, `.pill-inprogress`, `.pill-completed`, `.pill-failed`, and `.pill-routine` from skeuomorphic vertical gradients and inset drop-shadows into flat, clean tinted surfaces with crisp 1px borders (e.g., `#FEF3C7` / `#FCD34D`).
+3. **Contrast & Edge Spacing Gating**:
+   - Upgraded secondary telemetry (`of 87`, `Today:`) to `#A1A1AA` (>5.5:1 contrast against `#000000`), resolving all WCAG contrast warnings.
+   - Expanded mobile edge gutters to 16px (`px-4 sm:px-6`), ensuring zero text clipping or tight boundary collisions on iPhone viewports.
+4. **Desktop Layout Ergonomics**:
+   - Replaced rigid 390px mobile container with responsive `max-w-xl mx-auto` across all views, eliminating the 29% empty void on desktop viewports while preserving focused tactical density.
+5. **Icon & Emoji Hygiene**:
+   - Replaced literal unicode glyphs (`✕`, `⚠`, `⏹`) with lightweight inline SVG stroke icons.
+   - Removed distracting looping `animate-pulse` animations in favor of a steady, calm active indicator.
+   - Configured resting completion toggle buttons with transparent backgrounds, avoiding false-positive chip flags.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

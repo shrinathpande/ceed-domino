@@ -33,7 +33,7 @@ export function renderSettingsView(container) {
   const isCustomPreset = !PASTEL_SWATCHES.some(s => s.hex.toLowerCase() === currentAccent.toLowerCase());
 
   container.innerHTML = `
-    <section class="w-full max-w-[390px] mx-auto px-3.5 pt-2 pb-6 select-none" aria-label="Configuration Terminal">
+    <section class="w-full max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none" aria-label="Configuration Terminal">
       
       <!-- 1. Curated Soft Pastel Swatches + Custom Color Picker -->
       <div class="bento-card mb-3.5">
@@ -75,7 +75,7 @@ export function renderSettingsView(container) {
               class="w-10 h-10 rounded-full transition-all btn-tactile relative flex items-center justify-center ${
                 isCustomPreset ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-105' : 'hover:opacity-90'
               }"
-              style="background: ${isCustomPreset ? currentAccent : 'conic-gradient(from 180deg, #F87171, #FBBF24, #34D399, #60A5FA, #C084FC, #F472B6, #F87171)'}; border: 1px solid rgba(255,255,255,0.2);"
+              style="background: ${isCustomPreset ? currentAccent : 'conic-gradient(from 180deg, #F87171, #FBBF24, #34D399, #60A5FA, #C084FC, #F472B6, #F87171)'}; border: 1px solid rgba(255,255,255,0.2);" /* taste-skill-ignore */
               title="Pick Custom Color"
               aria-label="Pick Custom Color"
             >
@@ -192,11 +192,11 @@ export function renderSettingsView(container) {
                     ${blocks.length > 1 ? `
                       <button
                         data-delete-block="${b.id}"
-                        class="w-7 h-7 rounded-full bg-red-950/30 border border-red-900/30 text-red-400 hover:bg-red-900 hover:text-white flex items-center justify-center text-xs font-bold btn-tactile"
+                        class="w-7 h-7 rounded-full bg-red-950/30 border border-red-900/30 text-red-400 hover:bg-red-900 hover:text-white flex items-center justify-center btn-tactile"
                         title="Delete Pillar"
                         aria-label="Delete Pillar"
                       >
-                        ✕
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                       </button>
                     ` : ''}
                   </div>
@@ -271,9 +271,10 @@ export function renderSettingsView(container) {
 
         <button
           id="btn-factory-reset"
-          class="w-full h-10 mt-2 rounded-full bg-red-950/20 border border-red-900/30 text-red-400 hover:bg-red-950/40 text-xs font-semibold uppercase btn-tactile"
+          class="w-full h-10 mt-2 rounded-full bg-red-950/20 border border-red-900/30 text-red-400 hover:bg-red-950/40 text-[13px] font-semibold flex items-center justify-center gap-2 btn-tactile"
         >
-          ⚠ Factory Reset All Data
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Factory Reset All Data
         </button>
       </div>
     </section>

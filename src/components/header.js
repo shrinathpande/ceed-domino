@@ -49,11 +49,13 @@ export function showExamToast() {
             </svg>
           </span>
           <div>
-            <div class="text-[11px] font-semibold tracking-wider text-[#A1A1AA] uppercase">CEED 2027 Examination</div>
+            <div class="text-[12px] font-semibold text-[#A1A1AA]">CEED 2027 Examination</div>
             <div class="text-[13px] font-bold text-[#F4F4F6] mt-0.5">${cd.examDateFormatted} • 09:00 AM IST</div>
           </div>
         </div>
-        <button id="toast-dismiss-btn" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-[#A1A1AA] hover:text-white flex items-center justify-center text-xs font-bold leading-none shrink-0" aria-label="Close">✕</button>
+        <button id="toast-dismiss-btn" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-[#A1A1AA] hover:text-white flex items-center justify-center shrink-0" aria-label="Close">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
 
       <div class="mt-2.5 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px]">
@@ -126,7 +128,9 @@ export function showInAppToast(msg, isAlert = false) {
 
   toast.innerHTML = `
     <div style="flex: 1; padding-right: 8px;">${msg}</div>
-    <button style="background: transparent; border: none; color: inherit; font-weight: bold; font-size: 13px; cursor: pointer; padding: 0 4px; line-height: 1;" aria-label="Dismiss">✕</button>
+    <button style="background: transparent; border: none; color: inherit; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0 4px;" aria-label="Dismiss">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
   `;
 
   toast.style.cssText = `
@@ -216,13 +220,13 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
     : `${examCountdown.compact} to CEED`;
 
   headerEl.innerHTML = `
-    <div class="max-w-[390px] mx-auto px-3.5 pt-2 pb-2">
+    <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-2">
       <!-- Row 1: Telemetry, Countdown Pill, Sun/Moon Theme Toggle & Streak -->
       <div class="flex items-center justify-between mb-2">
         <!-- Left: Day of 87 + Interactive [XXd to CEED] Pill -->
         <div class="flex items-center gap-1.5">
           <span class="text-sm font-semibold text-[var(--text-primary)] tracking-tight">
-            Day <span class="font-bold text-[var(--domino-accent)]">${String(dayIndex + 1).padStart(2, '0')}</span> <span class="text-[var(--text-muted)] font-normal">of 87</span>
+            Day <span class="font-bold text-[var(--domino-accent)]">${String(dayIndex + 1).padStart(2, '0')}</span> <span class="text-[var(--text-secondary)] font-normal">of 87</span>
           </span>
           <button
             id="btn-exam-countdown"
