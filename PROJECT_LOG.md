@@ -980,4 +980,22 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 20. Stone Domino Favicon & Touch Icon Suite Deployment
+
+### 20.1 Multi-Resolution Asset Generation
+- Ingested the user-uploaded high-relief stone carved Ace of Clubs domino card artwork (`1024x1024` master).
+- Generated complete suite of web and native mobile icon assets using Lanczos resampling:
+  - `public/favicon.ico`: Multi-size Windows and browser bookmark icon (16×16, 32×32, 48×48, 64×64).
+  - `public/favicon-32x32.png` & `public/favicon-16x16.png`: High-clarity tab icons.
+  - `public/favicon.svg`: Vector container with embedded high-resolution data URI and subtle 40px squircle clip.
+  - `public/icons/apple-touch-icon.png` & `public/apple-touch-icon.png`: 180×180 iOS home screen web clip icon.
+  - `public/icons/icon-192.png`: 192×192 PWA task switcher icon.
+  - `public/icons/icon-512.png`: 512×512 PWA splash and maskable store icon.
+
+### 20.2 PWA & HTML Configuration
+- Updated [`index.html`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/index.html) with explicit multi-format `<link>` tags for SVG, 32px/16px PNGs, standard ICO, and 180px Apple Touch Icon.
+- Updated [`vite.config.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/vite.config.js) PWA plugin configuration to precache all icon assets in the service worker runtime cache.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*
