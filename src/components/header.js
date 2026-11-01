@@ -220,7 +220,7 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
     : `${examCountdown.compact} to CEED`;
 
   headerEl.innerHTML = `
-    <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-2">
+    <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-2 stagger-item stagger-delay-0">
       <!-- Row 1: Telemetry, Countdown Pill, Sun/Moon Theme Toggle & Streak -->
       <div class="flex items-center justify-between mb-2">
         <!-- Left: Day of 87 + Interactive [XXd to CEED] Pill -->

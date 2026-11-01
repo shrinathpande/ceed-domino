@@ -291,7 +291,35 @@ html, body {
   transform: scale(0.95);
 }
 
-/* 5. Reduced Motion Override */
+/* 5. Staggered Group Entrance System (Emil Kowalski Recipe: 40ms cascade) */
+@keyframes staggerEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-item {
+  animation: staggerEnter 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+  pointer-events: auto;
+}
+
+.stagger-delay-0 { animation-delay: 0ms; }
+.stagger-delay-1 { animation-delay: 40ms; }
+.stagger-delay-2 { animation-delay: 80ms; }
+.stagger-delay-3 { animation-delay: 120ms; }
+.stagger-delay-4 { animation-delay: 160ms; }
+.stagger-delay-5 { animation-delay: 200ms; }
+.stagger-delay-6 { animation-delay: 240ms; }
+.stagger-delay-7 { animation-delay: 280ms; }
+.stagger-delay-8 { animation-delay: 320ms; }
+
+/* 6. Reduced Motion Override */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
@@ -304,6 +332,11 @@ html, body {
   }
   .accordion-inner {
     transition: none !important;
+    transform: none !important;
+  }
+  .stagger-item {
+    animation: none !important;
+    opacity: 1 !important;
     transform: none !important;
   }
 }

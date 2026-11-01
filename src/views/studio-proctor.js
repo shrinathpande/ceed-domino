@@ -122,7 +122,7 @@ export function renderStudioProctor(container) {
     <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 space-y-3.5 select-none">
 
       <!-- Day Stepper & Q1-Q5 Pill Switcher -->
-      <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center justify-between gap-2 stagger-item stagger-delay-1">
         <div class="recessed-well !py-2 !px-3 flex items-center gap-3">
           <button type="button" id="studio-prev-day" class="text-[#A1A1AA] hover:text-white btn-tactile text-sm" aria-label="Previous Day">‹</button>
           <span class="text-[13px] font-medium text-[#F4F4F6] tabular-nums">Day ${studioDayIndex + 1} of 87</span>
@@ -145,7 +145,7 @@ export function renderStudioProctor(container) {
       </div>
 
       <!-- CARD 1: Question Prompt (Clean Stacked Card) -->
-      <section class="bento-card">
+      <section class="bento-card stagger-item stagger-delay-2">
         <div class="flex items-center justify-between gap-2 mb-3">
           <span class="status-pill-beveled pill-inprogress !py-1 !px-2.5 !text-[11.5px]">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 15 15 9"/><path d="M10 9h5v5"/></svg>
@@ -174,7 +174,7 @@ export function renderStudioProctor(container) {
       </section>
 
       <!-- CARD 2 (Right Below It): Strategy & 24m Pacing Checklist -->
-      <section class="bento-card">
+      <section class="bento-card stagger-item stagger-delay-3">
         <div class="flex items-center justify-between mb-3">
           <span class="status-pill-beveled pill-pending !py-1 !px-2.5 !text-[11.5px]">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -212,7 +212,7 @@ export function renderStudioProctor(container) {
       </section>
 
       <!-- Bottom Scheduler Action Bar -->
-      <div class="recessed-well !rounded-[12px] !p-3.5 flex items-center justify-between gap-2">
+      <div class="recessed-well !rounded-[12px] !p-3.5 flex items-center justify-between gap-2 stagger-item stagger-delay-4">
         <div class="flex items-baseline gap-2 pl-1">
           <span id="studio-timer-digits" class="text-[28px] font-semibold text-[#F4F4F6] tabular-nums leading-none">${timeStr}</span>
           <span class="text-[12px] text-[#71717A]">timer</span>

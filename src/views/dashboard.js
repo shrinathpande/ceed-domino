@@ -105,7 +105,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
     <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none">
       
       <!-- 7-Day Circular Calendar Strip with Today Indicator -->
-      <div class="mb-4">
+      <div class="mb-4 stagger-item stagger-delay-1">
         <div class="flex items-center justify-between px-1 mb-2">
           <div class="flex items-center gap-1.5 text-xs text-[#A1A1AA]">
             <span class="w-2 h-2 rounded-full bg-[var(--domino-accent)]"></span>
@@ -154,7 +154,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
       </div>
 
       <!-- Planning Hero Card - Full Soft Pastel Accent Infusion -->
-      <section class="ron-top-sheet mb-4">
+      <section class="ron-top-sheet mb-4 stagger-item stagger-delay-2">
         <div class="flex items-start justify-between gap-4 mb-5">
           <h1 class="text-2xl sm:text-[28px] font-bold tracking-tight text-[#09090B] leading-none">
             Planning
@@ -238,7 +238,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
           const pct = Math.min(100, Math.round((loggedMins / (targetMins || 60)) * 100));
 
           return `
-            <div class="flex flex-col">
+            <div class="flex flex-col stagger-item stagger-delay-${Math.min(index + 3, 8)}">
               <article
                 data-card-id="${block.id}"
                 role="button"

@@ -1125,4 +1125,25 @@ Ran taste-skill v2 automated inspection with Chrome Puppeteer at 1440px (desktop
 
 ---
 
+## 28. System-Wide 40ms Staggered Group Entrance System
+
+### 28.1 Motion Choreography & Parameters
+Implemented an Emil Kowalski-compliant 40ms cascading entrance system that triggers on initial app boot and across all tab switches (`Today`, `Stats`, `Studio`, `Config`):
+- **Trajectory & Easing**: `@keyframes staggerEnter` (`translateY(10px)` → `0`, `opacity: 0` → `1`) over `240ms cubic-bezier(0.16, 1, 0.3, 1)` with `animation-fill-mode: both`.
+- **40ms Interval Cascade**:
+  - `stagger-delay-0` (`0ms`): Sticky top navigation header.
+  - `stagger-delay-1` (`40ms`): First view block (e.g. 7-Day Calendar Strip on Today, Top Bento stats on Stats, Day Stepper & Q-pills on Studio, Palette Picker on Config).
+  - `stagger-delay-2` (`80ms`): Second view block (Hero Planning Card on Today, Consistency matrix card on Stats, Question prompt on Studio, Pillar architecture on Config).
+  - `stagger-delay-3..6` (`120ms`–`240ms`): Successive domino cards 1 through 4 on Today, and subsequent analytical / procedural action modules on Stats, Studio, and Config.
+- **Interaction & Accessibility**:
+  - Elements remain immediately interactive (`pointer-events: auto`) throughout the cascade.
+  - Enforced `@media (prefers-reduced-motion: reduce)` override setting animation to `none !important` and opacity to `1 !important`.
+
+### 28.2 Verification & Sync
+- **Production Build**: Verified with `npm run build` — 29 modules compiled cleanly in 286ms.
+- **Automated Gating**: `lint.mjs` and `inspect.mjs` verified with 0 FAIL.
+- **Git Commit**: `feat(motion): add system-wide 40ms staggered cascade entrance across all app views`.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

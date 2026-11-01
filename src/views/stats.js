@@ -60,7 +60,7 @@ export function renderStats(container) {
     <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 space-y-3.5 select-none">
 
       <!-- Top Row: Dual High-Craft Bentos -->
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-2 gap-3 stagger-item stagger-delay-1">
         <div class="bento-card py-4 px-4 flex flex-col justify-between">
           <div class="flex items-center gap-2 mb-1.5">
             <svg class="text-[#22C55E] shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -93,7 +93,7 @@ export function renderStats(container) {
       </div>
 
       <!-- Consistency Card with Segmented Ring & Glitch-Free 13-Column High-Contrast Green Grid -->
-      <section class="bento-card">
+      <section class="bento-card stagger-item stagger-delay-2">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-1.5 text-[14px] font-medium text-[#D4D4D8]">
             <span>Consistency Index</span>
@@ -145,7 +145,7 @@ export function renderStats(container) {
       </section>
 
       <!-- 2-Column Streak Bento with 2-Tone Flame -->
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-2 gap-3 stagger-item stagger-delay-3">
         <div class="bento-card py-4 px-4">
           <div class="flex items-center gap-2 mb-2">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
@@ -190,7 +190,7 @@ export function renderStats(container) {
       </div>
 
       <!-- Effort Allocation Card -->
-      <section class="bento-card">
+      <section class="bento-card stagger-item stagger-delay-4">
         <div class="flex items-start justify-between gap-3 mb-2">
           <div>
             <div class="text-[12px] text-[#71717A] mb-0.5">Total Effort Allocation</div>

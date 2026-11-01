@@ -36,7 +36,7 @@ export function renderSettingsView(container) {
     <section class="w-full max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none" aria-label="Configuration Terminal">
       
       <!-- 1. Curated Soft Pastel Swatches + Custom Color Picker -->
-      <div class="bento-card mb-3.5">
+      <div class="bento-card mb-3.5 stagger-item stagger-delay-1">
         <div class="flex items-center justify-between mb-3">
           <div>
             <div class="text-[12px] font-medium text-[#71717A]">Tactile Appearance</div>
@@ -154,7 +154,7 @@ export function renderSettingsView(container) {
       </div>
 
       <!-- 2. Domino Pillar Editor (Clean Bento Rows) -->
-      <div class="bento-card mb-3.5">
+      <div class="bento-card mb-3.5 stagger-item stagger-delay-2">
         <div class="flex items-center justify-between mb-3 pb-2 border-b border-[#1F1F23]">
           <div>
             <div class="text-[12px] font-medium text-[#71717A]">Pillars & Objectives</div>
@@ -250,7 +250,7 @@ export function renderSettingsView(container) {
       </div>
 
       <!-- 3. Backup & Factory Reset -->
-      <div class="bento-card mb-3.5">
+      <div class="bento-card mb-3.5 stagger-item stagger-delay-3">
         <div class="text-[12px] font-medium text-[#71717A] mb-1">Data Portability</div>
         <div class="text-sm font-semibold text-[#F4F4F6] mb-3">Backup & Storage</div>
 
