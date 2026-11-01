@@ -5,35 +5,22 @@ import {
   getState,
   saveState,
   DEFAULT_BLOCKS,
-  isDominoTask
+  isDominoTask,
+  THEMES,
+  getTheme,
+  setTheme
 } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
-import { getExamCountdown } from '../utils/dates.js';
+import { showInAppToast } from '../components/header.js';
 
 let activeDateStr = new Date().toISOString().slice(0, 10);
-
-function showInAppToast(msg, isAlert = false) {
-  let toast = document.getElementById('ceed-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'ceed-toast';
-    toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 text-xs font-mono font-bold tracking-tight border-2 shadow-2xl transition-all duration-300 pointer-events-none select-none max-w-[90vw] text-center';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.className = `fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 text-xs font-mono font-bold tracking-tight border-2 ${isAlert ? 'border-red-500 bg-black text-red-400' : 'border-white bg-black text-white'} shadow-2xl transition-all duration-300 pointer-events-none select-none max-w-[90vw] text-center opacity-100 scale-100`;
-  clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(() => {
-    toast.className += ' opacity-0 scale-95';
-  }, 3200);
-}
 
 export function renderSettingsView(container) {
   const blocks = getBlocks();
   const state = getState();
   const todayRec = state.records?.[activeDateStr] || { emergency: false };
   const isEmergency = todayRec.emergency || false;
-  const examCountdown = getExamCountdown();
+  const currentThemeId = getTheme();
 
   // Apply or remove global emergency theme shift
   if (isEmergency) {
@@ -43,24 +30,32 @@ export function renderSettingsView(container) {
   }
 
   container.innerHTML = `
-    <section class="w-full max-w-[390px] mx-auto px-3 pt-2 pb-24 font-mono text-white select-none">
-      <!-- Settings Terminal Header -->
-      <div class="border-2 border-white bg-[#0a0a0a] p-3 mb-3 flex items-center justify-between">
-        <div>
-          <div class="text-[10px] uppercase tracking-wider text-neutral-400 mb-0.5">SYSTEM TERMINAL // CONFIG</div>
-          <div class="text-sm font-bold text-white">CEED DOMINO v2.0 CONFIG</div>
+    <section class="w-full max-w-[420px] mx-auto px-3 pt-2 pb-24 font-mono select-none" aria-label="Settings Terminal">
+      <!-- 3-Theme Switcher Card -->
+      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
+        <div class="text-[10px] uppercase tracking-wider text-neutral-400 mb-2">INTERFACE THEME (3 MODES)</div>
+        <div class="grid grid-cols-3 gap-1.5">
+          ${THEMES.map(t => {
+            const isSelected = t.id === currentThemeId;
+            return `
+              <button
+                data-theme-choice="${t.id}"
+                class="btn-tactile h-11 border-2 ${
+                  isSelected
+                    ? 'border-[#FF69AF] bg-[#FF69AF] text-black font-extrabold'
+                    : 'border-neutral-800 bg-[#0c0c0c] text-neutral-300'
+                } flex flex-col items-center justify-center text-[10px] leading-tight"
+              >
+                <span>${t.label}</span>
+                <span class="text-[8px] opacity-75">${t.id === 'cyber' ? 'OLED Pill' : t.id === 'brutalist' ? 'Raw Wire' : 'Monochrome'}</span>
+              </button>
+            `;
+          }).join('')}
         </div>
-        <button
-          id="settings-exam-countdown"
-          class="text-[10px] font-bold text-white bg-black border border-neutral-700 px-2 py-0.5 active:border-[#FF69AF] active:text-[#FF69AF]"
-          title="${examCountdown.detailed}"
-        >
-          ${examCountdown.compact}
-        </button>
       </div>
 
       <!-- Emergency Mode Toggle Card -->
-      <div class="border-2 ${isEmergency ? 'border-red-600 bg-[#120404]' : 'border-neutral-800 bg-[#0a0a0a]'} p-3 mb-3">
+      <div class="card-shell border-2 ${isEmergency ? 'border-red-600 bg-[#120404]' : 'border-neutral-800 bg-[#0a0a0a]'} p-3 mb-3">
         <div class="flex items-center justify-between mb-2">
           <div class="pr-2">
             <div class="text-xs font-bold ${isEmergency ? 'text-red-400' : 'text-white'}">EMERGENCY MODE (STREAK SAVER)</div>
@@ -68,51 +63,49 @@ export function renderSettingsView(container) {
           </div>
           <button
             id="btn-toggle-emergency"
-            class="px-3 py-1.5 border shrink-0 ${isEmergency ? 'border-red-500 bg-red-500 text-black font-bold text-xs' : 'border-neutral-700 bg-black text-white text-xs'} active:scale-95"
+            class="btn-tactile px-3.5 py-2 border shrink-0 ${isEmergency ? 'border-red-500 bg-red-500 text-black font-bold text-xs' : 'border-neutral-700 bg-black text-white text-xs'}"
           >
-            ${isEmergency ? 'ACTIVE (RED)' : 'OFF'}
+            ${isEmergency ? 'ACTIVE' : 'OFF'}
           </button>
         </div>
       </div>
 
       <!-- Streak Shield Bank -->
-      <div class="border-2 border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
+      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
         <div class="flex items-center justify-between">
           <div>
             <div class="text-xs font-bold text-white">STREAK SHIELDS (🛡️)</div>
             <div class="text-[10px] text-neutral-400">Current Shields: ${state.shields || 0} / 3 (+1 every 7-day streak)</div>
           </div>
-          <div class="flex gap-1.5">
-            <button id="btn-add-shield" class="px-2.5 py-1.5 border border-white text-xs font-bold active:bg-white active:text-black">
-              +1 SHIELD
-            </button>
-          </div>
+          <button id="btn-add-shield" class="btn-tactile px-3 py-1.5 border border-white text-xs font-bold text-white active:bg-white active:text-black">
+            +1 SHIELD
+          </button>
         </div>
       </div>
 
       <!-- Domino Pillars & Badge Editor -->
-      <div class="border-2 border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
+      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
         <div class="flex items-center justify-between mb-2 pb-2 border-b border-neutral-800">
           <div class="text-xs font-bold text-white uppercase">DOMINO PILLARS & BADGES</div>
           <button id="btn-reset-blocks" class="text-[10px] text-neutral-400 underline">Reset Defaults</button>
         </div>
 
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-2.5">
           ${blocks.map((b) => {
             const isMand = isDominoTask(b);
             return `
-              <div class="border border-neutral-800 bg-black p-2.5" data-block-id="${b.id}">
+              <div class="border border-neutral-800 bg-black/60 rounded p-2.5" data-block-id="${b.id}">
                 <div class="flex items-center justify-between gap-2 mb-2">
                   <input
                     type="text"
                     data-edit-badge="${b.id}"
                     value="${b.badge}"
-                    class="w-28 bg-neutral-900 border ${isMand ? 'border-[#FF69AF] text-[#FF69AF]' : 'border-neutral-700 text-white'} text-[11px] px-2 py-1 font-bold uppercase focus:outline-none"
-                    placeholder="Badge (e.g. DOMINO 1)"
+                    class="w-28 bg-[#121212] border ${isMand ? 'border-[#FF69AF] text-[#FF69AF]' : 'border-neutral-700 text-white'} text-[11px] px-2 py-1 font-bold uppercase rounded focus:outline-none"
+                    placeholder="Badge"
                   />
                   <select
                     data-edit-cat="${b.id}"
-                    class="bg-neutral-900 border border-neutral-700 text-[11px] text-white px-2 py-1 focus:outline-none"
+                    class="bg-[#121212] border border-neutral-700 text-[11px] text-white px-2 py-1 rounded focus:outline-none"
                   >
                     <option value="STUDY" ${b.category === 'STUDY' ? 'selected' : ''}>STUDY</option>
                     <option value="WORK" ${b.category === 'WORK' ? 'selected' : ''}>WORK</option>
@@ -126,7 +119,7 @@ export function renderSettingsView(container) {
                     type="text"
                     data-edit-name="${b.id}"
                     value="${b.name}"
-                    class="w-full bg-neutral-900 border border-neutral-700 text-xs text-white px-2 py-1 focus:outline-none font-bold"
+                    class="w-full bg-[#121212] border border-neutral-700 text-xs text-white px-2 py-1.5 rounded focus:outline-none font-bold"
                     placeholder="Block Name"
                   />
                 </div>
@@ -141,7 +134,7 @@ export function renderSettingsView(container) {
                       max="12"
                       data-edit-target="${b.id}"
                       value="${(b.targetMins / 60).toFixed(1)}"
-                      class="w-16 bg-neutral-900 border border-neutral-700 text-white text-center py-0.5 focus:outline-none font-mono"
+                      class="w-16 bg-[#121212] border border-neutral-700 text-white text-center py-0.5 rounded focus:outline-none font-mono"
                     />
                   </div>
                   <span class="${isMand ? 'text-[#FF69AF] font-bold' : 'text-neutral-500'}">
@@ -155,13 +148,13 @@ export function renderSettingsView(container) {
       </div>
 
       <!-- State Backup & JSON Restore Controls -->
-      <div class="border-2 border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
+      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
         <div class="text-xs font-bold text-white uppercase mb-2">STATE BACKUP & RESTORE</div>
         <div class="grid grid-cols-2 gap-2 mb-2">
-          <button id="btn-backup-json" class="h-11 border border-white bg-black text-xs font-bold uppercase active:bg-white active:text-black">
+          <button id="btn-backup-json" class="btn-tactile h-11 border border-white bg-black text-xs font-bold uppercase text-white active:bg-white active:text-black">
             EXPORT JSON
           </button>
-          <label class="h-11 border border-neutral-700 bg-black text-xs font-bold uppercase flex items-center justify-center cursor-pointer hover:border-white">
+          <label class="btn-tactile h-11 border border-neutral-700 bg-black text-xs font-bold uppercase flex items-center justify-center cursor-pointer hover:border-white text-white">
             IMPORT JSON
             <input type="file" id="file-import-json" accept=".json" class="hidden" />
           </label>
@@ -172,7 +165,7 @@ export function renderSettingsView(container) {
       </div>
 
       <!-- Factory Reset -->
-      <button id="btn-factory-reset" class="w-full h-11 border border-red-800 bg-black text-red-400 text-xs uppercase tracking-widest active:bg-red-900 active:text-white">
+      <button id="btn-factory-reset" class="btn-tactile w-full h-11 border border-red-800 bg-black text-red-400 text-xs uppercase tracking-widest active:bg-red-900 active:text-white">
         ⚠ FACTORY RESET ALL DATA
       </button>
     </section>
@@ -186,13 +179,17 @@ export function renderSettings(container) {
 }
 
 function bindSettingsEvents(container) {
-  container.querySelector('#settings-exam-countdown')?.addEventListener('click', () => {
-    const cd = getExamCountdown();
-    playRelayClick();
-    showInAppToast(cd.detailed);
+  // Theme Choices
+  container.querySelectorAll('[data-theme-choice]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const choice = btn.getAttribute('data-theme-choice');
+      setTheme(choice);
+      showInAppToast(`Theme set to ${choice.toUpperCase()}`);
+      renderSettingsView(container);
+    });
   });
 
-  // Toggle Emergency Mode with 2-consecutive-days rule
+  // Toggle Emergency Mode with 2-consecutive-day rule
   container.querySelector('#btn-toggle-emergency')?.addEventListener('click', () => {
     const state = getState();
     if (!state.records[activeDateStr]) {
@@ -201,7 +198,6 @@ function bindSettingsEvents(container) {
     const currentEmergency = !!state.records[activeDateStr].emergency;
 
     if (!currentEmergency) {
-      // Check yesterday
       const yesterday = new Date(activeDateStr + 'T00:00:00');
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayStr = yesterday.toISOString().slice(0, 10);

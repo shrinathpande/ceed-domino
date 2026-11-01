@@ -4,7 +4,14 @@ import { playRelayClick } from '../utils/sound.js';
 export const STATE_KEY = 'ceed_v2_state';
 export const BLOCKS_KEY = 'ceed_v2_blocks';
 export const ALARMS_KEY = 'ceed_v2_alarms';
+export const THEME_KEY = 'ceed_v2_theme';
 const LEGACY_STORAGE_KEY = 'ceed_domino_state_v2';
+
+export const THEMES = [
+  { id: 'cyber', label: 'CYBER', name: 'Cyber-Tactile OLED' },
+  { id: 'brutalist', label: 'BRUTAL', name: 'Industrial Brutalist' },
+  { id: 'stealth', label: 'STEALTH', name: 'Stealth Monochrome' }
+];
 
 export const DEFAULT_BLOCKS = [
   { id: 'd1', badge: 'DOMINO 1', name: 'Walk & Fitness', category: 'WALK', targetMins: 90 },
@@ -16,7 +23,7 @@ export const DEFAULT_BLOCKS = [
 const DEFAULT_SETTINGS = {
   startDate: '2026-10-22',
   endDate: '2027-01-17',
-  theme: 'dark',
+  theme: 'cyber',
 };
 
 // Core architectural invariant: any block with 'DOMINO' in badge is mandatory
@@ -28,7 +35,18 @@ export function isDominoTask(block) {
 export function getBlocks() {
   try {
     const raw = localStorage.getItem(BLOCKS_KEY);
-    return raw ? JSON.parse(raw) : structuredClone(DEFAULT_BLOCKS);
+    if (!raw) return structuredClone(DEFAULT_BLOCKS);
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) return structuredClone(DEFAULT_BLOCKS);
+    // Guarantee numeric targetMins on every block
+    return parsed.map((b, idx) => ({
+      id: b.id || `d${idx + 1}`,
+      badge: b.badge || `DOMINO ${idx + 1}`,
+      name: b.name || `Block ${idx + 1}`,
+      category: b.category || 'STUDY',
+      targetMins: Number(b.targetMins || b.floor || 60),
+      hasPartACounter: !!b.hasPartACounter
+    }));
   } catch {
     return structuredClone(DEFAULT_BLOCKS);
   }
@@ -41,6 +59,39 @@ export function saveBlocks(blocks) {
 
 let _stateCache = null;
 
+// Normalize day record data to prevent type errors (e.g. object vs array for completed)
+function normalizeDayRecord(rec) {
+  if (!rec || typeof rec !== 'object') {
+    rec = {};
+  }
+  if (!rec.durations || typeof rec.durations !== 'object') {
+    rec.durations = {};
+  }
+  if (Array.isArray(rec.completed)) {
+    // Already an array
+  } else if (rec.completed && typeof rec.completed === 'object') {
+    // Legacy object format: { d1: true, d2: false }
+    rec.completed = Object.keys(rec.completed).filter(k => rec.completed[k]);
+  } else {
+    rec.completed = [];
+  }
+  if (!Array.isArray(rec.logs)) {
+    rec.logs = [];
+  }
+  if (!Array.isArray(rec.customMins)) {
+    rec.customMins = [];
+  }
+  if (typeof rec.partACount !== 'number' || isNaN(rec.partACount)) {
+    rec.partACount = 0;
+  }
+  if (typeof rec.partABonusClaimed !== 'boolean') {
+    rec.partABonusClaimed = false;
+  }
+  rec.emergency = !!rec.emergency;
+  rec.shieldUsed = !!rec.shieldUsed;
+  return rec;
+}
+
 /** Load state or migrate from legacy ceed_domino_state_v2 */
 export function getState() {
   if (_stateCache) return _stateCache;
@@ -48,8 +99,12 @@ export function getState() {
     const raw = localStorage.getItem(STATE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
+      const normalizedRecords = {};
+      for (const [d, r] of Object.entries(parsed.records || {})) {
+        normalizedRecords[d] = normalizeDayRecord(r);
+      }
       _stateCache = {
-        records: parsed.records || {},
+        records: normalizedRecords,
         streak: parsed.streak || 0,
         bestStreak: parsed.bestStreak || 0,
         shields: parsed.shields !== undefined ? parsed.shields : 2,
@@ -148,19 +203,11 @@ export function getDayRecord(dateStr) {
     };
     saveState(state);
   } else {
-    // Forward compat
-    const rec = state.records[dateStr];
-    if (!rec.durations) rec.durations = {};
-    if (!rec.completed) rec.completed = [];
-    if (!rec.logs) rec.logs = [];
-    if (!rec.customMins) rec.customMins = [];
-    if (rec.partACount === undefined) rec.partACount = 0;
-    if (rec.partABonusClaimed === undefined) rec.partABonusClaimed = false;
+    state.records[dateStr] = normalizeDayRecord(state.records[dateStr]);
   }
   return state.records[dateStr];
 }
 
-// Backward-compatible alias for legacy calls
 export function ensureDayRecord(dateStr) {
   return getDayRecord(dateStr);
 }
@@ -172,11 +219,9 @@ export function logHours(dateStr, blockId, deltaMins, customLabel = null) {
   const block = blocks.find(b => b.id === blockId);
   if (!block) return;
 
-  if (!state.records[dateStr]) getDayRecord(dateStr);
-  const rec = state.records[dateStr];
-
-  const prev = rec.durations[blockId] || 0;
-  const next = Math.max(0, prev + deltaMins);
+  const rec = getDayRecord(dateStr);
+  const prev = Number(rec.durations[blockId]) || 0;
+  const next = Math.max(0, prev + Number(deltaMins));
   rec.durations[blockId] = next;
 
   // Record timestamped log entry regardless of time of day
@@ -211,8 +256,7 @@ export function logHours(dateStr, blockId, deltaMins, customLabel = null) {
 // Daily 35-Question Part A Micro-Counter with Auto +1.0h Study Reward
 export function logPartAQuestions(dateStr, deltaQs, setExact = false) {
   const state = getState();
-  if (!state.records[dateStr]) getDayRecord(dateStr);
-  const rec = state.records[dateStr];
+  const rec = getDayRecord(dateStr);
 
   const prev = rec.partACount || 0;
   const next = setExact ? Math.max(0, deltaQs) : Math.max(0, prev + deltaQs);
@@ -241,8 +285,8 @@ export function recalculateStreak(state) {
   const todayStr = new Date().toISOString().slice(0, 10);
 
   for (const d of dates) {
-    const rec = state.records[d];
-    const allDone = mandatoryIds.every(id => (rec.completed || []).includes(id));
+    const rec = normalizeDayRecord(state.records[d]);
+    const allDone = mandatoryIds.every(id => rec.completed.includes(id));
     if (allDone || rec.shieldUsed) {
       currentStreak += 1;
     } else if (d !== todayStr) {
@@ -287,10 +331,12 @@ export function getCumulativeTelemetry() {
     NIGHT: { label: 'NIGHT (21:00–04:59)', mins: 0 }
   };
 
-  for (const rec of Object.values(state.records)) {
+  for (const rawRec of Object.values(state.records || {})) {
+    const rec = normalizeDayRecord(rawRec);
     totalPartASolved += rec.partACount || 0;
 
-    for (const [blockId, mins] of Object.entries(rec.durations || {})) {
+    for (const [blockId, rawMins] of Object.entries(rec.durations || {})) {
+      const mins = Number(rawMins) || 0;
       const b = blockMap[blockId];
       const cat = b ? b.category : 'OTHER';
       if (cat === 'STUDY') cumulativeStudyMins += mins;
@@ -299,16 +345,16 @@ export function getCumulativeTelemetry() {
     }
 
     for (const cEntry of rec.customMins || []) {
-      if (cEntry.category === 'STUDY') cumulativeStudyMins += cEntry.mins;
-      else if (cEntry.category === 'WORK') cumulativeWorkMins += cEntry.mins;
-      else if (cEntry.category === 'WALK') cumulativeWalkMins += cEntry.mins;
+      const mins = Number(cEntry.mins) || 0;
+      if (cEntry.category === 'STUDY') cumulativeStudyMins += mins;
+      else if (cEntry.category === 'WORK') cumulativeWorkMins += mins;
+      else if (cEntry.category === 'WALK') cumulativeWalkMins += mins;
     }
 
     for (const compId of rec.completed || []) {
       if (isDominoTask(blockMap[compId])) totalCompletedDominos += 1;
     }
 
-    // Aggregate timestamped logs into biological time-of-day windows
     for (const logItem of rec.logs || []) {
       if (!logItem.mins || logItem.mins <= 0) continue;
       const hr = parseHour24Fallback(logItem);
@@ -348,6 +394,37 @@ export function getCumulativeTelemetry() {
     peakWindows,
     topWindowName: topWindow && topWindow.mins > 0 ? `${topWindow.key} (${topWindow.pct}%)` : 'NO DATA YET'
   };
+}
+
+// Theme Management (3 Themes: cyber, brutalist, stealth)
+export function getTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved && THEMES.some(t => t.id === saved)) return saved;
+  } catch {}
+  return 'cyber';
+}
+
+export function setTheme(themeId) {
+  const match = THEMES.find(t => t.id === themeId);
+  const valid = match ? match.id : 'cyber';
+  localStorage.setItem(THEME_KEY, valid);
+  document.documentElement.setAttribute('data-theme', valid);
+  document.documentElement.className = valid; // also set class for Tailwind convenience
+  const state = getState();
+  state.settings = state.settings || {};
+  state.settings.theme = valid;
+  saveState(state);
+  document.dispatchEvent(new CustomEvent('theme-changed', { detail: valid }));
+  playRelayClick();
+  return valid;
+}
+
+export function cycleTheme() {
+  const current = getTheme();
+  const idx = THEMES.findIndex(t => t.id === current);
+  const nextIdx = (idx + 1) % THEMES.length;
+  return setTheme(THEMES[nextIdx].id);
 }
 
 // Helpers for backward-compatibility

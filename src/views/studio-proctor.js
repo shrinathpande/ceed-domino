@@ -1,8 +1,9 @@
 // src/views/studio-proctor.js
 import partBData from '../data/part_b_questions.json';
-import { logHours, getDayRecord, saveState, getState } from '../core/state.js';
+import { logHours } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
-import { getDayIndex, getExamCountdown } from '../utils/dates.js';
+import { getDayIndex } from '../utils/dates.js';
+import { showInAppToast } from '../components/header.js';
 
 let activeDayIndex = 0;       // 0 to 86 (Day 1 to 87)
 let activeQuestionIndex = 0;  // 0 to 4 (Q1 to Q5)
@@ -12,6 +13,7 @@ let showChecklistDrawer = true;
 let oledDeskMode = false;
 let timerInterval = null;
 let timerState = null;        // { startedAt, durationSec }
+let wakeLockSentinel = null;
 
 const DEFAULT_CHECKLIST = [
   '1. Thumbnail & Perspective Grid (3m)',
@@ -20,20 +22,19 @@ const DEFAULT_CHECKLIST = [
   '4. Callouts & Design Notes (5m)'
 ];
 
-function showInAppToast(msg) {
-  let toast = document.getElementById('ceed-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'ceed-toast';
-    toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 text-xs font-mono font-bold tracking-tight border-2 border-white bg-black text-white shadow-2xl transition-all duration-300 pointer-events-none select-none max-w-[90vw] text-center';
-    document.body.appendChild(toast);
+async function acquireWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLockSentinel = await navigator.wakeLock.request('screen');
+    }
+  } catch {}
+}
+
+function releaseWakeLock() {
+  if (wakeLockSentinel) {
+    wakeLockSentinel.release().catch(() => {});
+    wakeLockSentinel = null;
   }
-  toast.textContent = msg;
-  toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 text-xs font-mono font-bold tracking-tight border-2 border-white bg-black text-white shadow-2xl transition-all duration-300 pointer-events-none select-none max-w-[90vw] text-center opacity-100 scale-100';
-  clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(() => {
-    toast.className += ' opacity-0 scale-95';
-  }, 3200);
 }
 
 export function renderStudioProctor(container, onBack = null, initialDate = null, questionBank = null) {
@@ -41,9 +42,8 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
 
   const bank = (questionBank && questionBank.length > 0) ? questionBank : partBData;
   const todayStr = (typeof initialDate === 'string' && initialDate) ? initialDate : new Date().toISOString().slice(0, 10);
-  const examCountdown = getExamCountdown();
 
-  // If activeDayIndex was not set manually, align with calendar day
+  // Align with calendar day if starting clean
   if (activeDayIndex === 0) {
     const calcIndex = getDayIndex(todayStr);
     if (calcIndex >= 0 && calcIndex < 87) {
@@ -53,7 +53,6 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
 
   const rawDayData = bank.find(p => p.day === (activeDayIndex + 1)) || bank[activeDayIndex] || bank[0];
 
-  // Map to normalized daySet schema
   const daySet = {
     day: rawDayData.day || (activeDayIndex + 1),
     questions: (rawDayData.questions || [
@@ -75,61 +74,60 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
 
   const q = daySet.questions[activeQuestionIndex] || daySet.questions[0];
 
-  // Fullscreen OLED Desk Clock Mode for physical paper sketching
+  // Fullscreen OLED Desk Clock Mode (with Screen Wake Lock active)
   if (oledDeskMode) {
+    acquireWakeLock();
     container.innerHTML = `
       <div class="fixed inset-0 bg-black z-50 flex flex-col justify-between p-6 font-mono text-white select-none">
         <div class="flex justify-between items-center text-xs text-neutral-400">
-          <span>DAY ${daySet.day} // ${q.code}</span>
-          <button id="btn-exit-oled" class="border border-neutral-700 px-3 py-1.5 text-white active:bg-white active:text-black">EXIT OLED</button>
+          <span class="tracking-widest">DAY ${daySet.day} // ${q.code}</span>
+          <button id="btn-exit-oled" class="btn-tactile border border-neutral-700 px-3.5 py-1.5 text-white active:bg-white active:text-black">
+            EXIT OLED ✕
+          </button>
         </div>
         <div class="my-auto text-center">
-          <div id="studio-timer-display" class="text-7xl font-bold tracking-tighter text-[#FF69AF]">24:00</div>
-          <div class="text-xs text-neutral-300 mt-4 max-w-xs mx-auto line-clamp-2">${q.prompt}</div>
+          <div id="studio-timer-display" class="text-7xl font-extrabold tracking-tighter text-[#FF69AF] tabular-nums">24:00</div>
+          <div class="text-xs text-neutral-300 mt-4 max-w-xs mx-auto line-clamp-3 leading-relaxed">${q.prompt}</div>
         </div>
-        <button id="btn-complete-sprint" class="w-full h-12 border-2 border-[#FF69AF] text-[#FF69AF] font-bold text-xs uppercase active:bg-[#FF69AF] active:text-black">
-          FINISH & LOG TO STUDY DOMINO
+        <button id="btn-complete-sprint" class="btn-tactile w-full h-12 border-2 border-[#FF69AF] bg-[#FF69AF]/10 text-[#FF69AF] font-bold text-xs uppercase active:bg-[#FF69AF] active:text-black">
+          FINISH & LOG SPRINT
         </button>
       </div>
     `;
     bindStudioEvents(container, bank, daySet, q, todayStr);
     startTickerLoop(container);
     return;
+  } else {
+    releaseWakeLock();
   }
 
   container.innerHTML = `
-    <section class="w-full max-w-[390px] mx-auto px-3 pt-2 pb-24 font-mono text-white select-none">
-      <!-- ZONE 1: Sticky Top HUD Bar with Countdown -->
-      <div class="border-2 border-white bg-[#0a0a0a] px-2.5 py-2 flex items-center justify-between gap-1.5 mb-2">
-        <button id="btn-day-cycle" class="border border-neutral-700 px-2 py-1 text-xs font-bold active:bg-white active:text-black truncate" title="Jump to Day">
-          D${String(daySet.day).padStart(2, '0')}/87 ▾
+    <section class="w-full max-w-[420px] mx-auto px-3 pt-2 pb-24 font-mono select-none" aria-label="Part B Studio Proctor">
+      <!-- ZONE 1: Top HUD Bar (Day Cycle, Mode Toggle, Timer Display) -->
+      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] px-3 py-2 flex items-center justify-between gap-1.5 mb-2.5">
+        <button id="btn-day-cycle" class="btn-tactile border border-neutral-700 bg-[#121212] px-2.5 py-1 text-xs font-bold text-white active:bg-white active:text-black truncate" title="Jump to Day">
+          DAY ${String(daySet.day).padStart(2, '0')}/87 ▾
         </button>
 
-        <button id="btn-mode-toggle" class="border border-neutral-700 px-1.5 py-1 text-[10px] text-neutral-300">
+        <button id="btn-mode-toggle" class="btn-tactile border border-neutral-700 bg-[#121212] px-2 py-1 text-[10px] text-neutral-300">
           ${studioMode === 'DRILL' ? '24M DRILL' : '120M EXAM'}
         </button>
 
-        <button
-          id="studio-exam-countdown"
-          class="text-[10px] font-bold text-white bg-black border border-neutral-700 px-1.5 py-0.5 active:border-[#FF69AF] active:text-[#FF69AF]"
-          title="${examCountdown.detailed}"
-        >
-          ${examCountdown.compact}
-        </button>
-
-        <div id="studio-timer-display" class="text-xs font-bold px-1.5 py-1 border ${timerState ? 'border-[#FF69AF] text-[#FF69AF]' : 'border-neutral-800 text-white'}">
+        <div id="studio-timer-display" class="btn-tactile text-xs font-bold px-2 py-1 border ${timerState ? 'border-[#FF69AF] text-[#FF69AF] bg-[#FF69AF]/10' : 'border-neutral-800 text-white bg-black'} tabular-nums">
           ${studioMode === 'DRILL' ? '24:00' : '120:00'}
         </div>
       </div>
 
       <!-- ZONE 2: 5-Pill Question Deck Switcher -->
-      <div class="grid grid-cols-5 gap-1 mb-2">
+      <div class="grid grid-cols-5 gap-1 mb-2.5" role="tablist">
         ${daySet.questions.map((item, idx) => {
           const isCurrent = idx === activeQuestionIndex;
           return `
             <button
               data-q-idx="${idx}"
-              class="h-11 border-2 ${isCurrent ? 'border-[#FF69AF] bg-[#FF69AF] text-black font-bold' : 'border-neutral-800 bg-[#0a0a0a] text-neutral-300'} flex flex-col items-center justify-center text-[10px] leading-tight"
+              class="btn-tactile h-11 border-2 ${isCurrent ? 'border-[#FF69AF] bg-[#FF69AF] text-black font-extrabold' : 'border-neutral-800 bg-[#0c0c0c] text-neutral-400'} flex flex-col items-center justify-center text-[10px] leading-tight"
+              role="tab"
+              aria-selected="${isCurrent}"
             >
               <span>Q${idx + 1}</span>
               <span class="text-[9px] truncate max-w-full px-0.5">${item.code}</span>
@@ -138,22 +136,22 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
         }).join('')}
       </div>
 
-      <!-- ZONE 3: Single Focused Question Card -->
-      <div class="border-2 border-neutral-800 bg-[#0a0a0a] p-3 mb-2">
+      <!-- ZONE 3: Focused Question Card -->
+      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-2.5">
         <div class="flex items-center justify-between text-[10px] text-neutral-400 border-b border-neutral-800 pb-2 mb-2">
           <span class="text-[#FF69AF] font-bold truncate pr-1">Q${activeQuestionIndex + 1} // ${q.title.toUpperCase()}</span>
-          <span class="shrink-0">${q.marks}M • ${q.mins}m</span>
+          <span class="shrink-0 text-white">${q.marks}M • ${q.mins}m</span>
         </div>
 
         <p class="text-xs leading-relaxed text-white font-sans mb-3">
           ${q.prompt}
         </p>
 
-        <!-- Collapsible Trend Drawer -->
-        <div class="border border-neutral-800 bg-black mb-2">
+        <!-- Collapsible Examiner Trend Drawer -->
+        <div class="border border-neutral-800 bg-black/60 rounded mb-2 overflow-hidden">
           <button id="btn-toggle-trend" class="w-full px-2.5 py-2 text-left text-[11px] flex justify-between items-center text-neutral-300">
             <span>GAME THEORY & EXAMINER TREND</span>
-            <span>${showTrendDrawer ? '−' : '+'}</span>
+            <span class="text-neutral-500">${showTrendDrawer ? '−' : '+'}</span>
           </button>
           ${showTrendDrawer ? `
             <div class="px-2.5 pb-2.5 text-[11px] text-neutral-400 border-t border-neutral-900 pt-2 leading-relaxed">
@@ -163,10 +161,10 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
         </div>
 
         <!-- Collapsible Drawing Checklist -->
-        <div class="border border-neutral-800 bg-black">
+        <div class="border border-neutral-800 bg-black/60 rounded overflow-hidden">
           <button id="btn-toggle-checklist" class="w-full px-2.5 py-2 text-left text-[11px] flex justify-between items-center text-neutral-300">
             <span>24-MINUTE EXECUTION CHECKLIST</span>
-            <span>${showChecklistDrawer ? '−' : '+'}</span>
+            <span class="text-neutral-500">${showChecklistDrawer ? '−' : '+'}</span>
           </button>
           ${showChecklistDrawer ? `
             <div class="px-2.5 pb-2.5 pt-1 border-t border-neutral-900 flex flex-col gap-1.5">
@@ -181,32 +179,32 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
         </div>
       </div>
 
-      <!-- ZONE 4: Thumb-Zone Action Bar & Direct Study Domino Logger -->
-      <div class="grid grid-cols-2 gap-2 mb-2">
+      <!-- ZONE 4: Action Buttons (Start Sprint, OLED Clock Mode) -->
+      <div class="grid grid-cols-2 gap-2 mb-2.5">
         <button
           id="btn-start-stop"
-          class="h-12 border-2 ${timerState ? 'border-[#FF69AF] bg-[#FF69AF] text-black' : 'border-white bg-white text-black'} font-bold text-xs uppercase active:scale-95 transition-transform"
+          class="btn-tactile h-12 border-2 ${timerState ? 'border-[#FF69AF] bg-[#FF69AF] text-black font-extrabold' : 'border-white bg-white text-black font-bold'} text-xs uppercase"
         >
           ${timerState ? 'STOP SPRINT' : 'START TIMER'}
         </button>
 
         <button
           id="btn-oled-mode"
-          class="h-12 border-2 border-neutral-700 bg-[#0a0a0a] text-white font-bold text-xs uppercase active:bg-white active:text-black"
+          class="btn-tactile h-12 border border-neutral-700 bg-[#0c0c0c] text-white font-bold text-xs uppercase"
         >
           OLED DESK CLOCK
         </button>
       </div>
 
-      <!-- Direct Study / Paperwork Domino Sync Bar -->
-      <div class="border-2 border-neutral-800 bg-[#0a0a0a] p-2.5">
+      <!-- Direct Study Domino Sync -->
+      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-2.5">
         <div class="text-[10px] text-neutral-400 uppercase mb-2">
-          LOG PART B SESSION DIRECTLY TO STUDY / PAPERWORK DOMINO:
+          LOG PART B SPRINT DIRECTLY TO STUDY DOMINO:
         </div>
         <div class="grid grid-cols-3 gap-1.5">
-          <button data-log-studio="30" class="h-11 border border-neutral-700 text-xs font-bold active:bg-[#FF69AF] active:text-black">+30M STUDY</button>
-          <button data-log-studio="60" class="h-11 border border-neutral-700 text-xs font-bold active:bg-[#FF69AF] active:text-black">+1H STUDY</button>
-          <button data-log-studio="120" class="h-11 border border-[#FF69AF] text-[#FF69AF] text-xs font-bold active:bg-[#FF69AF] active:text-black">+2H SPRINT</button>
+          <button data-log-studio="30" class="btn-tactile h-11 border border-neutral-700 bg-[#0c0c0c] text-xs font-bold text-white active:bg-[#FF69AF] active:text-black">+30M STUDY</button>
+          <button data-log-studio="60" class="btn-tactile h-11 border border-neutral-700 bg-[#0c0c0c] text-xs font-bold text-white active:bg-[#FF69AF] active:text-black">+1H STUDY</button>
+          <button data-log-studio="120" class="btn-tactile h-11 border border-[#FF69AF] bg-[#FF69AF]/10 text-[#FF69AF] text-xs font-bold active:bg-[#FF69AF] active:text-black">+2H SPRINT</button>
         </div>
       </div>
     </section>
@@ -232,12 +230,6 @@ function startTickerLoop(container) {
 }
 
 function bindStudioEvents(container, questionBank, daySet, q, todayStr) {
-  container.querySelector('#studio-exam-countdown')?.addEventListener('click', () => {
-    const cd = getExamCountdown();
-    playRelayClick();
-    showInAppToast(cd.detailed);
-  });
-
   // Switch Q1-Q5 tabs
   container.querySelectorAll('[data-q-idx]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -247,32 +239,26 @@ function bindStudioEvents(container, questionBank, daySet, q, todayStr) {
     });
   });
 
-  // Cycle Day 1-87
-  const dayBtn = container.querySelector('#btn-day-cycle');
-  if (dayBtn) {
-    dayBtn.addEventListener('click', () => {
-      const input = prompt('Jump to Studio Day (1 - 87):', String(activeDayIndex + 1));
-      const num = Number(input);
-      if (num >= 1 && num <= 87) {
-        activeDayIndex = num - 1;
-        playRelayClick();
-        renderStudioProctor(container, null, todayStr, questionBank);
-      }
-    });
-  }
-
-  // Toggle 24m Drill vs 120m Exam
-  const modeBtn = container.querySelector('#btn-mode-toggle');
-  if (modeBtn) {
-    modeBtn.addEventListener('click', () => {
-      studioMode = studioMode === 'DRILL' ? 'EXAM' : 'DRILL';
-      timerState = null;
+  // Jump to Day
+  container.querySelector('#btn-day-cycle')?.addEventListener('click', () => {
+    const input = prompt('Jump to Studio Day (1 - 87):', String(activeDayIndex + 1));
+    const num = Number(input);
+    if (num >= 1 && num <= 87) {
+      activeDayIndex = num - 1;
       playRelayClick();
       renderStudioProctor(container, null, todayStr, questionBank);
-    });
-  }
+    }
+  });
 
-  // Expand/collapse Trend & Checklist drawers
+  // Toggle Mode
+  container.querySelector('#btn-mode-toggle')?.addEventListener('click', () => {
+    studioMode = studioMode === 'DRILL' ? 'EXAM' : 'DRILL';
+    timerState = null;
+    playRelayClick();
+    renderStudioProctor(container, null, todayStr, questionBank);
+  });
+
+  // Collapsible Drawers
   container.querySelector('#btn-toggle-trend')?.addEventListener('click', () => {
     showTrendDrawer = !showTrendDrawer;
     playRelayClick();
@@ -285,7 +271,7 @@ function bindStudioEvents(container, questionBank, daySet, q, todayStr) {
     renderStudioProctor(container, null, todayStr, questionBank);
   });
 
-  // Start / Stop Sprint Timer
+  // Start / Stop Timer
   container.querySelector('#btn-start-stop')?.addEventListener('click', () => {
     if (timerState) {
       const elapsedMins = Math.max(1, Math.round((Date.now() - timerState.startedAt) / 60000));
@@ -298,6 +284,7 @@ function bindStudioEvents(container, questionBank, daySet, q, todayStr) {
         durationSec: studioMode === 'DRILL' ? 24 * 60 : 120 * 60
       };
       playRelayClick();
+      showInAppToast(`Sprint started: ${studioMode === 'DRILL' ? '24m' : '120m'}`);
     }
     renderStudioProctor(container, null, todayStr, questionBank);
   });
@@ -317,6 +304,7 @@ function bindStudioEvents(container, questionBank, daySet, q, todayStr) {
 
   container.querySelector('#btn-exit-oled')?.addEventListener('click', () => {
     oledDeskMode = false;
+    releaseWakeLock();
     playRelayClick();
     renderStudioProctor(container, null, todayStr, questionBank);
   });
@@ -327,12 +315,13 @@ function bindStudioEvents(container, questionBank, daySet, q, todayStr) {
       : 24;
     timerState = null;
     oledDeskMode = false;
+    releaseWakeLock();
     logHours(todayStr, 'd2', elapsedMins, `Part B Studio (${q.code})`);
-    showInAppToast(`Finished! Logged ${elapsedMins}m to Domino 2`);
+    showInAppToast(`Sprint completed! +${elapsedMins}m logged to Domino 2`, true);
     renderStudioProctor(container, null, todayStr, questionBank);
   });
 
-  // Quick-log Studio minutes directly into Study Domino ('d2')
+  // Quick Log Studio
   container.querySelectorAll('[data-log-studio]').forEach(btn => {
     btn.addEventListener('click', () => {
       const mins = Number(btn.getAttribute('data-log-studio'));

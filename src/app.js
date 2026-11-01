@@ -1,19 +1,35 @@
-/**
- * App Shell — handles SPA routing, bottom navigation dock, and view switching.
- */
+// src/app.js
 import { renderDashboard } from './views/dashboard.js';
 import { renderSettings } from './views/settings.js';
 import { renderStudioProctor } from './views/studio-proctor.js';
 import { renderStats } from './views/stats.js';
-import { renderBottomNav } from './components/navigation.js';
+import { renderHeader } from './components/header.js';
+import { initGestureNavigation } from './utils/gestures.js';
+import { getTheme, setTheme } from './core/state.js';
 
 let _appContainer = null;
+let _viewContainer = null;
 
 /** Initialize the app */
 export function initApp(container) {
   _appContainer = container;
+  _appContainer.innerHTML = `
+    <div id="appShell" class="min-h-screen bg-[var(--ground)] text-[var(--text)] transition-colors">
+      <div id="headerSlot"></div>
+      <main id="viewContainer" class="w-full"></main>
+    </div>
+  `;
 
-  // Handle hash-based routing
+  _viewContainer = document.getElementById('viewContainer');
+
+  // Initialize Theme
+  const activeTheme = getTheme();
+  setTheme(activeTheme);
+
+  // Initialize Swipe Gestures
+  initGestureNavigation();
+
+  // Listen for hash changes
   window.addEventListener('hashchange', () => route());
   route();
 }
@@ -21,43 +37,30 @@ export function initApp(container) {
 /** Route to the correct view based on hash */
 function route() {
   const hash = window.location.hash || '#/';
-  renderBottomNav(hash);
+  const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+  const dateParam = urlParams.get('date');
+
+  // Render Top Instrument Header
+  renderHeader(_appContainer, hash, dateParam);
+
+  // Scroll to top on route change
+  window.scrollTo({ top: 0, behavior: 'instant' });
 
   if (hash.startsWith('#/studio')) {
-    // Extract date query parameter if present (e.g. #/studio?date=2026-10-22)
-    const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
-    const dateParam = urlParams.get('date');
-    renderStudioProctor(
-      _appContainer,
-      () => {
-        window.location.hash = '#/';
-      },
-      dateParam
-    );
+    renderStudioProctor(_viewContainer, () => {
+      window.location.hash = '#/';
+    }, dateParam);
   } else if (hash.startsWith('#/stats')) {
-    renderStats(
-      _appContainer,
-      () => {
-        window.location.hash = '#/';
-      },
-      (selectedDate) => {
-        window.location.hash = `#/dashboard?date=${selectedDate}`;
-      }
-    );
+    renderStats(_viewContainer, () => {
+      window.location.hash = '#/';
+    });
   } else if (hash.startsWith('#/settings')) {
-    renderSettings(_appContainer, () => {
+    renderSettings(_viewContainer, () => {
       window.location.hash = '#/';
     });
   } else {
-    // Dashboard (either '#/' or '#/dashboard' or query params like '#/?date=...')
-    const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
-    const targetDate = urlParams.get('date');
-    renderDashboard(
-      _appContainer,
-      () => {
-        window.location.hash = '#/settings';
-      },
-      targetDate
-    );
+    renderDashboard(_viewContainer, () => {
+      window.location.hash = '#/settings';
+    }, dateParam);
   }
 }

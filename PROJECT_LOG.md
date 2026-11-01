@@ -553,4 +553,27 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 8. Radical OLED Experience & UX Overhaul (Skill-Driven Revamp)
+
+**Date**: November 1, 2026  
+**Trigger**: Complete UX, UI, and motion overhaul executed via `frontend-design`, `ui-taste`, `grill-with-docs`, `web-design-guidelines`, and `impeccable`.
+
+### 8.1 Critical UX Bug Fixes (Clicking Resiliency)
+1. **iOS Safari `role="button"` Fix**: Cards converted into accessible touch targets with `role="button"`, `tabindex="0"`, and `min-h-[56px]`, eliminating dropped taps in mobile WebKit.
+2. **Schema Array Protection**: Implemented `normalizeDayRecord` in `src/core/state.js` guaranteeing `rec.completed` is always an `Array`. Prevents fatal `TypeError: rec.completed.includes is not a function` when inspecting legacy records.
+3. **Event Propagation Insulation**: All nested interactive buttons (`✓`, `🔒 TIMER`, `+0.5h`, `-5 Qs`, `35/35`) call `e.stopPropagation()` and feature dedicated spring scaling (`btn-tactile active:scale-96`), preventing accidental card collapse while logging.
+
+### 8.2 Three Selectable Themes
+1. **Cyber-Tactile OLED (`cyber`, Default)**: Pure AMOLED `#000000` ground, rich `#0c0c0c` charcoal surfaces, 10px pill curvatures, refined borders, spring motion (`cubic-bezier(0.16, 1, 0.3, 1)`), and `#FF69AF` accents.
+2. **Industrial Brutalist (`brutalist`)**: Strict 0px rectangular geometry, raw monospace tokens, and sharp wireframe borders.
+3. **Stealth Monochrome (`stealth`)**: High-contrast pure white on pitch black with graphite `#1f1f1f` dividers.
+- **Instant 1-Tap Theme Switching**: Available on the Top Instrument Header and in Settings.
+
+### 8.3 Mobile Motion & Navigation Upgrades
+1. **Horizontal Swipe Gesture Navigation (`src/utils/gestures.js`)**: Fluid swipe left/right across screens (`TODAY` ⇄ `STATS` ⇄ `STUDIO` ⇄ `CONFIG`) with tactile haptic notch ticks.
+2. **Top Instrument Header (`src/components/header.js`)**: Single-line compact header with C87 stamp, DXX day tracker, level indicator, exam countdown pill (`[XXd remaining]`), 3-theme toggle, shields, and streak counter.
+3. **Screen Wake Lock API (`src/views/studio-proctor.js`)**: OLED Desk Clock Mode acquires a native screen wake lock (`navigator.wakeLock`) so the iPhone 12 display stays permanently awake during physical sketching drills on paper.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

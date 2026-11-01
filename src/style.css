@@ -2,75 +2,80 @@
 
 @layer base {
   :root {
-    /* Industrial brutalist ledger ground & ink tokens */
-    --ground: #f4f3f1;
-    --surface: #ffffff;
-    --raised: #e9e8e5;
-    --border: #dcdad5;
-    --rule: #e5e3de;
-    --control: #cfccc5;
-    --text: #0e0e0e;
-    --muted: #6b6a65;
-    --accent: #111111;
-    
-    /* Functional signals (strict <=1% color budget) */
-    --positive: #1b7a3e;
-    --negative: #b91c1c;
-    --warning: #b45309;
-    --chart-accent: #0f4c81; /* Raw industrial blueprint cobalt */
-    
+    --ground: #000000;
+    --surface: #0c0c0c;
+    --raised: #161616;
+    --border: #262626;
+    --rule: #1c1c1c;
+    --text: #ffffff;
+    --muted: #888888;
+    --accent: #FF69AF;
     --domino-accent: #FF69AF;
-
-    --radius-card: 2px;
-    --radius-control: 2px;
-
-    /* GitHub Contribution Matrix Green Palette (Light) */
-    --gh-l0: #ebedf0;
-    --gh-l1: #9be9a8;
-    --gh-l2: #40c463;
-    --gh-l3: #30a14e;
-    --gh-l4: #216e39;
+    --radius-card: 10px;
+    --radius-btn: 8px;
+    --spring-physics: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .dark {
-    /* Pure Pitch AMOLED Black (#000000) for OLED Displays / iPhone 12 */
+  /* Theme 1: Cyber-Tactile OLED (Default) */
+  html[data-theme="cyber"],
+  .cyber {
+    --ground: #000000;
+    --surface: #0c0c0c;
+    --raised: #161616;
+    --border: #262626;
+    --rule: #1a1a1a;
+    --text: #ffffff;
+    --muted: #8e8e93;
+    --accent: #FF69AF;
+    --domino-accent: #FF69AF;
+    --radius-card: 10px;
+    --radius-btn: 8px;
+  }
+
+  /* Theme 2: Industrial Brutalist */
+  html[data-theme="brutalist"],
+  .brutalist {
+    --ground: #000000;
+    --surface: #080808;
+    --raised: #121212;
+    --border: #333333;
+    --rule: #222222;
+    --text: #ffffff;
+    --muted: #737373;
+    --accent: #ffffff;
+    --domino-accent: #FF69AF;
+    --radius-card: 0px;
+    --radius-btn: 0px;
+  }
+
+  /* Theme 3: Stealth Monochrome */
+  html[data-theme="stealth"],
+  .stealth {
     --ground: #000000;
     --surface: #0a0a0a;
     --raised: #141414;
-    --border: #222222;
-    --rule: #1a1a1a;
-    --control: #2e2e2e;
+    --border: #1f1f1f;
+    --rule: #171717;
     --text: #ffffff;
-    --muted: #888888;
+    --muted: #666666;
     --accent: #ffffff;
-    --chart-accent: #ffffff; /* Clean high-contrast monochrome accent */
-    --domino-accent: #FF69AF; /* Vibrant Domino Accent */
-
-    --positive: #22c55e;
-    --negative: #ef4444;
-    --warning: #f59e0b;
-
-    /* GitHub Contribution Matrix Green Palette (AMOLED Dark) */
-    --gh-l0: #121212;
-    --gh-l1: #0e4429;
-    --gh-l2: #006d32;
-    --gh-l3: #26a641;
-    --gh-l4: #39d353;
+    --domino-accent: #FF69AF;
+    --radius-card: 4px;
+    --radius-btn: 4px;
   }
 
   /* Full Emergency Mode: Red industrial alert shift */
   html.emergency-mode,
   body.emergency-active-theme {
-    --ground: #120404 !important;
-    --surface: #1f0808 !important;
-    --raised: #2a0b0b !important;
-    --border: #4d1515 !important;
-    --rule: #3b1010 !important;
-    --control: #5c1a1a !important;
+    --ground: #100303 !important;
+    --surface: #1a0606 !important;
+    --raised: #280909 !important;
+    --border: #521212 !important;
+    --rule: #3d0d0d !important;
     --text: #fee2e2 !important;
     --muted: #fca5a5 !important;
     --accent: #ef4444 !important;
-    --chart-accent: #f87171 !important;
+    --domino-accent: #ef4444 !important;
   }
 
   body {
@@ -84,11 +89,9 @@
     padding-top: env(safe-area-inset-top, 0px);
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
-    transition: background-color 300ms ease, color 300ms ease;
-  }
-
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
   }
 
   .font-mono {
@@ -96,81 +99,43 @@
   }
 }
 
-/* Industrial brutalist crisp precision */
-.ledger-border {
-  border: 1px solid var(--border);
-}
-
-.ledger-rule-b {
-  border-bottom: 1px solid var(--rule);
-}
-
-.ledger-rule-t {
-  border-top: 1px solid var(--rule);
-}
-
-.ledger-card {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
+/* Card Geometry & Tap Interactions */
+.card-shell {
   border-radius: var(--radius-card);
-  position: relative;
-  transition: background-color 200ms ease, border-color 200ms ease;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease;
 }
 
-/* High contrast active domino check state */
-.domino-done-brutalist {
-  border-color: var(--text) !important;
-  background-color: var(--surface) !important;
+.card-shell:active {
+  transform: scale(0.99);
 }
 
-/* High-contrast border ripple / pulse for domino completion */
-@keyframes borderPulse {
+.btn-tactile {
+  border-radius: var(--radius-btn);
+  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-tactile:active {
+  transform: scale(0.96);
+}
+
+/* Smooth Liquid Progress Bar */
+.liquid-progress {
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Subtle Shimmer Animation for Completed Domino */
+@keyframes completedSweep {
   0% {
-    box-shadow: 0 0 0 0 var(--text);
+    box-shadow: 0 0 0 0 rgba(255, 105, 175, 0.4);
   }
-  40% {
-    box-shadow: 0 0 0 3px var(--text);
+  50% {
+    box-shadow: 0 0 0 4px rgba(255, 105, 175, 0.2);
   }
   100% {
-    box-shadow: 0 0 0 0 transparent;
+    box-shadow: 0 0 0 0 rgba(255, 105, 175, 0);
   }
 }
 
-.border-pulse-active {
-  animation: borderPulse 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Domino Accent (#FF69AF) */
-.domino-card-mandatory .domino-badge-mandatory {
-  background-color: rgba(255, 105, 175, 0.15) !important;
-  color: var(--domino-accent) !important;
-  border-color: rgba(255, 105, 175, 0.35) !important;
-}
-
-/* Whole card border lights up with #FF69AF when completed */
-.domino-card-mandatory.domino-done-brutalist {
-  border-color: var(--domino-accent) !important;
-  background-color: var(--surface) !important;
-}
-
-.domino-card-mandatory .check-btn[aria-pressed="true"] {
-  background-color: var(--domino-accent) !important;
-  border-color: var(--domino-accent) !important;
-  color: #000000 !important;
-}
-
-.domino-card-mandatory.border-pulse-active {
-  animation: borderPulseDomino 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes borderPulseDomino {
-  0% {
-    box-shadow: 0 0 0 0 var(--domino-accent);
-  }
-  40% {
-    box-shadow: 0 0 0 3px var(--domino-accent);
-  }
-  100% {
-    box-shadow: 0 0 0 0 transparent;
-  }
+.domino-completed-pulse {
+  animation: completedSweep 0.5s ease-out;
 }
