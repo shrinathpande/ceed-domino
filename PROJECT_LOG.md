@@ -998,4 +998,17 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 21. Complete Surface & Color Palette Harmonization Across All Cards and Controls
+
+### 21.1 Harmonized Card Surface Token (`#121316`)
+- Fully synchronized `--surface-sheet` and `--surface-card` to `#121316` with uniform `1px solid rgba(255, 255, 255, 0.07)` border across all components:
+  - Planning Hero Card (`.ron-top-sheet`) now shares the exact same `#121316` matte obsidian background, `14px` border-radius, and border token as all Domino Cards (`.bento-card`).
+  - Restored clean, high-contrast `#F4F4F6` titles, `#71717A` metadata labels, and the 3-part progress bar (Crisp White `#F4F4F6` + Barcode Hatch `#A1A1AA` + Charcoal `#27272A`).
+- Inner wells (`.recessed-well`, nav bar, countdown pill) remain consistently structured in `#18191E` with `10px` radius.
+
+### 21.2 Header Telemetry & Navigation Uniformity
+- Removed discordant green indicator from the `76d to CEED` countdown pill in [`src/components/header.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/components/header.js), matching the clean monochromatic typography of the sticky header and segmented 4-tab bar (`Today`, `Stats`, `Studio`, `Config`).
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

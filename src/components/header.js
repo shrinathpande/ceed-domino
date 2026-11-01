@@ -222,11 +222,10 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
           <button
             id="btn-exam-countdown"
             type="button"
-            class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#18181E] hover:bg-[#27272A] text-[#A1A1AA] hover:text-[#F4F4F6] border border-white/[0.08] transition-all cursor-pointer select-none active:scale-95"
+            class="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-medium bg-[#18181E] hover:bg-[#27272A] text-[#A1A1AA] hover:text-[#F4F4F6] border border-white/[0.08] transition-all cursor-pointer select-none active:scale-95"
             title="Tap for exact CEED exam timing & countdown"
             aria-label="Exam Countdown Details"
           >
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 ${isCountdownExpanded ? 'animate-pulse' : ''}"></span>
             <span id="countdown-pill-text" class="tabular-nums font-mono">${pillLabel}</span>
           </button>
         </div>
