@@ -1036,4 +1036,18 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 23. Upgraded Minimalist Monolith Stone Domino Favicon Suite
+
+### 23.1 High-Relief Ace of Clubs Monolith Ingestion
+- Ingested the new square, bracket-free carved stone domino master artwork (`1024x1024` JPEG).
+- Regenerated all favicon and touch assets via Lanczos filter:
+  - `public/favicon.ico`: Embedded 16×16, 32×32, 48×48, and 64×64 multi-resolution Windows and tab icon.
+  - `public/favicon-32x32.png` & `public/favicon-16x16.png`: Crisp browser tab favicons.
+  - `public/favicon.svg`: Vector wrapper with embedded high-resolution data URI and 40px squircle clip.
+  - `public/apple-touch-icon.png` & `public/icons/apple-touch-icon.png`: 180×180 iOS home screen icon.
+  - `public/icons/icon-192.png` & `public/icons/icon-512.png`: Android and PWA splash/maskable icons.
+- Built and verified with 0 errors; all assets precached by the service worker.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*
