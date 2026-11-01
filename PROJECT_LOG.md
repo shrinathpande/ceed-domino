@@ -1171,4 +1171,40 @@ Implemented an Emil Kowalski-compliant 40ms cascading entrance system that trigg
 
 ---
 
+## 30. Light Mode High-Contrast Optimization & Ultra-Raw Terminal Brutalist UI Mode
+
+### 30.1 Light Mode Systemic Contrast & Surface Architecture (`src/style.css`, `stats.js`, `settings.js`)
+- **Systemic Palette Hierarchy (`html.theme-light`)**:
+  - Canvas Ground: `#F6F5F2` (Studio ivory ground with natural matte texture).
+  - Card Surfaces: `#FFFFFF` (Pure white card bodies, crisp and elevated).
+  - Recessed Control Wells: `#EAE9E3` (Tactile inset wells for inputs, steppers, and time tracks).
+  - Deep Ink Typography: `#09090B` (Primary headings, domino names, and telemetry; WCAG AAA 14:1 contrast).
+  - Secondary Markers: `#52525B` (WCAG AA 6.5:1 contrast for sublines, hours, and categories).
+  - Muted Borders: `rgba(0, 0, 0, 0.08)` (Subtle, clean 1px card and control boundaries).
+- **Component & View Inversion**:
+  - Overrode hardcoded dark mode Tailwind utility classes (`text-[#F4F4F6]`, `text-[#E4E4E7]`, `text-[#D4D4D8]`, `text-[#A1A1AA]`, `bg-[#141418]`, `bg-[#18181B]`, `bg-[#18191E]`, `bg-[#16171B]`, `bg-[#121214]`, `bg-[#1C1D22]`, `bg-[#23242A]`) under `html.theme-light` to instantly render deep ink typography and warm ivory control wells without breaking dark mode.
+  - Enhanced 87-day analytical consistency matrix (`src/views/stats.js`):
+    - Light mode empty cells render as `#EAE9E3` wells instead of pitch-black blocks.
+    - Active cells follow an inverted high-contrast green progression on white: `#86EFAC` (Low) → `#22C55E` (Medium) → `#16A34A` (High) → `#15803D` (Peak), mirroring the visual clarity of GitHub contribution graphs.
+    - Matrix inspector HUD and legend dynamically adapt between light and dark modes.
+
+### 30.2 Ultra-Raw Terminal Brutalist UI Mode (`src/style.css`, `state.js`, `settings.js`, `app.js`)
+- **Aesthetic Specification (`html.theme-brutalist` & `html[data-theme="brutalist"]`)**:
+  - **Zero Rounded Geometry**: Enforced strict `0px` sharp corners everywhere (`* { border-radius: 0px !important; }`), transforming all cards, buttons, swatches, pills, inputs, and day slots into razor-sharp rectangular blocks.
+  - **Heavy Industrial Borders**: Stark `2px solid` borders across all cards (`.bento-card`, `.ron-top-sheet`), control wells (`.recessed-well`), navigation bars, and status pills.
+  - **Zero Shadows**: Stripped all soft shadows and glows (`box-shadow: none !important`), delivering pure, unadorned structural clarity.
+  - **Monospace Technical Typography**: Headings and badges automatically switch to uppercase monospace (`font-family: var(--font-mono) !important; text-transform: uppercase !important; letter-spacing: -0.02em !important;`).
+  - **Mechanical Tactile Button Press**: Interactive buttons and pills execute a physical mechanical depression on active tap (`transform: translate(2px, 2px) !important;`).
+  - **Dual Mode Adaptability**: Fully functional in both dark OLED mode (stark white/zinc borders on `#000000`) and light mode (deep ink `#09090B` 2px borders on `#F6F5F2`).
+- **Interactive Control Switch**:
+  - Embedded a dedicated "Terminal Brutalist Mode" card at the top of the Config tab (`src/views/settings.js`) with an interactive `[ACTIVE [ON] / OFF]` tactile toggle.
+  - Integrated `isBrutalistMode()` and `setBrutalistMode(enabled)` in `src/core/state.js`, safely toggling `theme-brutalist` on `<html>` and dispatching `theme-changed` for instantaneous in-place re-renders.
+
+### 30.3 Verification & Quality Gate
+- **Production Build**: Verified with `npm run build` — 29 modules bundled cleanly in 351ms with zero errors.
+- **Automated Gating**: `lint.mjs` verified with **0 FAIL**, 114 WARN.
+- **Headless Browser CDP Testing**: Automated test suite verified light mode toggle, brutalist activation (`cardBorderRadius: "0px"`, `cardBorderWidth: "2px"`), dark brutalist mode, and seamless restoration to rounded 14px bento mode.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

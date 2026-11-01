@@ -4,3 +4,4 @@ dist
 *.local
 .vercel
 .taste-skill
+inspect-run

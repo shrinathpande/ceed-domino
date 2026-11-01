@@ -53,22 +53,100 @@
 }
 
 html.theme-light {
-  --bg-canvas: #F5F4F0;
+  --bg-canvas: #F6F5F2;
   --surface-sheet: #FFFFFF;
   --surface-card: #FFFFFF;
-  --surface-well: #EBEAE4;
-  --surface-peek: #E3E1DB;
+  --surface-well: #EAE9E3;
+  --surface-peek: #DFDED7;
   --border-subtle: rgba(0, 0, 0, 0.08);
   --border-well: rgba(0, 0, 0, 0.06);
-  --text-primary: #121214;
+  --text-primary: #09090B;
   --text-secondary: #52525B;
   --text-muted: #71717A;
-  --ground: #F5F4F0;
+  --ground: #F6F5F2;
   --surface: #FFFFFF;
-  --raised: #EBEAE4;
+  --raised: #EAE9E3;
   --border: rgba(0, 0, 0, 0.08);
-  --rule: #E4E4E7;
-  --text: #121214;
+  --rule: #E2E1DA;
+  --text: #09090B;
+}
+
+/* Light mode contextual adaptations */
+html.theme-light .bento-card {
+  background-color: var(--surface-card);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+html.theme-light .recessed-well {
+  background-color: var(--surface-well);
+  border-color: var(--border-well);
+  color: var(--text-primary);
+}
+
+html.theme-light header#topInstrumentHeader {
+  background-color: rgba(246, 245, 242, 0.94);
+  border-bottom-color: var(--border-subtle);
+}
+
+html.theme-light .text-\[\#F4F4F6\] {
+  color: #09090B !important;
+}
+
+html.theme-light .text-\[\#E4E4E7\] {
+  color: #09090B !important;
+}
+
+html.theme-light .text-\[\#D4D4D8\] {
+  color: #52525B !important;
+}
+
+html.theme-light .text-\[\#A1A1AA\] {
+  color: #52525B !important;
+}
+
+html.theme-light .bg-\[\#141418\],
+html.theme-light .bg-\[\#18181B\],
+html.theme-light .bg-\[\#18191E\],
+html.theme-light .bg-\[\#16171B\],
+html.theme-light .bg-\[\#121214\],
+html.theme-light .bg-\[\#1C1D22\],
+html.theme-light .bg-\[\#23242A\] {
+  background-color: var(--surface-well) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+html.theme-light .border-white\/\[0\.08\],
+html.theme-light .border-white\/\[0\.1\],
+html.theme-light .border-white\/\[0\.18\],
+html.theme-light .border-white\/\[0\.07\],
+html.theme-light .border-white\/\[0\.04\],
+html.theme-light .border-white\/20 {
+  border-color: var(--border-subtle) !important;
+}
+
+html.theme-light .border-\[\#27272A\],
+html.theme-light .border-\[\#1F1F23\],
+html.theme-light .border-\[\#3F3F46\] {
+  border-color: var(--border-subtle) !important;
+}
+
+html.theme-light .hover\:text-\[\#F4F4F6\]:hover {
+  color: #09090B !important;
+}
+
+html.theme-light .ron-top-sheet {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+html.theme-light input,
+html.theme-light select {
+  color: var(--text-primary) !important;
+}
+
+html.theme-light input::placeholder {
+  color: var(--text-muted) !important;
 }
 
 * {
@@ -388,4 +466,116 @@ html, body {
     opacity: 1 !important;
     transform: none !important;
   }
+}
+
+/* ==========================================================================
+   10. Ultra-Raw Terminal Brutalist Mode
+   ========================================================================== */
+html.theme-brutalist,
+html[data-theme="brutalist"] {
+  --border-subtle: #52525B;
+  --border-well: #3F3F46;
+}
+
+html.theme-brutalist.theme-light,
+html[data-theme="brutalist"].theme-light {
+  --border-subtle: #09090B;
+  --border-well: #09090B;
+}
+
+/* 1. Strict 0px sharp corners everywhere */
+html.theme-brutalist *,
+html.theme-brutalist *::before,
+html.theme-brutalist *::after,
+html[data-theme="brutalist"] *,
+html[data-theme="brutalist"] *::before,
+html[data-theme="brutalist"] *::after {
+  border-radius: 0px !important;
+}
+
+/* 2. Zero soft shadows */
+html.theme-brutalist .bento-card,
+html.theme-brutalist .recessed-well,
+html.theme-brutalist .ron-top-sheet,
+html.theme-brutalist button,
+html.theme-brutalist input,
+html.theme-brutalist select,
+html.theme-brutalist nav,
+html[data-theme="brutalist"] .bento-card,
+html[data-theme="brutalist"] .recessed-well,
+html[data-theme="brutalist"] .ron-top-sheet,
+html[data-theme="brutalist"] button,
+html[data-theme="brutalist"] input,
+html[data-theme="brutalist"] select,
+html[data-theme="brutalist"] nav {
+  box-shadow: none !important;
+}
+
+/* 3. High-contrast 2px stark industrial borders */
+html.theme-brutalist .bento-card,
+html.theme-brutalist .ron-top-sheet,
+html[data-theme="brutalist"] .bento-card,
+html[data-theme="brutalist"] .ron-top-sheet {
+  border-width: 2px !important;
+  border-color: #52525B !important;
+}
+
+html.theme-brutalist.theme-light .bento-card,
+html.theme-brutalist.theme-light .ron-top-sheet,
+html[data-theme="brutalist"].theme-light .bento-card,
+html[data-theme="brutalist"].theme-light .ron-top-sheet {
+  border-color: #09090B !important;
+}
+
+html.theme-brutalist .recessed-well,
+html[data-theme="brutalist"] .recessed-well {
+  border-width: 2px !important;
+  border-color: #3F3F46 !important;
+}
+
+html.theme-brutalist.theme-light .recessed-well,
+html[data-theme="brutalist"].theme-light .recessed-well {
+  border-color: #09090B !important;
+}
+
+html.theme-brutalist header#topInstrumentHeader,
+html[data-theme="brutalist"] header#topInstrumentHeader {
+  border-bottom-width: 2px !important;
+}
+
+html.theme-brutalist nav,
+html[data-theme="brutalist"] nav {
+  border-width: 2px !important;
+}
+
+/* 4. Technical Monospace uppercase typography on headings and badges */
+html.theme-brutalist h1,
+html.theme-brutalist h2,
+html.theme-brutalist h3,
+html.theme-brutalist h4,
+html.theme-brutalist .font-pixel-display,
+html[data-theme="brutalist"] h1,
+html[data-theme="brutalist"] h2,
+html[data-theme="brutalist"] h3,
+html[data-theme="brutalist"] h4,
+html[data-theme="brutalist"] .font-pixel-display {
+  font-family: var(--font-mono) !important;
+  text-transform: uppercase !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* 5. Mechanical tactile button press */
+html.theme-brutalist button:active,
+html.theme-brutalist .btn-tactile:active,
+html[data-theme="brutalist"] button:active,
+html[data-theme="brutalist"] .btn-tactile:active {
+  transform: translate(2px, 2px) !important;
+}
+
+/* 6. Status pills in Brutalist mode */
+html.theme-brutalist .status-pill-beveled,
+html[data-theme="brutalist"] .status-pill-beveled {
+  border-width: 2px !important;
+  text-transform: uppercase !important;
+  font-family: var(--font-mono) !important;
 }

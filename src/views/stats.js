@@ -35,6 +35,7 @@ export function renderStats(container) {
   const consistencyPct = activeDays > 0 ? Math.round((perfectDays / Math.max(activeDays, 1)) * 100) : 25;
 
   // Build 87-day matrix cells (13 columns x 7 rows = 91 slots)
+  const isLight = document.documentElement.classList.contains('theme-light');
   const startDate = new Date(2026, 9, 22); // Oct 22, 2026 local
   const matrixCells = Array.from({ length: 91 }).map((_, idx) => {
     const d = new Date(startDate);
@@ -44,11 +45,11 @@ export function renderStats(container) {
     const dayMins = rec ? Object.values(rec.durations || {}).reduce((a, b) => a + b, 0) : 0;
     const hrs = dayMins / 60;
 
-    let bgHex = '#18191E';
-    if (hrs >= 5) bgHex = '#C8F560'; // Peak Vibrant Lime
-    else if (hrs >= 3.5) bgHex = '#22C55E'; // High Bright Green
-    else if (hrs >= 2) bgHex = '#16A34A'; // Medium Emerald Green
-    else if (hrs > 0) bgHex = '#14532D'; // Low Deep Forest Green
+    let bgHex = isLight ? '#EAE9E3' : '#18191E';
+    if (hrs >= 5) bgHex = isLight ? '#15803D' : '#C8F560'; // Peak Vibrant Lime / High Forest
+    else if (hrs >= 3.5) bgHex = isLight ? '#16A34A' : '#22C55E'; // High Bright Green
+    else if (hrs >= 2) bgHex = isLight ? '#22C55E' : '#16A34A'; // Medium Emerald Green
+    else if (hrs > 0) bgHex = isLight ? '#86EFAC' : '#14532D'; // Low Light Green
 
     return { iso, hrs, bgHex, inCampaign: idx < 87, dayIndex: idx + 1 };
   });
@@ -135,11 +136,11 @@ export function renderStats(container) {
         <div id="matrix-hud" class="flex items-center justify-between text-[11px] text-[#71717A] px-1">
           <span>Tap any block to inspect hours</span>
           <div class="flex items-center gap-1.5" title="0h → 1-2h → 2-3.5h → 3.5-5h → 5h+">
-            <span class="w-2.5 h-2.5 rounded-[2px] bg-[#18191E]"></span>
-            <span class="w-2.5 h-2.5 rounded-[2px] bg-[#14532D]"></span>
-            <span class="w-2.5 h-2.5 rounded-[2px] bg-[#16A34A]"></span>
-            <span class="w-2.5 h-2.5 rounded-[2px] bg-[#22C55E]"></span>
-            <span class="w-2.5 h-2.5 rounded-[2px] bg-[#C8F560]"></span>
+            <span class="w-2.5 h-2.5 rounded-[2px] ${isLight ? 'bg-[#EAE9E3]' : 'bg-[#18191E]'}"></span>
+            <span class="w-2.5 h-2.5 rounded-[2px] ${isLight ? 'bg-[#86EFAC]' : 'bg-[#14532D]'}"></span>
+            <span class="w-2.5 h-2.5 rounded-[2px] ${isLight ? 'bg-[#22C55E]' : 'bg-[#16A34A]'}"></span>
+            <span class="w-2.5 h-2.5 rounded-[2px] ${isLight ? 'bg-[#16A34A]' : 'bg-[#22C55E]'}"></span>
+            <span class="w-2.5 h-2.5 rounded-[2px] ${isLight ? 'bg-[#15803D]' : 'bg-[#C8F560]'}"></span>
           </div>
         </div>
       </section>

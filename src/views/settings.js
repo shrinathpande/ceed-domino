@@ -10,6 +10,8 @@ import {
   setAccentColor,
   getCardInfusionScope,
   setCardInfusionScope,
+  isBrutalistMode,
+  setBrutalistMode,
   resetState
 } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
@@ -31,10 +33,35 @@ export function renderSettingsView(container) {
   const currentAccent = getAccentColor();
   const currentScope = getCardInfusionScope();
   const isCustomPreset = !PASTEL_SWATCHES.some(s => s.hex.toLowerCase() === currentAccent.toLowerCase());
+  const isBrutalist = isBrutalistMode();
 
   container.innerHTML = `
     <section class="w-full max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none" aria-label="Configuration Terminal">
       
+      <!-- 0. Terminal Brutalist UI Mode Switch -->
+      <div class="bento-card mb-3.5 stagger-item stagger-delay-0">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-[12px] font-medium text-[#71717A]">Interface Aesthetic</div>
+            <div class="text-base font-bold text-[#F4F4F6] tracking-tight">Terminal Brutalist Mode</div>
+            <div class="text-xs text-[#71717A] mt-0.5">0px sharp geometry, 2px stark borders, zero shadows & monospace typography</div>
+          </div>
+          <button
+            id="btn-brutalist-toggle"
+            type="button"
+            class="px-3.5 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider btn-tactile transition-all shrink-0 flex items-center gap-1.5 ${
+              isBrutalist
+                ? 'bg-[#F4F4F6] text-[#09090B] border-2 border-[#F4F4F6] shadow-sm'
+                : 'bg-[#18181B] text-[#71717A] border border-[#27272A] hover:text-[#F4F4F6]'
+            }"
+            aria-label="Toggle Terminal Brutalist UI"
+          >
+            <span class="w-2 h-2 rounded-full ${isBrutalist ? 'bg-[#09090B]' : 'bg-[#71717A]'}"></span>
+            <span>${isBrutalist ? 'ACTIVE [ON]' : 'OFF'}</span>
+          </button>
+        </div>
+      </div>
+
       <!-- 1. Curated Soft Pastel Swatches + Custom Color Picker -->
       <div class="bento-card mb-3.5 stagger-item stagger-delay-1">
         <div class="flex items-center justify-between mb-3">
@@ -288,6 +315,13 @@ export function renderSettings(container) {
 }
 
 function bindSettingsEvents(container) {
+  // Terminal Brutalist Mode Toggle
+  container.querySelector('#btn-brutalist-toggle')?.addEventListener('click', () => {
+    const next = !isBrutalistMode();
+    setBrutalistMode(next);
+    renderSettingsView(container);
+  });
+
   // Pastel Swatch Click (Zero toast spam, instant flat color application)
   container.querySelectorAll('[data-pastel-hex]').forEach(btn => {
     btn.addEventListener('click', () => {

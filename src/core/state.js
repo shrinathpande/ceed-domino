@@ -409,12 +409,24 @@ export function getTheme() {
   return 'cyber';
 }
 
+export function isBrutalistMode() {
+  return getTheme() === 'brutalist';
+}
+
+export function setBrutalistMode(enabled) {
+  const targetTheme = enabled ? 'brutalist' : 'cyber';
+  return setTheme(targetTheme);
+}
+
 export function setTheme(themeId) {
   const match = THEMES.find(t => t.id === themeId);
   const valid = match ? match.id : 'cyber';
   localStorage.setItem(THEME_KEY, valid);
   document.documentElement.setAttribute('data-theme', valid);
-  document.documentElement.className = valid; // also set class for Tailwind convenience
+  THEMES.forEach(t => {
+    document.documentElement.classList.remove(`theme-${t.id}`);
+  });
+  document.documentElement.classList.add(`theme-${valid}`);
   const state = getState();
   state.settings = state.settings || {};
   state.settings.theme = valid;
