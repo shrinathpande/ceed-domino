@@ -1,5 +1,116 @@
 @import "tailwindcss";
 
+/* ====================================================================
+   GEIST FONT FAMILIES (Local High-Performance WOFF2 Preloads)
+   ==================================================================== */
+/* Geist Serif (Default Editorial Aesthetic) */
+@font-face {
+  font-family: 'Geist Serif';
+  src: url('/fonts/geist/geist-serif/GeistSerifVF.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Serif Regular';
+  src: url('/fonts/geist/geist-serif/GeistSerif-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Serif Square';
+  src: url('/fonts/geist/geist-serif/GeistSerif-Square.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Serif Triangle';
+  src: url('/fonts/geist/geist-serif/GeistSerif-Triangle.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Serif Heart';
+  src: url('/fonts/geist/geist-serif/GeistSerif-Heart.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Geist Pixel */
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('/fonts/geist/geist-pixel/GeistPixelVF.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Pixel Square';
+  src: url('/fonts/geist/geist-pixel/GeistPixel-Square.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Pixel Grid';
+  src: url('/fonts/geist/geist-pixel/GeistPixel-Grid.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Pixel Circle';
+  src: url('/fonts/geist/geist-pixel/GeistPixel-Circle.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Pixel Triangle';
+  src: url('/fonts/geist/geist-pixel/GeistPixel-Triangle.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Pixel Line';
+  src: url('/fonts/geist/geist-pixel/GeistPixel-Line.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Geist Sans */
+@font-face {
+  font-family: 'Geist Sans';
+  src: url('/fonts/geist/geist-sans/Geist-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Geist Mono */
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/geist/geist-mono/GeistMono-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --ground: #000000;
@@ -22,12 +133,27 @@
     --pastel-rose: #FBCFE8;
     --pastel-lime: #D9F99D;
     --chalk-white: #F4F4F6;
+
+    /* Font Variable Tokens */
+    --font-geist-serif: 'Geist Serif', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-geist-serif-regular: 'Geist Serif Regular', serif;
+    --font-geist-serif-square: 'Geist Serif Square', serif;
+    --font-geist-serif-triangle: 'Geist Serif Triangle', serif;
+    --font-geist-serif-heart: 'Geist Serif Heart', serif;
+    --font-geist-sans: 'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-geist-mono: 'Geist Mono', monospace;
+    --font-geist-pixel: 'Geist Pixel', monospace;
+    --font-geist-pixel-square: 'Geist Pixel Square', monospace;
+    --font-geist-pixel-grid: 'Geist Pixel Grid', monospace;
+    --font-geist-pixel-circle: 'Geist Pixel Circle', monospace;
+    --font-geist-pixel-triangle: 'Geist Pixel Triangle', monospace;
+    --font-geist-pixel-line: 'Geist Pixel Line', monospace;
   }
 
   body {
     background-color: #000000;
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Geist", "Segoe UI", sans-serif;
+    font-family: var(--font-geist-serif);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
@@ -41,9 +167,57 @@
     overflow-x: hidden;
   }
 
+  .font-serif {
+    font-family: var(--font-geist-serif);
+  }
+
+  .font-serif-regular {
+    font-family: var(--font-geist-serif-regular);
+  }
+
+  .font-serif-square {
+    font-family: var(--font-geist-serif-square);
+  }
+
+  .font-serif-triangle {
+    font-family: var(--font-geist-serif-triangle);
+  }
+
+  .font-serif-heart {
+    font-family: var(--font-geist-serif-heart);
+  }
+
+  .font-sans {
+    font-family: var(--font-geist-sans);
+  }
+
   .font-mono {
-    font-family: "Geist Mono", monospace;
+    font-family: var(--font-geist-mono);
     font-variant-numeric: tabular-nums;
+  }
+
+  .font-pixel {
+    font-family: var(--font-geist-pixel);
+  }
+
+  .font-pixel-square {
+    font-family: var(--font-geist-pixel-square);
+  }
+
+  .font-pixel-grid {
+    font-family: var(--font-geist-pixel-grid);
+  }
+
+  .font-pixel-circle {
+    font-family: var(--font-geist-pixel-circle);
+  }
+
+  .font-pixel-triangle {
+    font-family: var(--font-geist-pixel-triangle);
+  }
+
+  .font-pixel-line {
+    font-family: var(--font-geist-pixel-line);
   }
 }
 

@@ -29,7 +29,7 @@ export function renderSettingsView(container) {
   const currentAccent = getAccentColor();
 
   container.innerHTML = `
-    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-sans select-none" aria-label="Configuration Terminal">
+    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-serif select-none" aria-label="Configuration Terminal">
       
       <!-- 1. Curated Soft Pastel Swatches (Zero Glow, Zero Toast Spam) -->
       <div class="bento-card mb-3.5">

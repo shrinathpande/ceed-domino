@@ -29,7 +29,7 @@ export function showInAppToast(msg, isAlert = false) {
     z-index: 9999;
     padding: 8px 16px;
     font-size: 12px;
-    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-family: var(--font-geist-serif);
     font-weight: 600;
     border: 1px solid #27272A;
     background-color: #18181B;

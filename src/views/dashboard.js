@@ -110,7 +110,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   const remainingPct = Math.max(0, 100 - completedPct - inProgressPct);
 
   container.innerHTML = `
-    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-sans select-none" aria-label="Today Dashboard">
+    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-serif select-none" aria-label="Today Dashboard">
       
       <!-- 7-Day Horizontal Circular Calendar Strip (Reference 6) -->
       <div class="flex items-center justify-between gap-1 mb-4">

@@ -89,7 +89,7 @@ export function renderStatsView(container) {
   };
 
   container.innerHTML = `
-    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-sans select-none" aria-label="Athletic Telemetry Stats">
+    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-serif select-none" aria-label="Athletic Telemetry Stats">
       
       <!-- 1. Top Row: 2 Bento Cards (Reference 2 Top Row) -->
       <div class="grid grid-cols-2 gap-3 mb-3.5">

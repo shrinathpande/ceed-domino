@@ -102,7 +102,7 @@ export function renderHeatmap(container, currentDateStr, onDateSelect) {
           <h2 class="text-sm font-bold text-[var(--text)] tracking-wider uppercase">Contribution Matrix</h2>
           <span class="text-[9px] px-1.5 py-0.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] font-bold text-[var(--muted)]">87-DAY MATRIX</span>
         </div>
-        <p class="text-[10px] text-[var(--muted)] mt-0.5 font-sans">Oct 22, 2026 – Jan 17, 2027 · Green volume scales with study focus</p>
+        <p class="text-[10px] text-[var(--muted)] mt-0.5 font-serif">Oct 22, 2026 – Jan 17, 2027 · Green volume scales with study focus</p>
       </div>
       
       <!-- GitHub Intensity Legend -->

@@ -1,11 +1,25 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   server: {
     host: true,
     port: 5173,
+  },
+  resolve: {
+    alias: {
+      'geist/font/sans': path.resolve(__dirname, './src/fonts/geist-sans.js'),
+      'geist/font/mono': path.resolve(__dirname, './src/fonts/geist-mono.js'),
+      'geist/font/pixel/variable': path.resolve(__dirname, './src/fonts/geist-pixel-variable.js'),
+      'geist/font/pixel': path.resolve(__dirname, './src/fonts/geist-pixel.js'),
+      'geist/font/serif': path.resolve(__dirname, './src/fonts/geist-serif.js'),
+    }
   },
   build: {
     chunkSizeWarningLimit: 1000,

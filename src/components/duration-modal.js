@@ -181,7 +181,7 @@ function createModalDOM() {
       </div>
 
       <!-- Feedback Banner -->
-      <div id="durationFeedbackBox" class="p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[11px] leading-relaxed font-sans">
+      <div id="durationFeedbackBox" class="p-2.5 rounded-[2px] bg-[var(--raised)] border border-[var(--border)] text-[11px] leading-relaxed font-serif">
       </div>
 
       <!-- Save Button -->

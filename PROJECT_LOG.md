@@ -779,4 +779,32 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 13. Geist Font Family Integration & Universal Editorial Serif Architecture
+
+### 13.1 Package & Asset Architecture
+- Installed official `geist@1.9.0` npm package.
+- High-performance, offline-first local WOFF2 font distribution bundled in `public/fonts/geist/`:
+  - **Geist Serif**: `GeistSerifVF.woff2`, `GeistSerif-Regular.woff2`, `GeistSerif-Square.woff2`, `GeistSerif-Triangle.woff2`, `GeistSerif-Heart.woff2`.
+  - **Geist Pixel**: `GeistPixelVF.woff2`, `GeistPixel-Square.woff2`, `GeistPixel-Grid.woff2`, `GeistPixel-Circle.woff2`, `GeistPixel-Triangle.woff2`, `GeistPixel-Line.woff2`.
+  - **Geist Sans**: `Geist-Variable.woff2`.
+  - **Geist Mono**: `GeistMono-Variable.woff2`.
+
+### 13.2 Vite Module Aliases & ESM Shim Layer
+- Configured path aliases in `vite.config.js` for instant, zero-configuration ESM imports:
+  - `geist/font/sans` -> `src/fonts/geist-sans.js`
+  - `geist/font/mono` -> `src/fonts/geist-mono.js`
+  - `geist/font/pixel/variable` -> `src/fonts/geist-pixel-variable.js`
+  - `geist/font/pixel` -> `src/fonts/geist-pixel.js`
+  - `geist/font/serif` -> `src/fonts/geist-serif.js`
+- Exported named font descriptors: `GeistSans`, `GeistMono`, `GeistPixel`, `GeistPixelSquare`, `GeistPixelGrid`, `GeistPixelCircle`, `GeistPixelTriangle`, `GeistPixelLine`, `GeistSerif`, `GeistSerifRegular`, `GeistSerifSquare`, `GeistSerifTriangle`, `GeistSerifHeart`.
+
+### 13.3 CSS Font Tokens & Universal Serif Typography
+- Base `body` font family bound to `var(--font-geist-serif)`:
+  - `font-family: 'Geist Serif', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;`
+- Removed all competing `font-sans` classes across `dashboard.js`, `settings.js`, `stats.js`, `studio-proctor.js`, `header.js`, `bottom-dock.js`, and modal views.
+- High-contrast numbers and times retain tabular monospace with `font-mono` (`Geist Mono`, `font-variant-numeric: tabular-nums`).
+- Preloaded `GeistSerifVF.woff2` and `GeistMono-Variable.woff2` in `index.html` for zero FOUT / zero flash AMOLED dark mode rendering.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*
