@@ -3,71 +3,23 @@
 @layer base {
   :root {
     --ground: #000000;
-    --surface: #0c0c0c;
-    --raised: #161616;
-    --border: #262626;
-    --rule: #1c1c1c;
+    --surface: #121215;
+    --raised: #1A1A1F;
+    --border: rgba(255, 255, 255, 0.07);
+    --rule: rgba(255, 255, 255, 0.05);
     --text: #ffffff;
-    --muted: #888888;
+    --muted: #71717A;
     --accent: #FF69AF;
     --domino-accent: #FF69AF;
-    --radius-card: 10px;
-    --radius-btn: 8px;
+    --radius-card: 22px;
+    --radius-btn: 9999px;
     --spring-physics: cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* Theme 1: Cyber-Tactile OLED (Default) */
-  html[data-theme="cyber"],
-  .cyber {
-    --ground: #000000;
-    --surface: #0c0c0c;
-    --raised: #161616;
-    --border: #262626;
-    --rule: #1a1a1a;
-    --text: #ffffff;
-    --muted: #8e8e93;
-    --accent: #FF69AF;
-    --domino-accent: #FF69AF;
-    --radius-card: 10px;
-    --radius-btn: 8px;
-  }
-
-  /* Theme 2: Industrial Brutalist */
-  html[data-theme="brutalist"],
-  .brutalist {
-    --ground: #000000;
-    --surface: #080808;
-    --raised: #121212;
-    --border: #333333;
-    --rule: #222222;
-    --text: #ffffff;
-    --muted: #737373;
-    --accent: #ffffff;
-    --domino-accent: #FF69AF;
-    --radius-card: 0px;
-    --radius-btn: 0px;
-  }
-
-  /* Theme 3: Stealth Monochrome */
-  html[data-theme="stealth"],
-  .stealth {
-    --ground: #000000;
-    --surface: #0a0a0a;
-    --raised: #141414;
-    --border: #1f1f1f;
-    --rule: #171717;
-    --text: #ffffff;
-    --muted: #666666;
-    --accent: #ffffff;
-    --domino-accent: #FF69AF;
-    --radius-card: 4px;
-    --radius-btn: 4px;
   }
 
   body {
     background-color: var(--ground);
     color: var(--text);
-    font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Geist", "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
@@ -75,6 +27,7 @@
     padding-top: env(safe-area-inset-top, 0px);
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
     min-height: 100vh;
     min-height: -webkit-fill-available;
     overflow-x: hidden;
@@ -82,67 +35,54 @@
 
   .font-mono {
     font-family: "Geist Mono", monospace;
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* Custom OLED Range Slider */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: #1c1c1c;
-  height: 6px;
-  border-radius: 9999px;
-  outline: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--domino-accent, #FF69AF);
-  cursor: pointer;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 10px rgba(255, 105, 175, 0.4);
-  transition: transform 0.1s ease;
-}
-
-input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(1.2);
-}
-
-input[type="range"]::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--domino-accent, #FF69AF);
-  cursor: pointer;
-  border: 2px solid #ffffff;
-}
-
-/* Card Geometry & Tap Interactions */
-.card-shell {
-  border-radius: var(--radius-card);
+/* Bento Design System Tokens */
+.bento-card {
+  background-color: #121215;
+  border-radius: 22px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.5);
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.card-shell:active {
-  transform: scale(0.99);
+.bento-subcard {
+  background-color: #1A1A1F;
+  border-radius: 14px;
 }
 
-.btn-tactile {
-  border-radius: var(--radius-btn);
-  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, border-color 0.15s ease;
+/* Vertical Hatch Pattern for Allocation Bars & Dynamic States (Reference 5) */
+.bg-hatch {
+  background-image: repeating-linear-gradient(
+    90deg,
+    #27272A 0px,
+    #27272A 2px,
+    transparent 2px,
+    transparent 6px
+  );
 }
 
-.btn-tactile:active {
-  transform: scale(0.96);
+.bg-hatch-light {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.15) 0px,
+    rgba(255, 255, 255, 0.15) 2px,
+    transparent 2px,
+    transparent 6px
+  );
 }
 
-/* Smooth Liquid Progress Bar */
-.liquid-progress {
-  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+.bg-hatch-accent {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--domino-accent, #FF69AF) 0px,
+    var(--domino-accent, #FF69AF) 2px,
+    transparent 2px,
+    transparent 6px
+  );
 }
 
 /* Subtle Shimmer Animation for Completed Domino */
@@ -160,4 +100,53 @@ input[type="range"]::-moz-range-thumb {
 
 .domino-completed-pulse {
   animation: completedSweep 0.5s ease-out;
+}
+
+/* Custom Tactile OLED Range Slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #1c1c21;
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  border: 3px solid var(--domino-accent, #FF69AF);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  transition: transform 0.1s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.25);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  border: 3px solid var(--domino-accent, #FF69AF);
+}
+
+/* Tactile Button Feedback */
+.btn-tactile {
+  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-tactile:active {
+  transform: scale(0.96);
+}
+
+.liquid-progress {
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }

@@ -11,13 +11,14 @@ import {
   getAccentColor
 } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
-import { showInAppToast } from '../components/header.js';
+import { renderStatusPill } from '../components/status-pill.js';
 import {
   startLockScreenTimer,
   stopLockScreenTimer
 } from '../utils/lockscreen-timer.js';
 
 const ACTIVE_TIMER_KEY = 'ceed_v2_active_timer';
+const PILLAR_PALETTE = ['#34D399', '#FF69AF', '#A855F7', '#38BDF8', '#F59E0B'];
 
 let expandedBlockId = null;
 let activeDateStr = new Date().toISOString().slice(0, 10);
@@ -39,6 +40,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   if (liveStopwatchInterval) clearInterval(liveStopwatchInterval);
 
   const blocks = getBlocks();
+  const state = getState();
   const record = getDayRecord(activeDateStr);
   const activeTimer = getActiveTimer();
   const accentColor = getAccentColor();
@@ -46,128 +48,168 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   let todayStudyMins = 0;
   let todayWorkMins = 0;
   let todayTotalMins = 0;
+  let totalTargetMins = 0;
 
   blocks.forEach(b => {
     const m = Number(record.durations[b.id]) || 0;
     todayTotalMins += m;
+    totalTargetMins += b.targetMins || 60;
     if (b.category === 'STUDY') todayStudyMins += m;
     if (b.category === 'WORK') todayWorkMins += m;
-  });
-
-  (record.customMins || []).forEach(entry => {
-    const m = Number(entry.mins) || 0;
-    todayTotalMins += m;
-    if (entry.category === 'STUDY') todayStudyMins += m;
-    if (entry.category === 'WORK') todayWorkMins += m;
   });
 
   const mandatoryBlocks = blocks.filter(isDominoTask);
   const completedDominoCount = mandatoryBlocks.filter(b => record.completed.includes(b.id)).length;
   const allDominosDone = mandatoryBlocks.length > 0 && completedDominoCount === mandatoryBlocks.length;
 
+  // Calculate 7-Day Horizontal Calendar Strip (Mon - Sun)
+  const curr = new Date(activeDateStr + 'T00:00:00');
+  const dayOfWeek = curr.getDay();
+  const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(curr);
+  monday.setDate(curr.getDate() + diffToMon);
+
+  const weekDays = [];
+  const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const dStr = d.toISOString().slice(0, 10);
+    const dayRec = state.records?.[dStr];
+    const isComplete = dayRec && mandatoryBlocks.length > 0 && Array.isArray(dayRec.completed) && mandatoryBlocks.every(b => dayRec.completed.includes(b.id));
+    weekDays.push({
+      dateStr: dStr,
+      label: dayLabels[i],
+      dateNum: d.getDate(),
+      isComplete,
+      isSelected: dStr === activeDateStr
+    });
+  }
+
+  // Dynamic 1-sentence narrative focus
+  const sortedBlocks = [...blocks].sort((a, b) => (Number(record.durations[b.id]) || 0) - (Number(record.durations[a.id]) || 0));
+  const topBlock = sortedBlocks[0];
+  const topHours = ((Number(record.durations[topBlock?.id]) || 0) / 60).toFixed(1);
+  const walkBlock = blocks.find(b => b.category === 'WALK') || blocks[0];
+  const walkHours = ((Number(record.durations[walkBlock?.id]) || 0) / 60).toFixed(1);
+
+  // Proportions for 36px Segmented Allocation Bar
+  const allocDenominator = Math.max(todayTotalMins, totalTargetMins || 1);
+  const remainingTargetMins = Math.max(0, totalTargetMins - todayTotalMins);
+  const unloggedHatchPct = Math.round((remainingTargetMins / allocDenominator) * 100);
+
   container.innerHTML = `
-    <section class="w-full max-w-[420px] mx-auto px-3 pt-2 pb-24 font-mono select-none" aria-label="Dashboard">
-      <!-- Date Picker & Streak Status Card -->
-      <div
-        class="card-shell border p-2.5 mb-2.5 flex items-center justify-between"
-        style="${allDominosDone ? `border-color: ${accentColor}; background-color: #10050b;` : 'border-color: #262626; background-color: #0a0a0a;'}"
-      >
-        <div class="flex items-center gap-2">
-          <input
-            type="date"
-            id="dash-date-picker"
-            value="${activeDateStr}"
-            class="bg-transparent text-xs font-bold text-white uppercase focus:outline-none cursor-pointer"
-            aria-label="Select Date"
-          />
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <span
-            class="text-[11px] font-bold"
-            style="color: ${allDominosDone ? accentColor : '#888888'};"
+    <section class="w-full max-w-[420px] mx-auto px-3.5 pt-2 pb-28 font-sans select-none" aria-label="Today Dashboard">
+      
+      <!-- 7-Day Horizontal Circular Calendar Strip (Reference 6) -->
+      <div class="flex items-center justify-between gap-1 mb-3.5 px-0.5">
+        ${weekDays.map(w => `
+          <button
+            data-select-date="${w.dateStr}"
+            class="flex flex-col items-center gap-1.5 btn-tactile focus:outline-none"
+            aria-label="Select ${w.label} ${w.dateNum}"
           >
-            ${allDominosDone ? '★ STREAK LOCKED' : `${completedDominoCount}/${mandatoryBlocks.length} DOMINOS`}
+            <span class="text-[11px] font-medium ${w.isSelected ? 'text-white font-bold' : 'text-zinc-500'}">${w.label}</span>
+            <div
+              class="w-[38px] h-[38px] rounded-full flex flex-col items-center justify-center font-bold text-xs transition-all relative ${
+                w.isSelected
+                  ? 'text-black shadow-lg shadow-white/10'
+                  : 'bg-[#121215] text-zinc-300 border border-white/[0.07] hover:border-white/20'
+              }"
+              style="${w.isSelected ? `background-color: ${accentColor}; color: #000000;` : ''}"
+            >
+              <span>${w.dateNum}</span>
+              ${w.isComplete && !w.isSelected ? `
+                <span class="w-1 h-1 rounded-full bg-emerald-400 absolute bottom-1"></span>
+              ` : ''}
+            </div>
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- Component A: Hero Output & Chunky Segmented Allocation Card (References 4 & 5) -->
+      <div class="bento-card mb-3.5">
+        <!-- Top of Card: Muted Label + Hero 42px Metric + Semantic Status Pill -->
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <div>
+            <div class="text-[12px] font-medium text-[#71717A] tracking-wide mb-1">Total Daily Output</div>
+            <div class="text-[40px] font-extrabold text-white tracking-tight leading-none">
+              ${(todayTotalMins / 60).toFixed(1)} <span class="text-xl font-medium text-zinc-500">HRS</span>
+            </div>
+          </div>
+          <div>
+            ${allDominosDone
+              ? renderStatusPill('COMPLETED', '✓ Streak Locked')
+              : renderStatusPill('PENDING', `${completedDominoCount}/${mandatoryBlocks.length} Dominos`)
+            }
+          </div>
+        </div>
+
+        <!-- 1-Sentence Dynamic Narrative with Inline Pill Badge -->
+        <p class="text-xs text-zinc-400 leading-relaxed mb-4">
+          Today's focus is led by
+          <span
+            class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold"
+            style="background-color: ${accentColor}25; color: ${accentColor}; border: 1px solid ${accentColor}40;"
+          >
+            ${topBlock?.name || 'Study'} ${topHours}h
           </span>
-        </div>
-      </div>
+          with ${walkHours}h of fitness logged.
+        </p>
 
-      <!-- Dual Daily Hour Ledger -->
-      <div class="grid grid-cols-2 gap-2 mb-3">
-        <!-- Study Card -->
-        <div class="card-shell border border-neutral-800 bg-[#0c0c0c] p-3 flex flex-col justify-between">
-          <div class="text-[10px] text-neutral-400 uppercase tracking-wider">STUDY TIME</div>
-          <div class="text-2xl font-bold mt-1 mb-0.5" style="color: ${accentColor};">
-            ${(todayStudyMins / 60).toFixed(1)} <span class="text-xs font-normal text-neutral-400">HRS</span>
-          </div>
-          <div class="text-[10px] text-neutral-400">
-            Total Target Floor Met
-          </div>
+        <!-- 36px Tall Segmented Allocation Bar (Reference 4) -->
+        <div class="h-9 rounded-xl overflow-hidden flex gap-1 p-1 bg-[#09090B] border border-white/5 mb-3.5">
+          ${blocks.map((b, idx) => {
+            const color = idx === 1 ? accentColor : PILLAR_PALETTE[idx % PILLAR_PALETTE.length];
+            const bMins = Number(record.durations[b.id]) || 0;
+            const pct = (bMins / allocDenominator) * 100;
+            if (pct <= 0) return '';
+            return `
+              <div
+                class="h-full rounded-lg transition-all duration-300"
+                style="width: ${Math.max(4, pct)}%; background-color: ${color};"
+                title="${b.name}: ${(bMins / 60).toFixed(1)}h"
+              ></div>
+            `;
+          }).join('')}
+
+          ${unloggedHatchPct > 0 ? `
+            <div
+              class="h-full rounded-lg bg-hatch flex-1 transition-all duration-300"
+              title="Remaining Unlogged: ${(remainingTargetMins / 60).toFixed(1)}h"
+            ></div>
+          ` : ''}
         </div>
 
-        <!-- Productive Card -->
-        <div class="card-shell border border-neutral-700 bg-[#0c0c0c] p-3 flex flex-col justify-between">
-          <div class="text-[10px] text-neutral-400 uppercase tracking-wider">TOTAL PRODUCTIVE</div>
-          <div class="text-2xl font-bold text-white mt-1 mb-0.5">
-            ${(todayTotalMins / 60).toFixed(1)} <span class="text-xs font-normal text-neutral-400">HRS</span>
-          </div>
-          <div class="text-[10px] text-neutral-400">
-            Work: ${(todayWorkMins / 60).toFixed(1)}h • ${todayTotalMins}m
-          </div>
-        </div>
-      </div>
-
-      <!-- Daily Domino Pillars Stream -->
-      <div class="text-[10px] text-neutral-400 uppercase tracking-wider mb-2 flex justify-between items-center px-0.5">
-        <span>DAILY DOMINOS (TAP CARD TO ADJUST)</span>
-        <span class="text-[9px]" style="color: ${accentColor};">OLED SLIDER</span>
-      </div>
-
-      <div class="flex flex-col gap-2.5 mb-3">
-        ${blocks.map(b => renderDominoBlockCard(b, record, activeTimer, accentColor)).join('')}
-      </div>
-
-      <!-- Universal Quick-Log Bar -->
-      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-2.5 mb-3">
-        <div class="text-[10px] text-neutral-400 uppercase mb-2 flex justify-between items-center">
-          <span>+ QUICK LOG ACTIVITY</span>
-          <span class="text-white font-bold text-[9px]">DIRECT</span>
-        </div>
-        <div class="grid grid-cols-3 gap-1.5">
-          <button data-quick-cat="STUDY" class="btn-tactile h-10 border border-neutral-700 bg-[#080808] text-[11px] font-bold text-white active:bg-white active:text-black">
-            + 1h STUDY
-          </button>
-          <button data-quick-cat="WORK" class="btn-tactile h-10 border border-neutral-700 bg-[#080808] text-[11px] font-bold text-white active:bg-white active:text-black">
-            + 1h WORK
-          </button>
-          <button data-quick-cat="WALK" class="btn-tactile h-10 border border-neutral-700 bg-[#080808] text-[11px] font-bold text-white active:bg-white active:text-black">
-            + 1h WALK
-          </button>
-        </div>
-      </div>
-
-      <!-- Today's Activity Feed -->
-      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-2.5">
-        <div class="text-[10px] text-neutral-400 uppercase mb-2">
-          TODAY'S ACTIVITY LOG (${(record.logs || []).length})
-        </div>
-        ${(record.logs || []).length === 0 ? `
-          <div class="text-[11px] text-neutral-500 py-2">No activity logged yet today. Tap any card above.</div>
-        ` : `
-          <div class="flex flex-col gap-1.5 max-h-40 overflow-y-auto">
-            ${record.logs.map(item => `
-              <div class="flex items-center justify-between text-[11px] border-b border-neutral-900 pb-1">
-                <div class="truncate pr-2">
-                  <span class="text-neutral-500">[${item.time}]</span>
-                  <span class="text-white ml-1">${item.label}</span>
+        <!-- 2-Column Vertical-Bar Legend (Reference 4) -->
+        <div class="grid grid-cols-2 gap-2">
+          ${blocks.map((b, idx) => {
+            const color = idx === 1 ? accentColor : PILLAR_PALETTE[idx % PILLAR_PALETTE.length];
+            const bMins = Number(record.durations[b.id]) || 0;
+            const bHours = (bMins / 60).toFixed(1);
+            const sharePct = todayTotalMins > 0 ? Math.round((bMins / todayTotalMins) * 100) : 0;
+            return `
+              <div class="flex items-center gap-2 p-2 rounded-xl bg-[#1A1A1F]/70 border border-white/[0.04]">
+                <div class="w-[3px] h-6 rounded-full shrink-0" style="background-color: ${color};"></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-[12px] text-zinc-200 font-medium truncate">${b.name}</div>
+                  <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500">
+                    <span>${bHours}h</span>
+                    <span>${sharePct}%</span>
+                  </div>
                 </div>
-                <span class="font-bold shrink-0" style="color: ${item.mins >= 0 ? accentColor : '#888888'};">
-                  ${item.mins >= 0 ? '+' : ''}${(item.mins / 60).toFixed(1)}h (${item.mins}m)
-                </span>
               </div>
-            `).join('')}
-          </div>
-        `}
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Component B: Expressive Domino Cards with Ruler-Tick Slider (References 1 & 5) -->
+      <div class="flex flex-col gap-3">
+        ${blocks.map((b, idx) => {
+          const color = idx === 1 ? accentColor : PILLAR_PALETTE[idx % PILLAR_PALETTE.length];
+          return renderDominoBlockCard(b, record, activeTimer, color, accentColor);
+        }).join('')}
       </div>
     </section>
   `;
@@ -187,7 +229,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   }
 }
 
-function renderDominoBlockCard(block, record, activeTimer, accentColor) {
+function renderDominoBlockCard(block, record, activeTimer, pillarColor, accentColor) {
   const loggedMins = Number(record.durations[block.id]) || 0;
   const targetMins = block.targetMins || 60;
   const isDone = Array.isArray(record.completed) && record.completed.includes(block.id);
@@ -196,160 +238,163 @@ function renderDominoBlockCard(block, record, activeTimer, accentColor) {
   const isRunning = activeTimer && activeTimer.blockId === block.id;
 
   const pct = Math.min(100, Math.round((loggedMins / Math.max(1, targetMins)) * 100));
+  const isUnder = isDone && loggedMins < targetMins;
 
-  const borderStyle = isDone
-    ? `border-2 border-[${accentColor}] bg-[#0c0409]`
-    : isRunning
-    ? 'border-2 border-white bg-[#0e0e0e]'
-    : 'border border-neutral-800 bg-[#0c0c0c]';
-
-  const inlineBorderStyle = isDone
-    ? `border: 2px solid ${accentColor}; background-color: #0c0409; box-shadow: 0 0 10px ${accentColor}33;`
-    : isRunning
-    ? 'border: 2px solid #ffffff; background-color: #0e0e0e;'
-    : 'border: 1px solid #262626; background-color: #0c0c0c;';
+  // Determine Semantic Status Pill
+  let statusPillHtml = '';
+  if (isRunning) {
+    statusPillHtml = renderStatusPill('LIVE', 'Live Active');
+  } else if (isDone && isUnder) {
+    statusPillHtml = renderStatusPill('UNDER_FLOOR', 'Under Floor');
+  } else if (isDone) {
+    statusPillHtml = renderStatusPill('COMPLETED', 'Completed');
+  } else if (!isMandatory) {
+    statusPillHtml = renderStatusPill('ROUTINE', 'Routine');
+  } else {
+    statusPillHtml = renderStatusPill('PENDING', 'Pending');
+  }
 
   return `
     <div
-      class="card-shell cursor-pointer select-none"
-      style="${inlineBorderStyle}"
+      class="bento-card cursor-pointer select-none transition-all duration-200"
+      style="${isDone ? `border-color: ${pillarColor}40; box-shadow: 0 4px 24px -2px ${pillarColor}20;` : ''}"
       data-card-id="${block.id}"
       role="button"
       tabindex="0"
       aria-expanded="${isExpanded}"
       aria-label="${block.name} Domino Card"
     >
-      <!-- Card Face Content -->
-      <div class="p-3">
-        <!-- Top Row: Badge, Category, and Action Buttons (Timer + Square Corner Checkmark) -->
-        <div class="flex items-center justify-between gap-2 mb-1.5">
-          <div class="flex items-center gap-1.5 min-w-0">
-            <span
-              class="btn-tactile px-1.5 py-0.5 font-bold text-[10px]"
-              style="${isMandatory ? `background-color: ${accentColor}; color: #000000;` : 'border: 1px solid #404040; color: #a3a3a3;'}"
-            >
-              ${block.badge}
-            </span>
-            <span class="text-neutral-400 text-[10px] uppercase font-mono tracking-wider">${block.category}</span>
+      <!-- Main Card Face -->
+      <div class="flex flex-col gap-2.5">
+        <!-- Top Row: Semantic Status Pill (Left) + Hours Readout & Circular Check Button (Right) -->
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            ${statusPillHtml}
           </div>
 
-          <!-- Action Buttons Group: Direct Timer Button + Dedicated Square Checkmark Button -->
-          <div class="flex items-center gap-2 shrink-0">
-            <!-- Direct Card Face Timer Button -->
-            <button
-              data-timer-toggle="${block.id}"
-              class="btn-tactile h-8 px-2.5 border ${
-                isRunning
-                  ? 'border-white bg-white text-black font-extrabold animate-pulse'
-                  : 'border-neutral-700 bg-[#161616] text-neutral-200 hover:text-white font-bold'
-              } text-[10px] uppercase flex items-center gap-1 rounded"
-              aria-label="${isRunning ? 'Stop Live Timer' : 'Start Live Timer'}"
-              title="${isRunning ? 'Click to stop timer' : 'Click to start timer'}"
-            >
-              <span>${isRunning ? '⏹ STOP' : '▶ TIMER'}</span>
-            </button>
+          <div class="flex items-center gap-2.5 shrink-0">
+            <span class="text-xs font-mono tabular-nums text-zinc-300">
+              <strong class="text-white">${(loggedMins / 60).toFixed(1)}h</strong> / ${(targetMins / 60).toFixed(1)}h
+            </span>
 
-            <!-- Dedicated Corner Checkmark Square Button -->
+            <!-- Dedicated 38x38px Circular Checkmark Button (Reference 1) -->
             <button
               data-manual-toggle="${block.id}"
               data-target-mins="${targetMins}"
-              class="btn-tactile w-8 h-8 border-2 font-bold text-sm flex items-center justify-center rounded shrink-0"
+              class="w-[38px] h-[38px] rounded-full flex items-center justify-center font-bold text-sm btn-tactile transition-all shrink-0"
               style="${
                 isDone
-                  ? `border-color: ${accentColor}; background-color: ${accentColor}; color: #000000;`
-                  : 'border-color: #525252; background-color: #000000; color: #ffffff;'
+                  ? `background-color: ${pillarColor}; color: #000000; box-shadow: 0 0 12px ${pillarColor}60;`
+                  : 'background-color: #1A1A1F; border: 1px solid rgba(255, 255, 255, 0.12); color: #71717A;'
               }"
-              aria-label="${isDone ? 'Uncheck and Reset to 0h' : 'Complete Domino'}"
-              title="${isDone ? 'Tap to unmark (resets to 0h)' : 'Tap to mark done (sets to target)'}"
+              aria-label="${isDone ? 'Uncheck Domino (Resets to 0h)' : 'Complete Domino'}"
+              title="${isDone ? 'Tap to unmark (resets to 0h)' : 'Tap to mark complete'}"
             >
               ${isDone ? '✓' : '○'}
             </button>
           </div>
         </div>
 
-        <!-- Second Row: Pillar Name + High Contrast Percentage & Hours -->
-        <div class="flex items-baseline justify-between gap-2 mb-2">
-          <div class="text-xs font-bold text-white truncate">${block.name}</div>
-          <div class="flex items-baseline gap-1.5 shrink-0 font-mono">
-            <span class="text-xs font-extrabold" style="color: ${pct >= 100 ? accentColor : '#ffffff'};">${pct}%</span>
-            <span class="text-[10px] text-neutral-400">(${(loggedMins / 60).toFixed(1)}h / ${(targetMins / 60).toFixed(1)}h)</span>
-          </div>
+        <!-- Middle Row: Clean 17px Bold Title -->
+        <div class="flex items-baseline justify-between gap-2">
+          <h3 class="text-[17px] font-bold text-[#F4F4F5] tracking-tight truncate">${block.name}</h3>
+          <span class="text-xs font-mono font-bold" style="color: ${pct >= 100 ? pillarColor : '#A1A1AA'};">${pct}%</span>
         </div>
 
-        <!-- High-Contrast Liquid Progress Bar -->
-        <div class="w-full h-2 bg-black border border-neutral-800 rounded-full overflow-hidden">
+        <!-- Bottom Row: 3-Texture Progress Bar (Solid Fill + Hatched Timer + Track) -->
+        <div class="h-2 rounded-full overflow-hidden flex bg-[#1A1A1F] border border-white/[0.04]">
           <div
-            class="liquid-progress h-full"
-            style="width: ${pct}%; background-color: ${accentColor};"
+            class="liquid-progress h-full rounded-full transition-all duration-300"
+            style="width: ${pct}%; background-color: ${pillarColor};"
           ></div>
+          ${isRunning ? `
+            <div class="h-full bg-hatch-light flex-1 animate-pulse"></div>
+          ` : ''}
         </div>
 
-        <!-- Live Stopwatch Banner (Nested within card on Today page when active) -->
+        <!-- Running Timer Banner (If Active) -->
         ${isRunning ? `
-          <div class="mt-2.5 p-2 bg-white/5 border border-white/20 rounded flex items-center justify-between">
-            <div class="flex items-center gap-2 text-xs font-mono font-bold text-white">
-              <span class="inline-block w-2 h-2 rounded-full animate-ping" style="background-color: ${accentColor};"></span>
-              <span>LIVE SESSION:</span>
+          <div class="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-xs font-mono font-bold text-blue-400">
+              <span class="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
+              <span>LIVE TIMER:</span>
               <span data-live-sw class="text-white font-extrabold">0m 00s</span>
             </div>
-            <span class="text-[9px] text-neutral-400 uppercase">Lock-Screen Active</span>
+            <span class="text-[10px] text-blue-300 font-sans">Lock-Screen Synced</span>
           </div>
         ` : ''}
       </div>
 
-      <!-- Expanded Drawer: Precision Time Slider & Steppers -->
+      <!-- Expanded Drawer: Tactile Ruler Slider & Steppers (Reference 5) -->
       ${isExpanded ? `
-        <div class="px-3 pb-3 pt-2 border-t border-neutral-800/80 bg-black/60 flex flex-col gap-2.5" data-drawer>
-          <div class="border border-neutral-800 bg-[#080808] p-3 rounded-lg flex flex-col gap-2">
-            <div class="flex items-center justify-between text-[11px]">
-              <span class="text-neutral-400 font-bold uppercase tracking-wider text-[10px]">CUSTOMIZE LOGGED TIME</span>
+        <div class="mt-4 pt-4 border-t border-white/[0.07] flex flex-col gap-3.5" data-drawer>
+          <!-- Tactile Slider Box -->
+          <div class="bento-subcard p-3.5 flex flex-col gap-2">
+            <div class="flex items-center justify-between text-xs font-medium">
+              <span class="text-[#71717A]">Time Allocation</span>
               <span class="text-white font-mono font-bold text-xs" data-slider-readout="${block.id}">
                 ${(loggedMins / 60).toFixed(1)}h (${loggedMins}m)
               </span>
             </div>
 
-            <div class="flex items-center gap-2 pt-1">
+            <!-- Subtle Vertical-Tick Ruler Track (Reference 5) -->
+            <div class="relative py-1">
+              <input
+                type="range"
+                min="0"
+                max="360"
+                step="15"
+                value="${loggedMins}"
+                data-slider-block="${block.id}"
+                class="w-full cursor-pointer relative z-10"
+                aria-label="Adjust hours for ${block.name}"
+              />
+              <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono pt-1">
+                <span>0h</span>
+                <span>1h</span>
+                <span>2h</span>
+                <span>3h</span>
+                <span>4h</span>
+                <span>5h</span>
+                <span>6h</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Row inside Drawer: Steppers + Solid White Pill CTA Button -->
+          <div class="flex items-center justify-between gap-2">
+            <!-- -15m and +15m Circular Stepper Buttons -->
+            <div class="flex items-center gap-2">
               <button
                 data-step-mins="-15"
                 data-block="${block.id}"
-                class="btn-tactile h-9 px-3 border border-neutral-700 bg-black text-xs font-bold text-neutral-300 hover:text-white shrink-0"
+                class="w-9 h-9 rounded-full bg-[#1A1A1F] border border-white/10 hover:border-white/25 text-white font-bold text-xs flex items-center justify-center btn-tactile"
                 aria-label="Decrease 15 minutes"
               >
                 -15m
               </button>
-
-              <div class="flex-1 px-1">
-                <input
-                  type="range"
-                  min="0"
-                  max="360"
-                  step="15"
-                  value="${loggedMins}"
-                  data-slider-block="${block.id}"
-                  class="w-full cursor-pointer"
-                  aria-label="Adjust minutes logged"
-                />
-              </div>
-
               <button
                 data-step-mins="15"
                 data-block="${block.id}"
-                class="btn-tactile h-9 px-3 border border-neutral-700 bg-black text-xs font-bold text-neutral-300 hover:text-white shrink-0"
+                class="w-9 h-9 rounded-full bg-[#1A1A1F] border border-white/10 hover:border-white/25 text-white font-bold text-xs flex items-center justify-center btn-tactile"
                 aria-label="Increase 15 minutes"
               >
                 +15m
               </button>
             </div>
 
-            <div class="flex items-center justify-between text-[9px] text-neutral-500 font-mono px-1">
-              <span>0h</span>
-              <span>1h</span>
-              <span>2h</span>
-              <span>3h</span>
-              <span>4h</span>
-              <span>5h</span>
-              <span>6h</span>
-            </div>
+            <!-- High-Contrast Solid White Pill CTA Button (Reference 5 Schedule MO style) -->
+            <button
+              data-timer-toggle="${block.id}"
+              class="h-10 px-5 rounded-full font-bold text-xs uppercase flex items-center gap-1.5 btn-tactile shadow-lg ${
+                isRunning
+                  ? 'bg-red-500 text-white animate-pulse'
+                  : 'bg-white text-black hover:bg-zinc-100'
+              }"
+              aria-label="${isRunning ? 'Stop Timer' : 'Start Timer'}"
+            >
+              <span>${isRunning ? '⏹ Stop Session' : '▶ Start Timer'}</span>
+            </button>
           </div>
         </div>
       ` : ''}
@@ -358,17 +403,20 @@ function renderDominoBlockCard(block, record, activeTimer, accentColor) {
 }
 
 function bindDashboardEvents(container, record, blocks) {
-  // Date Picker
-  container.querySelector('#dash-date-picker')?.addEventListener('change', (e) => {
-    activeDateStr = e.target.value;
-    playRelayClick();
-    renderDashboard(container);
+  // Calendar Strip Date Selection
+  container.querySelectorAll('[data-select-date]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const dateStr = btn.getAttribute('data-select-date');
+      activeDateStr = dateStr;
+      playRelayClick();
+      renderDashboard(container, null, activeDateStr);
+    });
   });
 
-  // Universal Card Tap to Expand/Collapse (Tapping card body opens customization)
+  // Universal Card Tap to Expand/Collapse (Only ONE card open at a time)
   container.querySelectorAll('[data-card-id]').forEach(card => {
     const toggleExpansion = (e) => {
-      // If tap originated from an interactive child button, ignore card toggle
       if (e.target.closest('button, input, select, textarea, [data-manual-toggle], [data-timer-toggle], [data-slider-block], [data-step-mins]')) {
         return;
       }
@@ -387,7 +435,7 @@ function bindDashboardEvents(container, record, blocks) {
     });
   });
 
-  // Dedicated Corner Checkmark Button: Two-Way Toggle
+  // Dedicated Circular Checkmark Button: Two-Way Toggle
   container.querySelectorAll('[data-manual-toggle]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -399,15 +447,12 @@ function bindDashboardEvents(container, record, blocks) {
       const isDone = Array.isArray(rec.completed) && rec.completed.includes(id);
 
       if (isDone) {
-        // UNCHECK: Remove from completed and reset duration to 0 (card resets to zero)
         rec.completed = rec.completed.filter(x => x !== id);
         rec.durations[id] = 0;
         recalculateStreak(state);
         saveState(state);
         playRelayClick();
-        showInAppToast('Domino unmarked (0.0h)');
       } else {
-        // CHECK: Add to completed and set duration to target floor (fills to 100%)
         if (!rec.completed.includes(id)) {
           rec.completed.push(id);
         }
@@ -415,13 +460,12 @@ function bindDashboardEvents(container, record, blocks) {
         recalculateStreak(state);
         saveState(state);
         playRelayClick();
-        showInAppToast(`★ ${(targetMins / 60).toFixed(1)}h Completed!`, true);
       }
       renderDashboard(container);
     });
   });
 
-  // Direct Card Face Live Timer Toggle
+  // Direct Card Face / Drawer Timer Toggle
   container.querySelectorAll('[data-timer-toggle]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -430,15 +474,12 @@ function bindDashboardEvents(container, record, blocks) {
       const activeTimer = getActiveTimer();
 
       if (activeTimer && activeTimer.blockId === blockId) {
-        // Stop active timer & commit elapsed time
         const elapsedSec = Math.floor((Date.now() - activeTimer.startedAt) / 1000);
         const elapsedMins = Math.max(1, Math.round(elapsedSec / 60));
         stopLockScreenTimer();
         localStorage.removeItem(ACTIVE_TIMER_KEY);
         logHours(activeDateStr, blockId, elapsedMins, 'Live Timer Session');
-        showInAppToast(`Timer Stopped! +${elapsedMins}m logged`, true);
       } else {
-        // If another timer is running, stop it first
         if (activeTimer) {
           stopLockScreenTimer();
           localStorage.removeItem(ACTIVE_TIMER_KEY);
@@ -450,14 +491,16 @@ function bindDashboardEvents(container, record, blocks) {
           startedAt: Date.now()
         };
         localStorage.setItem(ACTIVE_TIMER_KEY, JSON.stringify(newTimer));
-        startLockScreenTimer(`${block?.badge || 'CEED'} • ${block?.name || 'Session'}`, 'Focus Session Running');
-        showInAppToast(`Timer Started for ${block?.name || 'Domino'}`, true);
+        startLockScreenTimer(block || { name: 'Study Session', badge: 'DOMINO' }, newTimer.startedAt, () => {
+          renderDashboard(container);
+        });
       }
+      playRelayClick();
       renderDashboard(container);
     });
   });
 
-  // Custom Time Slider (Live scrubbing + Commit)
+  // Custom Time Slider
   container.querySelectorAll('[data-slider-block]').forEach(slider => {
     const blockId = slider.getAttribute('data-slider-block');
     const readout = container.querySelector(`[data-slider-readout="${blockId}"]`);
@@ -475,7 +518,6 @@ function bindDashboardEvents(container, record, blocks) {
       const val = Number(e.target.value);
       setDominoDuration(blockId, activeDateStr, val);
       playRelayClick();
-      showInAppToast(`Saved ${(val / 60).toFixed(1)}h (${val}m)`);
       renderDashboard(container);
     });
   });
@@ -491,22 +533,7 @@ function bindDashboardEvents(container, record, blocks) {
       const next = Math.max(0, Math.min(360, current + step));
       setDominoDuration(blockId, activeDateStr, next);
       playRelayClick();
-      showInAppToast(`Set to ${(next / 60).toFixed(1)}h (${next}m)`);
       renderDashboard(container);
-    });
-  });
-
-  // Quick Log Buttons (+1h STUDY, +1h WORK, +1h WALK)
-  container.querySelectorAll('[data-quick-cat]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const cat = btn.getAttribute('data-quick-cat');
-      const matchingBlock = blocks.find(b => b.category === cat) || blocks[0];
-      if (matchingBlock) {
-        logHours(activeDateStr, matchingBlock.id, 60, `+1.0h Quick ${cat}`);
-        showInAppToast(`+1.0h Logged to ${matchingBlock.name}`, true);
-        renderDashboard(container);
-      }
     });
   });
 }

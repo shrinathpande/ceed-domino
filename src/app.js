@@ -4,6 +4,7 @@ import { renderSettings } from './views/settings.js';
 import { renderStudioProctor } from './views/studio-proctor.js';
 import { renderStats } from './views/stats.js';
 import { renderHeader } from './components/header.js';
+import { renderBottomDock } from './components/bottom-dock.js';
 import { initGestureNavigation } from './utils/gestures.js';
 import { getTheme, setTheme } from './core/state.js';
 
@@ -14,7 +15,7 @@ let _viewContainer = null;
 export function initApp(container) {
   _appContainer = container;
   _appContainer.innerHTML = `
-    <div id="appShell" class="min-h-screen bg-[var(--ground)] text-[var(--text)] transition-colors">
+    <div id="appShell" class="min-h-screen bg-[var(--ground)] text-[var(--text)] transition-colors relative">
       <div id="headerSlot"></div>
       <main id="viewContainer" class="w-full"></main>
     </div>
@@ -40,8 +41,11 @@ function route() {
   const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
   const dateParam = urlParams.get('date');
 
-  // Render Top Instrument Header
+  // Render Top Header
   renderHeader(_appContainer, hash, dateParam);
+
+  // Render Floating Bottom Navigation Dock
+  renderBottomDock(_appContainer, hash);
 
   // Scroll to top on route change
   window.scrollTo({ top: 0, behavior: 'instant' });

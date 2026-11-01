@@ -654,6 +654,72 @@ Before modifying code, the upgrade plan was grilled against core requirements an
   - Added `[ + ADD NEW DOMINO PILLAR ]` button to create custom pillars.
   - Added delete buttons (`✕`) for removing pillars.
 
+### 11. Complete Visual & UX Transformation: Expressive Data-Driven Tactility
+
+**Date**: November 1, 2026  
+**Inspiration & Paradigms**: Bía Sleep, Moonbeam Analytics, Robinhood, and Ron Design Scheduler.
+
+### 11.1 The New Visual Design System
+- **Surfaces & Radii**:
+  - Pure OLED Black ground (`#000000`).
+  - Matte Obsidian Bento Cards (`#121215`, `22px` border radius, `p-5`, whisper-quiet `1px solid rgba(255, 255, 255, 0.07)` border).
+  - Nested Sub-Cards (`#1A1A1F`, `14px` border radius).
+- **Typography**:
+  - Hero Metrics: `40px` tight bold sans-serif (`Inter` / `Geist Sans`, `tracking-tight`, `#FFFFFF`).
+  - Card Titles: `17px` bold sans-serif (`#F4F4F5`).
+  - Readouts & Tabular Metrics: `13px` tabular monospace (`Geist Mono`, `font-variant-numeric: tabular-nums`).
+  - Muted Labels: `12px` medium sans-serif (`#71717A`).
+- **Semantic Tinted Status Pills (`src/components/status-pill.js`)**:
+  - Standardized pill helper supporting:
+    - `COMPLETED`: bg `rgba(16, 185, 129, 0.14)`, border `rgba(16, 185, 129, 0.4)`, text `#34D399`, icon `✓`.
+    - `LIVE / ACTIVE`: bg `rgba(59, 130, 246, 0.15)`, border `rgba(59, 130, 246, 0.45)`, text `#60A5FA`, icon `↗`.
+    - `PENDING`: bg `rgba(245, 158, 11, 0.14)`, border `rgba(245, 158, 11, 0.4)`, text `#FBBF24`, icon `!`.
+    - `UNDER_FLOOR`: bg `rgba(239, 68, 68, 0.14)`, border `rgba(239, 68, 68, 0.4)`, text `#F87171`, icon `✕`.
+    - `ROUTINE`: bg `rgba(161, 161, 170, 0.12)`, border `rgba(161, 161, 170, 0.3)`, text `#A1A1AA`, icon `🕒`.
+
+### 11.2 Global Navigation & 7-Day Calendar Strip
+- **Top Instrument Header (`src/components/header.js`)**:
+  - Single clean row: `Day XX of 87` + inline `[76d to CEED]` pill on left, `🔥 Xd` streak pill and `🛡️ X` shield badge on right.
+  - Removed 3-theme switcher buttons from header and silenced noisy routine toast popups.
+- **7-Day Horizontal Circular Calendar Strip (`src/views/dashboard.js`)**:
+  - Directly beneath header on `Today`: `Mon Tue Wed Thu Fri Sat Sun` above 7 circular date buttons (`38x38px`, `rounded-full`).
+  - Active date filled with `--domino-accent` and bold dark text. Past completed days marked with subtle bottom dot indicator. Tapping switches `activeDateStr` instantly.
+- **Floating Bottom Navigation Dock (`src/components/bottom-dock.js`)**:
+  - Moved `Today`, `Stats`, `Studio`, `Config` tabs to a floating bottom dock (`rounded-full`, `#16161A/90` with `backdrop-blur-md`, `border: 1px solid rgba(255,255,255,0.08)`, respecting safe area padding).
+
+### 11.3 Today View Overhaul
+- **Removed**: Redundant "+ Quick Log Activity" and "Today's Activity Log" boxes.
+- **Hero Output & Chunky Segmented Allocation Card**:
+  - Total Daily Output label + `40px` hero metric + right-aligned semantic status pill.
+  - 1-sentence dynamic narrative with inline pill badge.
+  - **36px Tall Segmented Allocation Bar**: Proportional rounded rectangles colored by pillar palette (`#34D399`, `#FF69AF`, `#A855F7`, `#38BDF8`) + vertical hatch pattern (`bg-hatch`) for remaining unlogged target time.
+  - **2-Column Vertical-Bar Legend**: 2x2 grid with 3px vertical colored bars, pillar name, logged hours, and share percentage.
+- **Expressive Domino Cards**:
+  - Card face: Semantic Status Pill, hours fraction (`2.0h / 2.0h`), and `38x38px` circular check button (`✓`/`○`).
+  - 3-Texture Progress Bar (Solid color fill + Hatched timer pattern + Track).
+  - Tactile Ruler Slider inside single-expanded drawer with `-15m`/`+15m` circular buttons and high-contrast solid white pill CTA button (`▶ Start Timer` / `⏹ Stop Session`).
+
+### 11.4 Stats View (Bento Architecture)
+- **Top Row**: 2 Mini Bento Cards (`Active Days / Consistency` + `500h Mastery Progress` with 3-texture bar).
+- **Consistency Matrix**: `13x7` rounded cells in sky-blue/accent shades + 1-line interactive inspection subtitle.
+- **2-Column Streak Bento**: Current Streak (`🔥 X days` + 7 circular day indicators) + Longest Streak (`🔥 Y days` + date range).
+- **Volume & Allocation Card**: Multi-segment horizontal bar with 4px gaps + 4-color dot legend.
+- **`✦ Domino Intelligence` Card**: Warm amber header + dynamic 2-sentence analytical summary with bold white metrics.
+- **Footer**: Clean pill buttons for `Export CSV` and `Backup JSON`.
+
+### 11.5 Studio View (Asymmetric Peek Card Layout)
+- **Top Navigation Pill**: `< Day XX of 87 >` + `Q1  Q2  Q3  Q4  Q5` circular/pill switcher.
+- **Asymmetric Peek Card Layout**:
+  - Left Card (82% width): High-contrast card with semantic pill (`20 Marks • 24m`), question title, and clean 14px prompt body.
+  - Right Vertical Peek Card (18% width): Rotated vertical tab `Strategy & Checklist`. Tapping it smoothly flips sizes to 82%/18% with zero vertical scrolling, revealing examiner trend notes and 4-step checklist!
+- **Bottom Floating Scheduler Bar**: Live countdown (`24:00`), `⛶ OLED` button for Fullscreen Desk Clock with Screen Wake Lock, and solid white pill CTA button (`▶ Start Drill` / `✓ Finish & Log`).
+
+### 11.6 Config View
+- Bento cards with 22px radii.
+- Accent Palette Picker: 6 glowing circular swatches (`#FF69AF`, `#38BDF8`, `#10B981`, `#F59E0B`, `#A855F7`, `#FFFFFF`) with zero toast spam + custom hex input.
+- Domino Architecture Editor: Clean bento rows with title input, category pill selector, target hour `-0.5h / +0.5h` steppers, delete, and `+ Add New Domino Pillar`.
+- Backup & Reset pill buttons.
+
 ---
 
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

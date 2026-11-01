@@ -3,23 +3,21 @@ import partBData from '../data/part_b_questions.json';
 import { logHours } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
 import { getDayIndex } from '../utils/dates.js';
-import { showInAppToast } from '../components/header.js';
+import { renderStatusPill } from '../components/status-pill.js';
 
 let activeDayIndex = 0;       // 0 to 86 (Day 1 to 87)
 let activeQuestionIndex = 0;  // 0 to 4 (Q1 to Q5)
-let studioMode = 'DRILL';     // 'DRILL' (24m) or 'EXAM' (120m)
-let showTrendDrawer = false;
-let showChecklistDrawer = true;
+let activeCardSide = 'PROMPT'; // 'PROMPT' (left 82%) or 'STRATEGY' (right 82%)
 let oledDeskMode = false;
 let timerInterval = null;
-let timerState = null;        // { startedAt, durationSec }
+let timerState = null;        // { startedAt, durationSec, pausedRemaining }
 let wakeLockSentinel = null;
 
 const DEFAULT_CHECKLIST = [
-  '1. Thumbnail & Perspective Grid (3m)',
+  '1. 3-Min Thumbnail & Perspective Grid',
   '2. Primary Form & Human Scale (8m)',
-  '3. Line Weight & Material Shading (8m)',
-  '4. Callouts & Design Notes (5m)'
+  '3. Line Weight Hierarchy & Shadows (8m)',
+  '4. Annotated Callouts & Problem Solution (5m)'
 ];
 
 async function acquireWakeLock() {
@@ -43,7 +41,6 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
   const bank = (questionBank && questionBank.length > 0) ? questionBank : partBData;
   const todayStr = (typeof initialDate === 'string' && initialDate) ? initialDate : new Date().toISOString().slice(0, 10);
 
-  // Align with calendar day if starting clean
   if (activeDayIndex === 0) {
     const calcIndex = getDayIndex(todayStr);
     if (calcIndex >= 0 && calcIndex < 87) {
@@ -74,23 +71,23 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
 
   const q = daySet.questions[activeQuestionIndex] || daySet.questions[0];
 
-  // Fullscreen OLED Desk Clock Mode (with Screen Wake Lock active)
+  // Fullscreen OLED Desk Clock Mode
   if (oledDeskMode) {
     acquireWakeLock();
     container.innerHTML = `
-      <div class="fixed inset-0 bg-black z-50 flex flex-col justify-between p-6 font-mono text-white select-none">
-        <div class="flex justify-between items-center text-xs text-neutral-400">
-          <span class="tracking-widest">DAY ${daySet.day} // ${q.code}</span>
-          <button id="btn-exit-oled" class="btn-tactile border border-neutral-700 px-3.5 py-1.5 text-white active:bg-white active:text-black">
-            EXIT OLED ✕
+      <div class="fixed inset-0 bg-black z-50 flex flex-col justify-between p-6 font-sans text-white select-none">
+        <div class="flex justify-between items-center text-xs text-zinc-400">
+          <span class="tracking-widest uppercase font-mono">Day ${daySet.day} // ${q.code}</span>
+          <button id="btn-exit-oled" class="px-4 py-2 rounded-full border border-white/20 bg-white/10 text-white font-medium text-xs btn-tactile">
+            Exit OLED ✕
           </button>
         </div>
         <div class="my-auto text-center">
-          <div id="studio-timer-display" class="text-7xl font-extrabold tracking-tighter text-[#FF69AF] tabular-nums">24:00</div>
-          <div class="text-xs text-neutral-300 mt-4 max-w-xs mx-auto line-clamp-3 leading-relaxed">${q.prompt}</div>
+          <div id="studio-timer-display" class="text-8xl font-extrabold tracking-tight font-mono text-white tabular-nums">24:00</div>
+          <div class="text-sm text-zinc-400 mt-6 max-w-sm mx-auto line-clamp-3 leading-relaxed">${q.prompt}</div>
         </div>
-        <button id="btn-complete-sprint" class="btn-tactile w-full h-12 border-2 border-[#FF69AF] bg-[#FF69AF]/10 text-[#FF69AF] font-bold text-xs uppercase active:bg-[#FF69AF] active:text-black">
-          FINISH & LOG SPRINT
+        <button id="btn-complete-sprint" class="w-full h-12 rounded-full bg-white text-black font-bold text-sm uppercase btn-tactile shadow-2xl">
+          Finish & Log Sprint (+24m)
         </button>
       </div>
     `;
@@ -101,233 +98,258 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
     releaseWakeLock();
   }
 
+  const isPromptExpanded = activeCardSide === 'PROMPT';
+
   container.innerHTML = `
-    <section class="w-full max-w-[420px] mx-auto px-3 pt-2 pb-24 font-mono select-none" aria-label="Part B Studio Proctor">
-      <!-- ZONE 1: Top HUD Bar (Day Cycle, Mode Toggle, Timer Display) -->
-      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] px-3 py-2 flex items-center justify-between gap-1.5 mb-2.5">
-        <button id="btn-day-cycle" class="btn-tactile border border-neutral-700 bg-[#121212] px-2.5 py-1 text-xs font-bold text-white active:bg-white active:text-black truncate" title="Jump to Day">
-          DAY ${String(daySet.day).padStart(2, '0')}/87 ▾
-        </button>
+    <section class="w-full max-w-[420px] mx-auto px-3.5 pt-2 pb-28 font-sans select-none" aria-label="Part B Studio Proctor">
+      
+      <!-- Top Navigation Pill & Switcher (Reference 5) -->
+      <div class="bento-card p-2.5 mb-3.5 flex items-center justify-between gap-2">
+        <!-- Day Selector Pill -->
+        <div class="flex items-center gap-1 bg-[#1A1A1F] rounded-full px-2 py-1 border border-white/5">
+          <button id="btn-prev-day" class="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-white btn-tactile font-bold" aria-label="Previous Day">‹</button>
+          <span class="text-xs font-bold text-white px-1">Day ${daySet.day} <span class="text-zinc-500 font-normal">of 87</span></span>
+          <button id="btn-next-day" class="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-white btn-tactile font-bold" aria-label="Next Day">›</button>
+        </div>
 
-        <button id="btn-mode-toggle" class="btn-tactile border border-neutral-700 bg-[#121212] px-2 py-1 text-[10px] text-neutral-300">
-          ${studioMode === 'DRILL' ? '24M DRILL' : '120M EXAM'}
-        </button>
-
-        <div id="studio-timer-display" class="btn-tactile text-xs font-bold px-2 py-1 border ${timerState ? 'border-[#FF69AF] text-[#FF69AF] bg-[#FF69AF]/10' : 'border-neutral-800 text-white bg-black'} tabular-nums">
-          ${studioMode === 'DRILL' ? '24:00' : '120:00'}
+        <!-- Q1 - Q5 Circular Switcher (Reference 5) -->
+        <div class="flex items-center gap-1">
+          ${daySet.questions.map((item, idx) => {
+            const isCurrent = idx === activeQuestionIndex;
+            return `
+              <button
+                data-q-idx="${idx}"
+                class="w-7 h-7 rounded-full text-[11px] font-bold flex items-center justify-center transition-all btn-tactile ${
+                  isCurrent
+                    ? 'bg-white text-black shadow-sm'
+                    : 'bg-[#1A1A1F] text-zinc-400 hover:text-white border border-white/5'
+                }"
+                aria-label="Question ${idx + 1}"
+              >
+                Q${idx + 1}
+              </button>
+            `;
+          }).join('')}
         </div>
       </div>
 
-      <!-- ZONE 2: 5-Pill Question Deck Switcher -->
-      <div class="grid grid-cols-5 gap-1 mb-2.5" role="tablist">
-        ${daySet.questions.map((item, idx) => {
-          const isCurrent = idx === activeQuestionIndex;
-          return `
-            <button
-              data-q-idx="${idx}"
-              class="btn-tactile h-11 border-2 ${isCurrent ? 'border-[#FF69AF] bg-[#FF69AF] text-black font-extrabold' : 'border-neutral-800 bg-[#0c0c0c] text-neutral-400'} flex flex-col items-center justify-center text-[10px] leading-tight"
-              role="tab"
-              aria-selected="${isCurrent}"
-            >
-              <span>Q${idx + 1}</span>
-              <span class="text-[9px] truncate max-w-full px-0.5">${item.code}</span>
-            </button>
-          `;
-        }).join('')}
-      </div>
-
-      <!-- ZONE 3: Focused Question Card -->
-      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-2.5">
-        <div class="flex items-center justify-between text-[10px] text-neutral-400 border-b border-neutral-800 pb-2 mb-2">
-          <span class="text-[#FF69AF] font-bold truncate pr-1">Q${activeQuestionIndex + 1} // ${q.title.toUpperCase()}</span>
-          <span class="shrink-0 text-white">${q.marks}M • ${q.mins}m</span>
-        </div>
-
-        <p class="text-xs leading-relaxed text-white font-sans mb-3">
-          ${q.prompt}
-        </p>
-
-        <!-- Collapsible Examiner Trend Drawer -->
-        <div class="border border-neutral-800 bg-black/60 rounded mb-2 overflow-hidden">
-          <button id="btn-toggle-trend" class="w-full px-2.5 py-2 text-left text-[11px] flex justify-between items-center text-neutral-300">
-            <span>GAME THEORY & EXAMINER TREND</span>
-            <span class="text-neutral-500">${showTrendDrawer ? '−' : '+'}</span>
-          </button>
-          ${showTrendDrawer ? `
-            <div class="px-2.5 pb-2.5 text-[11px] text-neutral-400 border-t border-neutral-900 pt-2 leading-relaxed">
-              ${q.trend}
-            </div>
-          ` : ''}
-        </div>
-
-        <!-- Collapsible Drawing Checklist -->
-        <div class="border border-neutral-800 bg-black/60 rounded overflow-hidden">
-          <button id="btn-toggle-checklist" class="w-full px-2.5 py-2 text-left text-[11px] flex justify-between items-center text-neutral-300">
-            <span>24-MINUTE EXECUTION CHECKLIST</span>
-            <span class="text-neutral-500">${showChecklistDrawer ? '−' : '+'}</span>
-          </button>
-          ${showChecklistDrawer ? `
-            <div class="px-2.5 pb-2.5 pt-1 border-t border-neutral-900 flex flex-col gap-1.5">
-              ${DEFAULT_CHECKLIST.map(step => `
-                <label class="flex items-center gap-2 text-[11px] text-neutral-300 py-0.5 cursor-pointer">
-                  <input type="checkbox" class="accent-[#FF69AF] w-4 h-4 cursor-pointer" />
-                  <span>${step}</span>
-                </label>
-              `).join('')}
-            </div>
-          ` : ''}
-        </div>
-      </div>
-
-      <!-- ZONE 4: Action Buttons (Start Sprint, OLED Clock Mode) -->
-      <div class="grid grid-cols-2 gap-2 mb-2.5">
-        <button
-          id="btn-start-stop"
-          class="btn-tactile h-12 border-2 ${timerState ? 'border-[#FF69AF] bg-[#FF69AF] text-black font-extrabold' : 'border-white bg-white text-black font-bold'} text-xs uppercase"
+      <!-- Asymmetric Peek Card Layout (Reference 6) -->
+      <div class="flex gap-2.5 mb-3.5 min-h-[380px] items-stretch">
+        
+        <!-- Main Card 1: Question Prompt Card -->
+        <div
+          id="card-prompt"
+          class="bento-card flex flex-col justify-between transition-all duration-300 relative overflow-hidden cursor-pointer ${
+            isPromptExpanded ? 'w-[82%] p-5' : 'w-[18%] p-2 flex items-center justify-center bg-[#1A1A1F]/80 hover:bg-[#1A1A1F]'
+          }"
         >
-          ${timerState ? 'STOP SPRINT' : 'START TIMER'}
-        </button>
+          ${isPromptExpanded ? `
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                ${renderStatusPill('LIVE', `${q.marks} Marks • ${q.mins}m`)}
+                <span class="text-[11px] font-mono text-zinc-500 font-bold">${q.code}</span>
+              </div>
 
-        <button
-          id="btn-oled-mode"
-          class="btn-tactile h-12 border border-neutral-700 bg-[#0c0c0c] text-white font-bold text-xs uppercase"
+              <div>
+                <h2 class="text-lg font-bold text-white tracking-tight mb-2">${q.title}</h2>
+                <p class="text-[14px] text-zinc-300 leading-relaxed font-normal">${q.prompt}</p>
+              </div>
+            </div>
+
+            <div class="text-[11px] text-zinc-500 pt-3 border-t border-white/[0.06] flex items-center justify-between">
+              <span>Standard A4 Booklet Drill</span>
+              <span class="text-zinc-400 font-medium">Tap right tab for Checklist →</span>
+            </div>
+          ` : `
+            <div class="h-full flex items-center justify-center">
+              <span class="transform -rotate-90 whitespace-nowrap text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                Question Prompt
+              </span>
+            </div>
+          `}
+        </div>
+
+        <!-- Peek Card 2: Strategy & Checklist (Reference 6) -->
+        <div
+          id="card-strategy"
+          class="bento-card flex flex-col justify-between transition-all duration-300 relative overflow-hidden cursor-pointer ${
+            !isPromptExpanded ? 'w-[82%] p-5' : 'w-[18%] p-2 flex items-center justify-center bg-[#1A1A1F]/80 hover:bg-[#1A1A1F]'
+          }"
         >
-          OLED DESK CLOCK
-        </button>
+          ${!isPromptExpanded ? `
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                ${renderStatusPill('PENDING', 'Examiner Strategy')}
+                <span class="text-[11px] font-mono text-zinc-500 font-bold">IIT Bombay Rubric</span>
+              </div>
+
+              <!-- Examiner Trend Note -->
+              <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed">
+                <strong class="text-white block mb-0.5">High-Scoring Angle:</strong>
+                ${q.trend}
+              </div>
+
+              <!-- 4-Step Checklist -->
+              <div>
+                <div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">4-Step Execution Protocol:</div>
+                <div class="flex flex-col gap-2">
+                  ${DEFAULT_CHECKLIST.map((item, idx) => `
+                    <label class="flex items-center gap-2.5 text-xs text-zinc-300 p-2 rounded-lg bg-[#1A1A1F]/70 border border-white/[0.03] cursor-pointer">
+                      <input type="checkbox" class="w-4 h-4 rounded text-blue-500 bg-black border-white/20 focus:ring-0 cursor-pointer" />
+                      <span>${item}</span>
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+
+            <div class="text-[11px] text-zinc-500 pt-3 border-t border-white/[0.06] flex items-center justify-between">
+              <span>Examiner Pacing Protocol</span>
+              <span class="text-zinc-400 font-medium">← Tap left tab for Prompt</span>
+            </div>
+          ` : `
+            <div class="h-full flex items-center justify-center">
+              <span class="transform -rotate-90 whitespace-nowrap text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                Strategy & Checklist
+              </span>
+            </div>
+          `}
+        </div>
+
       </div>
 
-      <!-- Direct Study Domino Sync -->
-      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-2.5">
-        <div class="text-[10px] text-neutral-400 uppercase mb-2">
-          LOG PART B SPRINT DIRECTLY TO STUDY DOMINO:
+      <!-- Bottom Floating Scheduler Bar (Reference 5) -->
+      <div class="bento-card p-3 flex items-center justify-between gap-3">
+        <!-- Live Countdown Timer -->
+        <div class="flex items-baseline gap-1.5 pl-1">
+          <span id="studio-timer-display" class="text-2xl font-extrabold font-mono text-white tabular-nums">24:00</span>
+          <span class="text-[11px] text-zinc-500 font-medium">remaining</span>
         </div>
-        <div class="grid grid-cols-3 gap-1.5">
-          <button data-log-studio="30" class="btn-tactile h-11 border border-neutral-700 bg-[#0c0c0c] text-xs font-bold text-white active:bg-[#FF69AF] active:text-black">+30M STUDY</button>
-          <button data-log-studio="60" class="btn-tactile h-11 border border-neutral-700 bg-[#0c0c0c] text-xs font-bold text-white active:bg-[#FF69AF] active:text-black">+1H STUDY</button>
-          <button data-log-studio="120" class="btn-tactile h-11 border border-[#FF69AF] bg-[#FF69AF]/10 text-[#FF69AF] text-xs font-bold active:bg-[#FF69AF] active:text-black">+2H SPRINT</button>
+
+        <div class="flex items-center gap-2">
+          <!-- OLED Desk Clock Button -->
+          <button
+            id="btn-oled-mode"
+            class="h-10 px-3 rounded-full bg-[#1A1A1F] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 btn-tactile"
+            title="Fullscreen Desk Clock"
+            aria-label="Fullscreen Desk Clock Mode"
+          >
+            <span>⛶</span>
+            <span>OLED</span>
+          </button>
+
+          <!-- Crisp Solid White Pill CTA Button (Reference 5) -->
+          <button
+            id="btn-drill-cta"
+            class="h-10 px-5 rounded-full font-bold text-xs uppercase flex items-center gap-1.5 btn-tactile shadow-lg ${
+              timerState ? 'bg-emerald-400 text-black animate-pulse' : 'bg-white text-black hover:bg-zinc-100'
+            }"
+          >
+            <span>${timerState ? '✓ Finish & Log' : '▶ Start Drill'}</span>
+          </button>
         </div>
       </div>
     </section>
   `;
 
   bindStudioEvents(container, bank, daySet, q, todayStr);
-  startTickerLoop(container);
+  if (timerState) startTickerLoop(container);
 }
 
-function startTickerLoop(container) {
-  if (!timerState) return;
-  const updateDisplay = () => {
-    const el = container.querySelector('#studio-timer-display');
-    if (!el) return;
-    const elapsedSec = Math.floor((Date.now() - timerState.startedAt) / 1000);
-    const remainingSec = Math.max(0, timerState.durationSec - elapsedSec);
-    const m = String(Math.floor(remainingSec / 60)).padStart(2, '0');
-    const s = String(remainingSec % 60).padStart(2, '0');
-    el.textContent = `${m}:${s}`;
-  };
-  updateDisplay();
-  timerInterval = setInterval(updateDisplay, 1000);
-}
+function bindStudioEvents(container, bank, daySet, q, todayStr) {
+  // Asymmetric Peek Card toggling (Reference 6)
+  container.querySelector('#card-prompt')?.addEventListener('click', (e) => {
+    if (activeCardSide !== 'PROMPT' && !e.target.closest('input, button')) {
+      activeCardSide = 'PROMPT';
+      playRelayClick();
+      renderStudioProctor(container, null, todayStr, bank);
+    }
+  });
 
-function bindStudioEvents(container, questionBank, daySet, q, todayStr) {
-  // Switch Q1-Q5 tabs
+  container.querySelector('#card-strategy')?.addEventListener('click', (e) => {
+    if (activeCardSide !== 'STRATEGY' && !e.target.closest('input, button')) {
+      activeCardSide = 'STRATEGY';
+      playRelayClick();
+      renderStudioProctor(container, null, todayStr, bank);
+    }
+  });
+
+  // Prev / Next Day
+  container.querySelector('#btn-prev-day')?.addEventListener('click', () => {
+    activeDayIndex = Math.max(0, activeDayIndex - 1);
+    playRelayClick();
+    renderStudioProctor(container, null, todayStr, bank);
+  });
+
+  container.querySelector('#btn-next-day')?.addEventListener('click', () => {
+    activeDayIndex = Math.min(86, activeDayIndex + 1);
+    playRelayClick();
+    renderStudioProctor(container, null, todayStr, bank);
+  });
+
+  // Question Switcher
   container.querySelectorAll('[data-q-idx]').forEach(btn => {
     btn.addEventListener('click', () => {
       activeQuestionIndex = Number(btn.getAttribute('data-q-idx'));
       playRelayClick();
-      renderStudioProctor(container, null, todayStr, questionBank);
+      renderStudioProctor(container, null, todayStr, bank);
     });
   });
 
-  // Jump to Day
-  container.querySelector('#btn-day-cycle')?.addEventListener('click', () => {
-    const input = prompt('Jump to Studio Day (1 - 87):', String(activeDayIndex + 1));
-    const num = Number(input);
-    if (num >= 1 && num <= 87) {
-      activeDayIndex = num - 1;
-      playRelayClick();
-      renderStudioProctor(container, null, todayStr, questionBank);
-    }
-  });
-
-  // Toggle Mode
-  container.querySelector('#btn-mode-toggle')?.addEventListener('click', () => {
-    studioMode = studioMode === 'DRILL' ? 'EXAM' : 'DRILL';
-    timerState = null;
-    playRelayClick();
-    renderStudioProctor(container, null, todayStr, questionBank);
-  });
-
-  // Collapsible Drawers
-  container.querySelector('#btn-toggle-trend')?.addEventListener('click', () => {
-    showTrendDrawer = !showTrendDrawer;
-    playRelayClick();
-    renderStudioProctor(container, null, todayStr, questionBank);
-  });
-
-  container.querySelector('#btn-toggle-checklist')?.addEventListener('click', () => {
-    showChecklistDrawer = !showChecklistDrawer;
-    playRelayClick();
-    renderStudioProctor(container, null, todayStr, questionBank);
-  });
-
-  // Start / Stop Timer
-  container.querySelector('#btn-start-stop')?.addEventListener('click', () => {
-    if (timerState) {
-      const elapsedMins = Math.max(1, Math.round((Date.now() - timerState.startedAt) / 60000));
-      timerState = null;
-      logHours(todayStr, 'd2', elapsedMins, `Part B Studio (${q.code})`);
-      showInAppToast(`Logged ${elapsedMins}m to Domino 2`);
-    } else {
-      timerState = {
-        startedAt: Date.now(),
-        durationSec: studioMode === 'DRILL' ? 24 * 60 : 120 * 60
-      };
-      playRelayClick();
-      showInAppToast(`Sprint started: ${studioMode === 'DRILL' ? '24m' : '120m'}`);
-    }
-    renderStudioProctor(container, null, todayStr, questionBank);
-  });
-
-  // OLED Desk Clock Toggle
+  // Fullscreen OLED Desk Mode
   container.querySelector('#btn-oled-mode')?.addEventListener('click', () => {
-    if (!timerState) {
-      timerState = {
-        startedAt: Date.now(),
-        durationSec: studioMode === 'DRILL' ? 24 * 60 : 120 * 60
-      };
-    }
     oledDeskMode = true;
     playRelayClick();
-    renderStudioProctor(container, null, todayStr, questionBank);
+    renderStudioProctor(container, null, todayStr, bank);
   });
 
   container.querySelector('#btn-exit-oled')?.addEventListener('click', () => {
     oledDeskMode = false;
-    releaseWakeLock();
     playRelayClick();
-    renderStudioProctor(container, null, todayStr, questionBank);
+    renderStudioProctor(container, null, todayStr, bank);
+  });
+
+  // Start Drill / Finish & Log CTA
+  container.querySelector('#btn-drill-cta')?.addEventListener('click', () => {
+    handleSprintToggle(container, q, todayStr, bank);
   });
 
   container.querySelector('#btn-complete-sprint')?.addEventListener('click', () => {
-    const elapsedMins = timerState
-      ? Math.max(24, Math.round((Date.now() - timerState.startedAt) / 60000))
-      : 24;
-    timerState = null;
-    oledDeskMode = false;
-    releaseWakeLock();
-    logHours(todayStr, 'd2', elapsedMins, `Part B Studio (${q.code})`);
-    showInAppToast(`Sprint completed! +${elapsedMins}m logged to Domino 2`, true);
-    renderStudioProctor(container, null, todayStr, questionBank);
+    handleSprintToggle(container, q, todayStr, bank);
   });
+}
 
-  // Quick Log Studio
-  container.querySelectorAll('[data-log-studio]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const mins = Number(btn.getAttribute('data-log-studio'));
-      logHours(todayStr, 'd2', mins, `Part B Studio (${q.code})`);
-      showInAppToast(`+${mins}m logged to Domino 2`);
-      renderStudioProctor(container, null, todayStr, questionBank);
-    });
-  });
+function handleSprintToggle(container, q, todayStr, bank) {
+  if (timerState) {
+    // Finish and Commit elapsed minutes to Study Domino ('d2' or 'd3')
+    const elapsedSec = Math.floor((Date.now() - timerState.startedAt) / 1000);
+    const elapsedMins = Math.max(1, Math.round(elapsedSec / 60));
+    timerState = null;
+    if (timerInterval) clearInterval(timerInterval);
+    oledDeskMode = false;
+    logHours(todayStr, 'd2', elapsedMins, `Part B: ${q.code} (${q.title})`);
+    playRelayClick();
+    renderStudioProctor(container, null, todayStr, bank);
+  } else {
+    // Start 24m timer
+    timerState = {
+      startedAt: Date.now(),
+      durationSec: 24 * 60
+    };
+    playRelayClick();
+    renderStudioProctor(container, null, todayStr, bank);
+  }
+}
+
+function startTickerLoop(container) {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const display = container.querySelector('#studio-timer-display');
+    if (!display || !timerState) return;
+    const elapsedSec = Math.floor((Date.now() - timerState.startedAt) / 1000);
+    const rem = Math.max(0, timerState.durationSec - elapsedSec);
+    const m = Math.floor(rem / 60);
+    const s = String(rem % 60).padStart(2, '0');
+    display.textContent = `${m}:${s}`;
+  }, 1000);
 }

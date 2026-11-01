@@ -6,148 +6,125 @@ import {
   saveState,
   DEFAULT_BLOCKS,
   isDominoTask,
-  THEMES,
-  getTheme,
-  setTheme,
   getAccentColor,
   setAccentColor,
   resetState
 } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
-import { showInAppToast } from '../components/header.js';
 
-const PRESET_COLORS = [
+const PALETTE_SWATCHES = [
   { name: 'OLED Pink', hex: '#FF69AF' },
-  { name: 'Cyber Cyan', hex: '#00E5FF' },
+  { name: 'Sky Blue', hex: '#38BDF8' },
   { name: 'Electric Green', hex: '#10B981' },
   { name: 'Solar Amber', hex: '#F59E0B' },
-  { name: 'Ultra Violet', hex: '#8B5CF6' },
+  { name: 'Ultra Violet', hex: '#A855F7' },
   { name: 'Pure White', hex: '#FFFFFF' }
 ];
 
 export function renderSettingsView(container) {
   const blocks = getBlocks();
   const state = getState();
-  const currentThemeId = getTheme();
   const currentAccent = getAccentColor();
 
   container.innerHTML = `
-    <section class="w-full max-w-[420px] mx-auto px-3 pt-2 pb-24 font-mono select-none" aria-label="Settings Terminal">
-      <!-- 3-Theme Switcher Card -->
-      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
-        <div class="text-[10px] uppercase tracking-wider text-neutral-400 mb-2">INTERFACE THEME (3 MODES)</div>
-        <div class="grid grid-cols-3 gap-1.5">
-          ${THEMES.map(t => {
-            const isSelected = t.id === currentThemeId;
+    <section class="w-full max-w-[420px] mx-auto px-3.5 pt-2 pb-28 font-sans select-none" aria-label="Configuration Terminal">
+      
+      <!-- 1. Accent Palette Picker (Reference 1 & Instructions) -->
+      <div class="bento-card mb-3.5">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <div class="text-[12px] font-medium text-[#71717A]">Tactile Appearance</div>
+            <div class="text-base font-bold text-white tracking-tight">OLED Accent Palette</div>
+          </div>
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1A1A1F] border border-white/10">
+            <span class="w-3 h-3 rounded-full" style="background-color: ${currentAccent};"></span>
+            <span class="text-xs font-mono font-bold text-white uppercase">${currentAccent}</span>
+          </div>
+        </div>
+
+        <!-- 6 Glowing Circular Swatches -->
+        <div class="flex items-center justify-between gap-2 mb-3 pt-1">
+          ${PALETTE_SWATCHES.map(s => {
+            const isSelected = s.hex.toLowerCase() === currentAccent.toLowerCase();
             return `
               <button
-                data-theme-choice="${t.id}"
-                class="btn-tactile h-11 border-2 ${
-                  isSelected
-                    ? 'border-white bg-white text-black font-extrabold'
-                    : 'border-neutral-800 bg-[#0c0c0c] text-neutral-300'
-                } flex flex-col items-center justify-center text-[10px] leading-tight"
+                data-palette-hex="${s.hex}"
+                class="w-10 h-10 rounded-full transition-all btn-tactile relative flex items-center justify-center ${
+                  isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110' : 'hover:scale-105'
+                }"
+                style="background-color: ${s.hex}; box-shadow: 0 0 12px ${s.hex}60;"
+                title="${s.name}"
+                aria-label="${s.name}"
               >
-                <span>${t.label}</span>
-                <span class="text-[8px] opacity-75">${t.id === 'cyber' ? 'OLED Pill' : t.id === 'brutalist' ? 'Raw Wire' : 'Monochrome'}</span>
+                ${isSelected ? `<span class="w-2 h-2 rounded-full ${s.hex === '#FFFFFF' ? 'bg-black' : 'bg-white'}"></span>` : ''}
               </button>
             `;
           }).join('')}
         </div>
-      </div>
 
-      <!-- Custom Accent Color Chooser -->
-      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
-        <div class="flex items-center justify-between mb-2">
-          <div class="text-[10px] uppercase tracking-wider text-neutral-400">CUSTOM ACCENT COLOR</div>
-          <div class="flex items-center gap-1.5">
-            <div id="accent-preview-box" class="w-4 h-4 rounded-full border border-white" style="background-color: ${currentAccent}; box-shadow: 0 0 8px ${currentAccent};"></div>
-            <span id="accent-hex-display" class="text-xs font-bold text-white">${currentAccent}</span>
-          </div>
-        </div>
-
-        <!-- Custom Color Inputs -->
-        <div class="flex items-center gap-2 mb-3">
-          <input
-            type="color"
-            id="accent-color-picker"
-            value="${currentAccent}"
-            class="w-10 h-10 border-2 border-neutral-700 bg-black cursor-pointer rounded shrink-0 p-0"
-            aria-label="Pick Accent Color"
-          />
+        <!-- Custom Hex Input Field -->
+        <div class="flex items-center gap-2 pt-2 border-t border-white/[0.06]">
           <input
             type="text"
-            id="accent-hex-input"
+            id="accent-custom-hex"
             value="${currentAccent}"
-            placeholder="#FF69AF"
+            placeholder="#38BDF8"
             maxlength="7"
-            class="flex-1 bg-[#121212] border border-neutral-700 text-xs px-2.5 py-2 font-mono uppercase text-white rounded focus:outline-none focus:border-white font-bold"
-            aria-label="Enter Hex Color Code"
+            class="flex-1 bg-[#1A1A1F] border border-white/10 text-xs px-3 py-2 font-mono uppercase text-white rounded-full focus:outline-none focus:border-white font-bold"
+            aria-label="Custom Hex Code"
           />
           <button
             id="btn-apply-hex"
-            class="btn-tactile h-9 px-3 border border-white bg-white text-black text-xs font-bold uppercase shrink-0"
+            class="h-8 px-4 rounded-full bg-white text-black text-xs font-bold uppercase btn-tactile shrink-0"
           >
-            APPLY
+            Apply
           </button>
-        </div>
-
-        <!-- Quick OLED Neon Presets -->
-        <div class="grid grid-cols-3 gap-1.5">
-          ${PRESET_COLORS.map(p => `
-            <button
-              data-preset-hex="${p.hex}"
-              class="btn-tactile h-8 px-2 border ${p.hex.toLowerCase() === currentAccent.toLowerCase() ? 'border-white' : 'border-neutral-800'} bg-[#121212] flex items-center gap-1.5 rounded"
-            >
-              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${p.hex};"></span>
-              <span class="text-[9px] font-bold text-neutral-200 truncate">${p.name}</span>
-            </button>
-          `).join('')}
         </div>
       </div>
 
-      <!-- Fully Customizable Domino Pillars & Badges -->
-      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
-        <div class="flex items-center justify-between mb-2 pb-2 border-b border-neutral-800">
+      <!-- 2. Domino Pillar Editor (Clean Bento Rows) -->
+      <div class="bento-card mb-3.5">
+        <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/[0.06]">
           <div>
-            <div class="text-xs font-bold text-white uppercase">CUSTOMIZE DOMINO PILLARS</div>
-            <div class="text-[9px] text-neutral-400">Include "DOMINO" in badge for streak tracking</div>
+            <div class="text-[12px] font-medium text-[#71717A]">Pillars & Objectives</div>
+            <div class="text-base font-bold text-white tracking-tight">Domino Architecture</div>
           </div>
-          <button id="btn-reset-blocks" class="text-[10px] text-neutral-400 hover:text-white underline">Reset Defaults</button>
+          <button id="btn-reset-blocks" class="text-xs text-zinc-400 hover:text-white underline">Reset Defaults</button>
         </div>
 
-        <div class="flex flex-col gap-2.5 mb-3" id="domino-editor-list">
-          ${blocks.map((b, idx) => {
+        <div class="flex flex-col gap-2.5 mb-3.5">
+          ${blocks.map((b) => {
             const isMand = isDominoTask(b);
+            const targetHrs = (b.targetMins / 60).toFixed(1);
             return `
-              <div class="border border-neutral-800 bg-black/60 rounded p-2.5 relative" data-block-id="${b.id}">
-                <div class="flex items-center justify-between gap-2 mb-2">
+              <div class="p-3 rounded-2xl bg-[#1A1A1F] border border-white/[0.04] flex flex-col gap-2" data-block-id="${b.id}">
+                <!-- Row 1: Badge + Category Pill + Delete -->
+                <div class="flex items-center justify-between gap-2">
                   <input
                     type="text"
                     data-edit-badge="${b.id}"
                     value="${b.badge}"
-                    class="w-32 bg-[#121212] border ${isMand ? 'border-neutral-500 text-white' : 'border-neutral-800 text-neutral-400'} text-[11px] px-2 py-1 font-bold uppercase rounded focus:outline-none"
-                    placeholder="Badge (e.g. DOMINO 1)"
+                    class="w-28 bg-[#121215] border border-white/10 text-xs px-2.5 py-1 font-bold text-white uppercase rounded-full focus:outline-none"
+                    placeholder="DOMINO 1"
                   />
 
-                  <div class="flex items-center gap-1.5">
+                  <div class="flex items-center gap-2">
                     <select
                       data-edit-cat="${b.id}"
-                      class="bg-[#121212] border border-neutral-700 text-[11px] text-white px-2 py-1 rounded focus:outline-none"
+                      class="bg-[#121215] border border-white/10 text-xs text-zinc-300 px-2.5 py-1 rounded-full focus:outline-none cursor-pointer"
                     >
                       <option value="STUDY" ${b.category === 'STUDY' ? 'selected' : ''}>STUDY</option>
                       <option value="WORK" ${b.category === 'WORK' ? 'selected' : ''}>WORK</option>
                       <option value="WALK" ${b.category === 'WALK' ? 'selected' : ''}>WALK</option>
-                      <option value="REST" ${b.category === 'REST' ? 'selected' : ''}>REST</option>
                       <option value="OTHER" ${b.category === 'OTHER' ? 'selected' : ''}>OTHER</option>
                     </select>
 
                     ${blocks.length > 1 ? `
                       <button
                         data-delete-block="${b.id}"
-                        class="btn-tactile w-7 h-7 border border-red-900/60 bg-red-950/30 text-red-400 hover:bg-red-900 hover:text-white rounded flex items-center justify-center text-xs font-bold"
-                        title="Delete Domino"
-                        aria-label="Delete Domino"
+                        class="w-7 h-7 rounded-full bg-red-950/40 border border-red-800/30 text-red-400 hover:bg-red-900 hover:text-white flex items-center justify-center text-xs font-bold btn-tactile"
+                        title="Delete Pillar"
+                        aria-label="Delete Pillar"
                       >
                         ✕
                       </button>
@@ -155,32 +132,39 @@ export function renderSettingsView(container) {
                   </div>
                 </div>
 
-                <div class="mb-2">
+                <!-- Row 2: Title Input -->
+                <div>
                   <input
                     type="text"
                     data-edit-name="${b.id}"
                     value="${b.name}"
-                    class="w-full bg-[#121212] border border-neutral-700 text-xs text-white px-2 py-1.5 rounded focus:outline-none font-bold"
-                    placeholder="Pillar Name (e.g. Study & Sketching)"
+                    class="w-full bg-transparent text-sm text-white font-bold tracking-tight focus:outline-none placeholder-zinc-500"
+                    placeholder="Pillar Name"
                   />
                 </div>
 
-                <div class="flex items-center justify-between text-[11px] text-neutral-400">
-                  <div class="flex items-center gap-1.5">
-                    <span>Floor (Hrs):</span>
-                    <input
-                      type="number"
-                      step="0.5"
-                      min="0.5"
-                      max="12"
-                      data-edit-target="${b.id}"
-                      value="${(b.targetMins / 60).toFixed(1)}"
-                      class="w-16 bg-[#121212] border border-neutral-700 text-white text-center py-0.5 rounded focus:outline-none font-mono"
-                    />
+                <!-- Row 3: Target Hours Steppers (-0.5h / +0.5h) -->
+                <div class="flex items-center justify-between pt-1 text-xs border-t border-white/[0.04]">
+                  <span class="text-zinc-500 font-medium">Daily Target Floor</span>
+                  <div class="flex items-center gap-2">
+                    <button
+                      data-step-target="${b.id}"
+                      data-step-delta="-30"
+                      class="w-7 h-7 rounded-full bg-[#121215] border border-white/10 text-white font-bold flex items-center justify-center btn-tactile"
+                      aria-label="Decrease Target 30m"
+                    >
+                      -
+                    </button>
+                    <span class="font-mono font-bold text-white text-xs w-10 text-center">${targetHrs}h</span>
+                    <button
+                      data-step-target="${b.id}"
+                      data-step-delta="30"
+                      class="w-7 h-7 rounded-full bg-[#121215] border border-white/10 text-white font-bold flex items-center justify-center btn-tactile"
+                      aria-label="Increase Target 30m"
+                    >
+                      +
+                    </button>
                   </div>
-                  <span class="${isMand ? 'text-white font-bold' : 'text-neutral-500'}">
-                    ${isMand ? '[MANDATORY DOMINO]' : '[FLEXIBLE ROUTINE]'}
-                  </span>
                 </div>
               </div>
             `;
@@ -188,47 +172,55 @@ export function renderSettingsView(container) {
         </div>
 
         <button
-          id="btn-add-new-block"
-          class="btn-tactile w-full h-10 border-2 border-dashed border-neutral-700 hover:border-white bg-[#0c0c0c] text-neutral-300 hover:text-white text-xs font-bold uppercase flex items-center justify-center gap-1.5 rounded"
+          id="btn-add-pillar"
+          class="w-full h-11 rounded-full border border-dashed border-white/20 hover:border-white/40 bg-[#1A1A1F]/60 text-zinc-300 hover:text-white text-xs font-bold uppercase flex items-center justify-center gap-1.5 btn-tactile"
         >
-          <span>+ ADD NEW DOMINO PILLAR</span>
+          <span>+ Add New Domino Pillar</span>
         </button>
       </div>
 
-      <!-- Streak Shield Bank -->
-      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-xs font-bold text-white">STREAK SHIELDS (🛡️)</div>
-            <div class="text-[10px] text-neutral-400">Current Shields: ${state.shields || 0} / 3 (+1 every 7-day streak)</div>
-          </div>
-          <button id="btn-add-shield" class="btn-tactile px-3 py-1.5 border border-white text-xs font-bold text-white active:bg-white active:text-black">
-            +1 SHIELD
-          </button>
+      <!-- 3. Streak Shields Bank -->
+      <div class="bento-card mb-3.5 flex items-center justify-between">
+        <div>
+          <div class="text-[12px] font-medium text-[#71717A]">Gamification Guard</div>
+          <div class="text-sm font-bold text-white">Streak Shields (🛡️)</div>
+          <div class="text-[11px] text-zinc-500 mt-0.5">${state.shields || 0} of 3 active (+1 every 7-day streak)</div>
         </div>
+        <button
+          id="btn-add-shield"
+          class="px-4 py-2 rounded-full bg-white text-black text-xs font-bold btn-tactile shadow-md"
+        >
+          +1 Shield
+        </button>
       </div>
 
-      <!-- State Backup & JSON Restore Controls -->
-      <div class="card-shell border border-neutral-800 bg-[#0a0a0a] p-3 mb-3">
-        <div class="text-xs font-bold text-white uppercase mb-2">STATE BACKUP & RESTORE</div>
+      <!-- 4. Backup & Factory Reset -->
+      <div class="bento-card mb-3.5">
+        <div class="text-[12px] font-medium text-[#71717A] mb-1">Data Portability</div>
+        <div class="text-sm font-bold text-white mb-3">Backup & Storage</div>
+
         <div class="grid grid-cols-2 gap-2 mb-2">
-          <button id="btn-backup-json" class="btn-tactile h-11 border border-white bg-black text-xs font-bold uppercase text-white active:bg-white active:text-black">
-            EXPORT JSON
+          <button
+            id="btn-backup-json"
+            class="h-10 rounded-full bg-[#1A1A1F] border border-white/10 hover:border-white/20 text-xs font-semibold text-white flex items-center justify-center gap-1 btn-tactile"
+          >
+            <span>↓</span>
+            <span>Export JSON</span>
           </button>
-          <label class="btn-tactile h-11 border border-neutral-700 bg-black text-xs font-bold uppercase flex items-center justify-center cursor-pointer hover:border-white text-white">
-            IMPORT JSON
+          <label class="h-10 rounded-full bg-[#1A1A1F] border border-white/10 hover:border-white/20 text-xs font-semibold text-white flex items-center justify-center gap-1 cursor-pointer btn-tactile">
+            <span>↑</span>
+            <span>Import JSON</span>
             <input type="file" id="file-import-json" accept=".json" class="hidden" />
           </label>
         </div>
-        <div class="text-[10px] text-neutral-500 leading-tight">
-          All records persist locally. Importing a backup replaces current browser storage.
-        </div>
-      </div>
 
-      <!-- Factory Reset -->
-      <button id="btn-factory-reset" class="btn-tactile w-full h-11 border border-red-800 bg-black text-red-400 text-xs uppercase tracking-widest active:bg-red-900 active:text-white">
-        ⚠ FACTORY RESET ALL DATA
-      </button>
+        <button
+          id="btn-factory-reset"
+          class="w-full h-10 mt-2 rounded-full bg-red-950/30 border border-red-800/40 text-red-400 hover:bg-red-900/40 hover:text-red-300 text-xs font-bold uppercase btn-tactile"
+        >
+          ⚠ Factory Reset All Data
+        </button>
+      </div>
     </section>
   `;
 
@@ -240,65 +232,36 @@ export function renderSettings(container) {
 }
 
 function bindSettingsEvents(container) {
-  // Theme Choices
-  container.querySelectorAll('[data-theme-choice]').forEach(btn => {
+  // Swatch Click
+  container.querySelectorAll('[data-palette-hex]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const choice = btn.getAttribute('data-theme-choice');
-      setTheme(choice);
-      showInAppToast(`Theme set to ${choice.toUpperCase()}`);
+      const hex = btn.getAttribute('data-palette-hex');
+      setAccentColor(hex);
+      playRelayClick();
       renderSettingsView(container);
     });
   });
 
-  // Color Picker & Hex Apply
-  const colorPicker = container.querySelector('#accent-color-picker');
-  const hexInput = container.querySelector('#accent-hex-input');
-  const btnApplyHex = container.querySelector('#btn-apply-hex');
-
-  const updateColor = (hex) => {
-    if (!hex) return;
-    const clean = setAccentColor(hex);
-    playRelayClick();
-    showInAppToast(`Accent Color Set: ${clean}`);
-    renderSettingsView(container);
-  };
-
-  colorPicker?.addEventListener('input', (e) => {
-    if (hexInput) hexInput.value = e.target.value.toUpperCase();
-  });
-
-  colorPicker?.addEventListener('change', (e) => {
-    updateColor(e.target.value);
-  });
-
-  btnApplyHex?.addEventListener('click', () => {
-    let val = hexInput?.value?.trim();
+  // Custom Hex Input Apply
+  container.querySelector('#btn-apply-hex')?.addEventListener('click', () => {
+    let val = container.querySelector('#accent-custom-hex')?.value?.trim();
     if (val) {
       if (!val.startsWith('#')) val = '#' + val;
       if (/^#[0-9A-Fa-f]{6}$/.test(val) || /^#[0-9A-Fa-f]{3}$/.test(val)) {
-        updateColor(val);
-      } else {
-        showInAppToast('Invalid Hex color! e.g. #00E5FF');
+        setAccentColor(val);
+        playRelayClick();
+        renderSettingsView(container);
       }
     }
   });
 
-  // Preset Color Buttons
-  container.querySelectorAll('[data-preset-hex]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const hex = btn.getAttribute('data-preset-hex');
-      updateColor(hex);
-    });
-  });
-
-  // Add Shield
+  // +1 Shield
   container.querySelector('#btn-add-shield')?.addEventListener('click', () => {
     const state = getState();
     state.shields = Math.min(3, (state.shields || 0) + 1);
     saveState(state);
     playRelayClick();
     renderSettingsView(container);
-    showInAppToast(`Shield Added (${state.shields}/3)`);
   });
 
   // Reset Blocks to Default
@@ -307,12 +270,11 @@ function bindSettingsEvents(container) {
       saveBlocks(structuredClone(DEFAULT_BLOCKS));
       playRelayClick();
       renderSettingsView(container);
-      showInAppToast('Domino pillars reset to default');
     }
   });
 
   // Add New Domino Pillar
-  container.querySelector('#btn-add-new-block')?.addEventListener('click', () => {
+  container.querySelector('#btn-add-pillar')?.addEventListener('click', () => {
     const blocks = getBlocks();
     const newIdx = blocks.length + 1;
     const newBlock = {
@@ -326,7 +288,6 @@ function bindSettingsEvents(container) {
     saveBlocks(blocks);
     playRelayClick();
     renderSettingsView(container);
-    showInAppToast(`Added ${newBlock.badge}!`);
   });
 
   // Delete Domino Pillar
@@ -334,25 +295,36 @@ function bindSettingsEvents(container) {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-delete-block');
       const blocks = getBlocks();
-      if (blocks.length <= 1) {
-        showInAppToast('Cannot delete the last remaining Domino!');
-        return;
-      }
+      if (blocks.length <= 1) return;
       const updated = blocks.filter(b => b.id !== id);
       saveBlocks(updated);
       playRelayClick();
       renderSettingsView(container);
-      showInAppToast('Domino deleted');
     });
   });
 
-  // Live auto-save on block input changes
+  // Target Hour Steppers (-0.5h / +0.5h)
+  container.querySelectorAll('[data-step-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-step-target');
+      const delta = Number(btn.getAttribute('data-step-delta'));
+      const blocks = getBlocks();
+      const b = blocks.find(x => x.id === id);
+      if (b) {
+        b.targetMins = Math.max(15, Math.min(720, b.targetMins + delta));
+        saveBlocks(blocks);
+        playRelayClick();
+        renderSettingsView(container);
+      }
+    });
+  });
+
+  // Live auto-save on badge, name, or category change
   container.querySelectorAll('[data-block-id]').forEach(wrapper => {
     const id = wrapper.getAttribute('data-block-id');
     const badgeInput = wrapper.querySelector(`[data-edit-badge="${id}"]`);
     const nameInput = wrapper.querySelector(`[data-edit-name="${id}"]`);
     const catSelect = wrapper.querySelector(`[data-edit-cat="${id}"]`);
-    const targetInput = wrapper.querySelector(`[data-edit-target="${id}"]`);
 
     const updateBlock = () => {
       const blocks = getBlocks();
@@ -361,8 +333,6 @@ function bindSettingsEvents(container) {
         b.badge = badgeInput?.value.trim() || 'DOMINO';
         b.name = nameInput?.value.trim() || 'Custom Task';
         b.category = catSelect?.value || 'STUDY';
-        const hours = parseFloat(targetInput?.value) || 1.0;
-        b.targetMins = Math.max(15, Math.round(hours * 60));
         saveBlocks(blocks);
       }
     };
@@ -370,10 +340,9 @@ function bindSettingsEvents(container) {
     badgeInput?.addEventListener('change', updateBlock);
     nameInput?.addEventListener('change', updateBlock);
     catSelect?.addEventListener('change', updateBlock);
-    targetInput?.addEventListener('change', updateBlock);
   });
 
-  // Backup JSON
+  // Export JSON
   container.querySelector('#btn-backup-json')?.addEventListener('click', () => {
     const state = getState();
     const blocks = getBlocks();
@@ -391,7 +360,6 @@ function bindSettingsEvents(container) {
     a.click();
     URL.revokeObjectURL(url);
     playRelayClick();
-    showInAppToast('JSON Backup Downloaded');
   });
 
   // Import JSON
@@ -403,12 +371,8 @@ function bindSettingsEvents(container) {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
-        if (imported.state) {
-          saveState(imported.state);
-        }
-        if (imported.blocks && Array.isArray(imported.blocks)) {
-          saveBlocks(imported.blocks);
-        }
+        if (imported.state) saveState(imported.state);
+        if (imported.blocks && Array.isArray(imported.blocks)) saveBlocks(imported.blocks);
         playRelayClick();
         alert('Backup successfully restored!');
         window.location.reload();
