@@ -282,7 +282,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                               : 'bg-[#18191E] text-[#71717A] border border-white/[0.1]')
                       }"
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="${isCompleted ? 'check-pop-enter' : ''}">
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
                     </button>
@@ -301,137 +301,139 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                   ></div>
                 </div>
 
-                ${isExpanded ? `
-                  <!-- Expanded Tactile Time Adjuster Slider Drawer -->
-                  <div class="mt-5 pt-4 ${isCardsInfused ? 'border-t border-black/15' : 'border-t border-white/[0.06]'}" data-drawer-stop>
-                    
-                    <!-- Hero Slider Header & Quick Step -->
-                    <div class="flex items-center justify-between mb-3">
-                      <span class="text-xs font-semibold ${isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]'}">Log Session Hours</span>
-                      <div class="flex items-center gap-2">
-                        <button
-                          type="button"
-                          data-step-mins="-15"
-                          data-block-id="${block.id}"
-                          class="w-7 h-7 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-[#09090B] hover:bg-black/20' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8]'} flex items-center justify-center text-sm font-bold btn-tactile"
-                          title="Decrease 15m"
-                          aria-label="Decrease logged duration by 15 minutes"
-                        >–</button>
-                        <span class="text-[17px] font-mono font-bold ${isCardsInfused ? 'text-[#09090B] bg-black/10 border border-black/20' : 'text-[#F4F4F6] bg-[var(--surface-well)] border border-[var(--border-subtle)]'} tabular-nums px-2 py-0.5 rounded-lg">
-                          ${loggedHrs.toFixed(2)}h
-                        </span>
-                        <button
-                          type="button"
-                          data-step-mins="15"
-                          data-block-id="${block.id}"
-                          class="w-7 h-7 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-[#09090B] hover:bg-black/20' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8]'} flex items-center justify-center text-sm font-bold btn-tactile"
-                          title="Increase 15m"
-                          aria-label="Increase logged duration by 15 minutes"
-                        >+</button>
-                      </div>
-                    </div>
-
-                    <!-- Fluid Tactile Range Slider with Safe Pan-X Touch Capture -->
-                    <div class="py-2" style="touch-action: pan-x;">
-                      <input
-                        type="range"
-                        min="0"
-                        max="6"
-                        step="0.25"
-                        value="${loggedHrs}"
-                        data-slider-block="${block.id}"
-                        aria-label="Logged session hours for ${block.name || 'Pillar'}: ${loggedHrs.toFixed(2)} hours"
-                        class="w-full h-2.5 rounded-lg appearance-none cursor-pointer ${isCardsInfused ? 'bg-black/15 accent-[#09090B]' : 'bg-[#1C1D22] accent-[var(--domino-accent)]'}"
-                        style="${
-                          isCardsInfused
-                            ? `background: linear-gradient(to right, #09090B 0%, #09090B ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) 100%);`
-                            : `background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, var(--surface-well) ${(loggedHrs / 6) * 100}%, var(--surface-well) 100%);`
-                        }"
-                      />
-                      <div class="flex justify-between text-[11px] font-mono ${isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]'} mt-1.5">
-                        <span>0.0h</span>
-                        <span>1.5h</span>
-                        <span>3.0h</span>
-                        <span>4.5h</span>
-                        <span>6.0h</span>
-                      </div>
-                    </div>
-
-                    <!-- Quick Preset Chips -->
-                    <div class="flex items-center gap-1.5 my-3 overflow-x-auto py-1">
-                      <button
-                        type="button"
-                        data-set-mins="0"
-                        data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
-                      >
-                        Reset (0h)
-                      </button>
-                      <button
-                        type="button"
-                        data-set-mins="${targetMins}"
-                        data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/20 border border-black/30 text-[#09090B] font-bold' : 'bg-[#18191E] border border-[var(--domino-accent)]/40 text-[var(--domino-accent)] hover:text-white font-semibold'} text-[11px] btn-tactile whitespace-nowrap"
-                      >
-                        Target (${targetHrs.toFixed(1)}h)
-                      </button>
-                      <button
-                        type="button"
-                        data-step-mins="30"
-                        data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
-                      >
-                        +30m
-                      </button>
-                      <button
-                        type="button"
-                        data-step-mins="60"
-                        data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
-                      >
-                        +1.0h
-                      </button>
-                      <button
-                        type="button"
-                        data-set-mins="240"
-                        data-block-id="${block.id}"
-                        class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
-                      >
-                        Max (4h)
-                      </button>
-                    </div>
-
-                    <!-- Recessed Bottom Well with Target Floor & Session Trigger -->
-                    <div class="mt-2 flex items-center justify-between gap-3 ${isCardsInfused ? 'bg-black/10 border border-black/15 p-3 rounded-[10px]' : 'recessed-well'}">
-                      <div>
-                        <div class="text-[11px] ${isCardsInfused ? 'text-black/70 font-semibold' : 'text-[#71717A]'}">Target Floor</div>
-                        <div class="text-[15px] font-bold ${isCardsInfused ? 'text-[#09090B]' : 'text-[#F4F4F6]'} tabular-nums mt-0.5">
-                          ${targetHrs.toFixed(1)} <span class="text-[12px] ${isCardsInfused ? 'text-black/60 font-medium' : 'text-[#71717A] font-normal'}">hrs / day</span>
+                <!-- Expanded Tactile Time Adjuster Slider Drawer (Emil Kowalski Accordion Transition) -->
+                <div data-drawer-wrapper class="accordion-wrapper ${isExpanded ? 'is-open' : ''}">
+                  <div class="accordion-inner">
+                    <div class="mt-5 pt-4 ${isCardsInfused ? 'border-t border-black/15' : 'border-t border-white/[0.06]'}" data-drawer-stop>
+                      
+                      <!-- Hero Slider Header & Quick Step -->
+                      <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-semibold ${isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]'}">Log Session Hours</span>
+                        <div class="flex items-center gap-2">
+                          <button
+                            type="button"
+                            data-step-mins="-15"
+                            data-block-id="${block.id}"
+                            class="w-7 h-7 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-[#09090B] hover:bg-black/20' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8]'} flex items-center justify-center text-sm font-bold btn-tactile"
+                            title="Decrease 15m"
+                            aria-label="Decrease logged duration by 15 minutes"
+                          >–</button>
+                          <span class="text-[17px] font-mono font-bold ${isCardsInfused ? 'text-[#09090B] bg-black/10 border border-black/20' : 'text-[#F4F4F6] bg-[var(--surface-well)] border border-[var(--border-subtle)]'} tabular-nums px-2 py-0.5 rounded-lg">
+                            ${loggedHrs.toFixed(2)}h
+                          </span>
+                          <button
+                            type="button"
+                            data-step-mins="15"
+                            data-block-id="${block.id}"
+                            class="w-7 h-7 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-[#09090B] hover:bg-black/20' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8]'} flex items-center justify-center text-sm font-bold btn-tactile"
+                            title="Increase 15m"
+                            aria-label="Increase logged duration by 15 minutes"
+                          >+</button>
                         </div>
                       </div>
 
-                      <button
-                        type="button"
-                        data-timer-toggle="${block.id}"
-                        class="px-5 py-2.5 rounded-full text-[13px] font-bold tracking-tight btn-tactile ${
-                          isRunningThis
-                            ? 'bg-[#FECACA] text-[#991B1B] border border-[#F87171]'
-                            : (isCardsInfused
-                                ? 'bg-[#09090B] text-white shadow-md hover:bg-black/90'
-                                : 'bg-[var(--domino-accent)] text-[#09090B] shadow-sm')
-                        }"
-                      >
-                        ${isRunningThis ? `Stop • ${timerState.formatted || '00:00'}` : 'Start Session'}
-                      </button>
-                    </div>
+                      <!-- Fluid Tactile Range Slider with Safe Pan-X Touch Capture -->
+                      <div class="py-2" style="touch-action: pan-x;">
+                        <input
+                          type="range"
+                          min="0"
+                          max="6"
+                          step="0.25"
+                          value="${loggedHrs}"
+                          data-slider-block="${block.id}"
+                          aria-label="Logged session hours for ${block.name || 'Pillar'}: ${loggedHrs.toFixed(2)} hours"
+                          class="w-full h-2.5 rounded-lg appearance-none cursor-pointer ${isCardsInfused ? 'bg-black/15 accent-[#09090B]' : 'bg-[#1C1D22] accent-[var(--domino-accent)]'}"
+                          style="${
+                            isCardsInfused
+                              ? `background: linear-gradient(to right, #09090B 0%, #09090B ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) 100%);`
+                              : `background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, var(--surface-well) ${(loggedHrs / 6) * 100}%, var(--surface-well) 100%);`
+                          }"
+                        />
+                        <div class="flex justify-between text-[11px] font-mono ${isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]'} mt-1.5">
+                          <span>0.0h</span>
+                          <span>1.5h</span>
+                          <span>3.0h</span>
+                          <span>4.5h</span>
+                          <span>6.0h</span>
+                        </div>
+                      </div>
 
+                      <!-- Quick Preset Chips -->
+                      <div class="flex items-center gap-1.5 my-3 overflow-x-auto py-1">
+                        <button
+                          type="button"
+                          data-set-mins="0"
+                          data-block-id="${block.id}"
+                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                        >
+                          Reset (0h)
+                        </button>
+                        <button
+                          type="button"
+                          data-set-mins="${targetMins}"
+                          data-block-id="${block.id}"
+                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/20 border border-black/30 text-[#09090B] font-bold' : 'bg-[#18191E] border border-[var(--domino-accent)]/40 text-[var(--domino-accent)] hover:text-white font-semibold'} text-[11px] btn-tactile whitespace-nowrap"
+                        >
+                          Target (${targetHrs.toFixed(1)}h)
+                        </button>
+                        <button
+                          type="button"
+                          data-step-mins="30"
+                          data-block-id="${block.id}"
+                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                        >
+                          +30m
+                        </button>
+                        <button
+                          type="button"
+                          data-step-mins="60"
+                          data-block-id="${block.id}"
+                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                        >
+                          +1.0h
+                        </button>
+                        <button
+                          type="button"
+                          data-set-mins="240"
+                          data-block-id="${block.id}"
+                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                        >
+                          Max (4h)
+                        </button>
+                      </div>
+
+                      <!-- Recessed Bottom Well with Target Floor & Session Trigger -->
+                      <div class="mt-2 flex items-center justify-between gap-3 ${isCardsInfused ? 'bg-black/10 border border-black/15 p-3 rounded-[10px]' : 'recessed-well'}">
+                        <div>
+                          <div class="text-[11px] ${isCardsInfused ? 'text-black/70 font-semibold' : 'text-[#71717A]'}">Target Floor</div>
+                          <div class="text-[15px] font-bold ${isCardsInfused ? 'text-[#09090B]' : 'text-[#F4F4F6]'} tabular-nums mt-0.5">
+                            ${targetHrs.toFixed(1)} <span class="text-[12px] ${isCardsInfused ? 'text-black/60 font-medium' : 'text-[#71717A] font-normal'}">hrs / day</span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          data-timer-toggle="${block.id}"
+                          class="px-5 py-2.5 rounded-full text-[13px] font-bold tracking-tight btn-tactile ${
+                            isRunningThis
+                              ? 'bg-[#FECACA] text-[#991B1B] border border-[#F87171]'
+                              : (isCardsInfused
+                                  ? 'bg-[#09090B] text-white shadow-md hover:bg-black/90'
+                                  : 'bg-[var(--domino-accent)] text-[#09090B] shadow-sm')
+                          }"
+                        >
+                          ${isRunningThis ? `Stop • ${timerState.formatted || '00:00'}` : 'Start Session'}
+                        </button>
+                      </div>
+
+                    </div>
                   </div>
-                ` : ''}
+                </div>
               </article>
 
               <!-- Dedicated Live Session Timer Box Directly Below Card when Running! -->
               ${isRunningThis ? `
-                <div class="mt-1.5 p-3 rounded-[14px] ${isCardsInfused ? 'bg-black/10 border border-black/25' : 'bg-[#16171B] border border-[var(--domino-accent)]/40'} flex items-center justify-between animate-fadeIn">
+                <div class="mt-1.5 p-3 rounded-[14px] ${isCardsInfused ? 'bg-black/10 border border-black/25' : 'bg-[#16171B] border border-[var(--domino-accent)]/40'} flex items-center justify-between drill-banner-enter">
                   <div class="flex items-center gap-2.5">
                     <span class="w-2.5 h-2.5 rounded-full ${isCardsInfused ? 'bg-[#09090B]' : 'bg-[var(--domino-accent)]'} animate-pulse"></span>
                     <div>
@@ -500,24 +502,37 @@ function bindDashboardEvents(container) {
     });
   });
 
-  // Card body expansion (clicking or pressing Enter/Space outside interactive elements)
+  // Card body expansion (Emil Kowalski Accordion Toggle without DOM thrashing)
   container.querySelectorAll('[data-card-id]').forEach(card => {
+    const toggleDrawer = () => {
+      const id = card.dataset.cardId;
+      const drawer = card.querySelector('[data-drawer-wrapper]');
+      const willOpen = !drawer?.classList.contains('is-open');
+
+      // Close all other open drawers smoothly
+      container.querySelectorAll('[data-drawer-wrapper]').forEach(d => {
+        d.classList.remove('is-open');
+      });
+
+      if (willOpen && drawer) {
+        drawer.classList.add('is-open');
+        expandedBlockId = id;
+      } else {
+        expandedBlockId = null;
+      }
+      playRelayClick();
+    };
+
     card.addEventListener('click', (e) => {
       if (e.target.closest('button') || e.target.closest('input')) return;
-      const id = card.dataset.cardId;
-      expandedBlockId = expandedBlockId === id ? null : id;
-      playRelayClick();
-      renderDashboard(container);
+      toggleDrawer();
     });
 
     card.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         if (e.target.closest('button') || e.target.closest('input')) return;
         e.preventDefault();
-        const id = card.dataset.cardId;
-        expandedBlockId = expandedBlockId === id ? null : id;
-        playRelayClick();
-        renderDashboard(container);
+        toggleDrawer();
       }
     });
   });

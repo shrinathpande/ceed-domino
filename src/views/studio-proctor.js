@@ -202,9 +202,9 @@ export function renderStudioProctor(container) {
                   type="checkbox"
                   data-step-check="${idx}"
                   ${isChecked ? 'checked' : ''}
-                  class="w-4 h-4 accent-[var(--domino-accent)] rounded cursor-pointer"
+                  class="w-4 h-4 accent-[var(--domino-accent)] rounded cursor-pointer transition-transform duration-150 active:scale-90"
                 />
-                <span class="${isChecked ? 'line-through text-[#71717A]' : 'text-[#E4E4E7]'}">${step}</span>
+                <span class="transition-all duration-150 ${isChecked ? 'line-through text-[#71717A]' : 'text-[#E4E4E7]'}">${step}</span>
               </label>
             `;
           }).join('')}
@@ -260,9 +260,9 @@ export function renderStudioProctor(container) {
       const span = input.nextElementSibling;
       if (span) {
         if (input.checked) {
-          span.className = 'line-through text-[#71717A]';
+          span.className = 'transition-all duration-150 line-through text-[#71717A]';
         } else {
-          span.className = 'text-[#E4E4E7]';
+          span.className = 'transition-all duration-150 text-[#E4E4E7]';
         }
       }
     });

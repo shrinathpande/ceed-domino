@@ -30,7 +30,7 @@ export function showExamToast() {
       toastLiveTimer = null;
     }
     toast.style.opacity = '0';
-    toast.style.transform = 'translate(-50%, -12px)';
+    toast.style.transform = 'translate(-50%, -12px) scale(0.96)';
     toast.style.pointerEvents = 'none';
     clearTimeout(toast._removeTimeout);
     toast._removeTimeout = setTimeout(() => {
@@ -92,12 +92,17 @@ export function showExamToast() {
     display: flex;
     flex-direction: column;
     transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    opacity: 1;
+    opacity: 0;
+    transform: translate(-50%, -12px) scale(0.96);
     pointer-events: auto;
   `;
 
   toast.style.display = 'flex';
   updateToastContent();
+  requestAnimationFrame(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translate(-50%, 0) scale(1)';
+  });
   toastLiveTimer = setInterval(updateToastContent, 1000);
 
   toast._timeout = setTimeout(dismiss, 6000);

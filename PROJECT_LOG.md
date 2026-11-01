@@ -1078,4 +1078,25 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 
 ---
 
+## 26. Emil Kowalski Animation Vocabulary & Motion Craft System
+
+### 26.1 Animation Vocabulary Integration
+Implemented purposeful, tactile motion grounded in Emil Kowalski's animation vocabulary, eliminating jarring UI teleports while adhering strictly to anti-slop restraint:
+
+| Vocabulary Term | Application Target | Motion & Timing Parameters | Purpose & UX Impact |
+| :--- | :--- | :--- | :--- |
+| **Accordion / Collapse** | Domino card time adjustment drawer (`dashboard.js`) | CSS Grid `grid-template-rows: 0fr` → `1fr` (`240ms cubic-bezier(0.16, 1, 0.3, 1)`) with inner `opacity: 0` → `1` (`180ms ease`) and `translateY(-6px)` → `0` | Eliminates height distortion and layout thrashing without arbitrary `max-height` hacks or full-dashboard DOM re-renders. |
+| **Spring Pop** | Task completion checkmark (`dashboard.js`) | `@keyframes checkPop` (`260ms cubic-bezier(0.16, 1, 0.3, 1)`): `scale(0.5) rotate(-15deg)` → `scale(1.18) rotate(3deg)` → `scale(1)` | Provides immediate, satisfying tactile reward upon locking in a domino block. |
+| **Origin-Aware Entrance** | Active drill timer banner (`dashboard.js`) | `@keyframes drillBannerSlide` (`220ms cubic-bezier(0.16, 1, 0.3, 1)`): `translateY(-8px) scale(0.97)` → `translateY(0) scale(1)` | Spatially anchors the live stopwatch directly to the initiating domino card rather than appearing out of nowhere. |
+| **Symmetrical Trajectory** | Exam countdown toast (`header.js`) | Entry & Exit: `translate(-50%, -12px) scale(0.96); opacity: 0` ↔ `translate(-50%, 0) scale(1); opacity: 1` (`250ms cubic-bezier(0.16, 1, 0.3, 1)`) via `requestAnimationFrame` | Toast enters from and departs back into the top header with matched physics, avoiding directional cognitive dissonance. |
+| **Tactile Press Physics** | Global interactive buttons & cards (`style.css`) | `.btn-tactile:active { transform: scale(0.95); }` (`160ms cubic-bezier(0.16, 1, 0.3, 1)`) | Mimics mechanical microswitches with immediate tactile travel on touch and click. |
+| **Smooth State Transition** | Studio 24m pacing milestone checklist (`studio-proctor.js`) | `transition-all duration-150`: Smooth line-through and text opacity fade | Provides calm visual affirmation as exam milestones are accomplished. |
+| **Reduced Motion Fallback** | System-wide accessibility (`style.css`) | `@media (prefers-reduced-motion: reduce)` zero-duration override | Instantly removes all scale, transform, and duration physics for users with motion sensitivity. |
+
+### 26.2 Zero-Error Production Verification
+- Executed `npm run build` with Vite 8 client environment: all 29 modules compiled cleanly in 322ms with service worker precache generation.
+- Preserved all `localStorage` state schemas (`ceed_v2_state`, `ceed_v2_blocks`, `ceed_v2_studio_pacing`) and core invariant functions (`isDominoTask()`).
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*
