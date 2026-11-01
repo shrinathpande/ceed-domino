@@ -607,6 +607,17 @@ Before modifying code, the upgrade plan was grilled against core requirements an
   - Removed the Part A 3,045 question campaign progress bar from `src/views/stats.js`, keeping the Stats view focused purely on the 500-Hour Mastery campaign and circadian telemetry.
   - Removed `hasPartACounter` flag from `DEFAULT_BLOCKS` in `src/core/state.js`.
 
+### 9.4 Two-Way Toggle & Uncheck Progress Bar Reset
+- **User Problem**: When unchecking a completed domino or tapping on the '3.0h' duration label, the pink progress bar did not go off (persisted at 100%), and tapping on the '3.0h' text did not untap/uncheck the domino.
+- **Root Causes**:
+  1. `data-manual-toggle` previously only removed the block from `rec.completed` without resetting `rec.durations[id]` to 0, leaving `loggedMins = 180` and `pct = 100%`.
+  2. The `3.0h / 3.0h` text container was an inert `div` without `data-manual-toggle`, so tapping the hours readout did not trigger completion toggling.
+  3. `setDominoDuration` and `logHours` only removed a block from `rec.completed` when minutes hit exactly 0, rather than whenever duration dropped below `effectiveTarget`.
+- **Solution**:
+  - Unified the `3.0h / 3.0h` hours readout and the `✓`/`○` button into a single interactive `<button data-manual-toggle>` touch target.
+  - In `data-manual-toggle`: unchecking now resets `rec.durations[id] = 0`, clears `rec.completed`, recalculates the streak, flushes state, and immediately empties the progress bar to 0% (`0.0h / 3.0h`). Checking sets duration to `targetMins` and fills the bar to 100%.
+  - Updated `setDominoDuration` and `logHours` in `src/core/state.js` to automatically uncheck whenever logged minutes drop below `effectiveTarget`.
+
 ---
 
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

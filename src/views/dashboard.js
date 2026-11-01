@@ -292,21 +292,26 @@ function renderDominoBlockCard(block, record, activeTimer) {
           </div>
         </div>
 
-        <div class="flex items-center gap-2.5 shrink-0">
-          <div class="text-right">
-            <div class="text-sm font-bold ${loggedMins >= targetMins ? 'text-[#FF69AF]' : 'text-white'}">
-              ${isRunning ? `<span data-live-sw class="text-[#FF69AF]">LIVE</span>` : `${(loggedMins / 60).toFixed(1)}h`}
-            </div>
-            <div class="text-[10px] text-neutral-500">/ ${(targetMins / 60).toFixed(1)}h</div>
-          </div>
-
+        <div class="flex items-center gap-2 shrink-0">
           <button
             data-manual-toggle="${block.id}"
             data-target-mins="${targetMins}"
-            class="btn-tactile w-11 h-11 border-2 ${isDone ? 'border-[#FF69AF] bg-[#FF69AF] text-black' : 'border-neutral-700 bg-black text-white'} font-bold text-sm flex items-center justify-center"
-            aria-label="${isDone ? 'Mark Incomplete' : 'Complete Domino'}"
+            class="btn-tactile flex items-center gap-2 p-1.5 rounded-lg border border-transparent hover:border-neutral-800 active:scale-95 transition-all text-right"
+            aria-label="${isDone ? 'Mark Incomplete and Reset Hours' : 'Complete Domino'}"
+            title="${isDone ? 'Tap to unmark and reset hours' : 'Tap to mark done'}"
           >
-            ${isDone ? '✓' : '○'}
+            <div class="text-right pointer-events-none">
+              <div class="text-sm font-bold ${loggedMins >= targetMins ? 'text-[#FF69AF]' : 'text-white'}">
+                ${isRunning ? `<span data-live-sw class="text-[#FF69AF]">LIVE</span>` : `${(loggedMins / 60).toFixed(1)}h`}
+              </div>
+              <div class="text-[10px] text-neutral-500">/ ${(targetMins / 60).toFixed(1)}h</div>
+            </div>
+
+            <div
+              class="w-11 h-11 border-2 ${isDone ? 'border-[#FF69AF] bg-[#FF69AF] text-black' : 'border-neutral-700 bg-black text-white'} font-bold text-sm flex items-center justify-center rounded shrink-0 pointer-events-none transition-colors"
+            >
+              ${isDone ? '✓' : '○'}
+            </div>
           </button>
         </div>
       </div>
@@ -422,29 +427,35 @@ function bindDashboardEvents(container, record, blocks) {
     });
   });
 
-  // Manual Checkoff Toggle
+  // Manual Checkoff Toggle (tap on checkmark or hours readout)
   container.querySelectorAll('[data-manual-toggle]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
+      e.preventDefault();
       const id = btn.getAttribute('data-manual-toggle');
       const targetMins = Number(btn.getAttribute('data-target-mins')) || 60;
       const state = getState();
       const rec = getDayRecord(activeDateStr);
+      const isDone = Array.isArray(rec.completed) && rec.completed.includes(id);
 
-      if (rec.completed.includes(id)) {
+      if (isDone) {
+        // UNCHECK: Remove from completed and reset duration to 0 so the progress bar goes off completely
         rec.completed = rec.completed.filter(x => x !== id);
+        rec.durations[id] = 0;
+        recalculateStreak(state);
         saveState(state);
         playRelayClick();
-        showInAppToast('Domino unmarked');
+        showInAppToast('Domino unmarked (0.0h)');
       } else {
-        if (!rec.durations[id]) {
-          logHours(activeDateStr, id, targetMins);
-        } else {
+        // CHECK: Add to completed and set duration to target floor so the bar fills to 100%
+        if (!rec.completed.includes(id)) {
           rec.completed.push(id);
-          saveState(state);
-          playRelayClick();
         }
-        showInAppToast('★ Domino Completed!', true);
+        rec.durations[id] = Math.max(targetMins, Number(rec.durations[id]) || 0);
+        recalculateStreak(state);
+        saveState(state);
+        playRelayClick();
+        showInAppToast(`★ ${(rec.durations[id] / 60).toFixed(1)}h Completed!`, true);
       }
       renderDashboard(container);
     });

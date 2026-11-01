@@ -239,11 +239,13 @@ export function logHours(dateStr, blockId, deltaMins, customLabel = null) {
     });
   }
 
-  // Auto-complete Domino when target floor is met
+  // Auto-complete Domino when target floor is met, uncheck if below
   const effectiveTarget = rec.emergency ? Math.ceil(block.targetMins / 2) : block.targetMins;
-  if (next >= effectiveTarget && !rec.completed.includes(blockId)) {
-    rec.completed.push(blockId);
-  } else if (next === 0) {
+  if (next >= effectiveTarget) {
+    if (!rec.completed.includes(blockId)) {
+      rec.completed.push(blockId);
+    }
+  } else {
     rec.completed = rec.completed.filter(id => id !== blockId);
   }
 
@@ -490,9 +492,11 @@ export function setDominoDuration(dominoId, dateStr, minutes) {
   const block = blocks.find(b => b.id === dominoId);
   const effectiveTarget = rec.emergency ? Math.ceil((block?.targetMins || 60) / 2) : (block?.targetMins || 60);
 
-  if (cleanMins >= effectiveTarget && !rec.completed.includes(dominoId)) {
-    rec.completed.push(dominoId);
-  } else if (cleanMins === 0) {
+  if (cleanMins >= effectiveTarget) {
+    if (!rec.completed.includes(dominoId)) {
+      rec.completed.push(dominoId);
+    }
+  } else {
     rec.completed = rec.completed.filter(id => id !== dominoId);
   }
   const state = getState();
