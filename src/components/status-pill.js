@@ -1,43 +1,45 @@
 // src/components/status-pill.js
+import { icons } from './icons.js';
 
 /**
- * Reusable Semantic Tinted Status Pill (Reference 1)
- * @param {'COMPLETED' | 'LIVE' | 'PENDING' | 'UNDER_FLOOR' | 'ROUTINE'} status
- * @param {string} [customLabel] - Optional label override (e.g. "2/4 Dominos" or "20 Marks • 24m")
- * @returns {string} HTML string for the pill
+ * Reference 1: Opaque Soft Pastel Status Pills
+ * Flat, opaque pastel capsule pills with deep ink text and vector glyphs. Zero glow.
+ * @param {'COMPLETED' | 'LIVE' | 'IN_PROGRESS' | 'PENDING' | 'UNDER_FLOOR' | 'ROUTINE'} status
+ * @param {string} [customLabel] - Optional label override
+ * @returns {string} HTML string
  */
 export function renderStatusPill(status, customLabel = null) {
   const normalized = (status || 'PENDING').toUpperCase();
 
-  let bg = 'rgba(245, 158, 11, 0.14)';
-  let border = 'rgba(245, 158, 11, 0.4)';
-  let text = '#FBBF24';
-  let icon = '!';
+  let bg = '#FDE6C4';
+  let border = '#F5C986';
+  let text = '#9A5806';
+  let iconSvg = icons.alert(11);
   let defaultLabel = 'Pending';
 
   if (normalized === 'COMPLETED' || normalized === 'SUCCESS') {
-    bg = 'rgba(16, 185, 129, 0.14)';
-    border = 'rgba(16, 185, 129, 0.4)';
-    text = '#34D399';
-    icon = '✓';
+    bg = '#C6F6D5';
+    border = '#9AE6B4';
+    text = '#18794E';
+    iconSvg = icons.check(11, 3);
     defaultLabel = 'Completed';
-  } else if (normalized === 'LIVE' || normalized === 'ACTIVE' || normalized === 'SUBMITTED') {
-    bg = 'rgba(59, 130, 246, 0.15)';
-    border = 'rgba(59, 130, 246, 0.45)';
-    text = '#60A5FA';
-    icon = '↗';
-    defaultLabel = 'Live Active';
+  } else if (normalized === 'LIVE' || normalized === 'ACTIVE' || normalized === 'IN_PROGRESS' || normalized === 'SUBMITTED') {
+    bg = '#D8E2FF';
+    border = '#ADC2FF';
+    text = '#244BC5';
+    iconSvg = icons.arrowUpRight(11, 3);
+    defaultLabel = 'In Progress';
   } else if (normalized === 'UNDER_FLOOR' || normalized === 'UNDER' || normalized === 'FAILED') {
-    bg = 'rgba(239, 68, 68, 0.14)';
-    border = 'rgba(239, 68, 68, 0.4)';
-    text = '#F87171';
-    icon = '✕';
+    bg = '#FFD6D6';
+    border = '#FEB2B2';
+    text = '#B91C1C';
+    iconSvg = icons.x(11, 3);
     defaultLabel = 'Under Floor';
-  } else if (normalized === 'ROUTINE' || normalized === 'EXPIRED') {
-    bg = 'rgba(161, 161, 170, 0.12)';
-    border = 'rgba(161, 161, 170, 0.3)';
-    text = '#A1A1AA';
-    icon = '🕒';
+  } else if (normalized === 'ROUTINE' || normalized === 'OPTIONAL' || normalized === 'EXPIRED') {
+    bg = '#E4E4E7';
+    border = '#D4D4D8';
+    text = '#27272A';
+    iconSvg = icons.clock(11, 2.5);
     defaultLabel = 'Routine';
   }
 
@@ -45,11 +47,11 @@ export function renderStatusPill(status, customLabel = null) {
 
   return `
     <span
-      class="inline-flex items-center gap-1.5 rounded-full select-none font-medium whitespace-nowrap"
-      style="background-color: ${bg}; border: 1px solid ${border}; color: ${text}; padding: 4px 10px; font-size: 11px; line-height: 1;"
+      class="inline-flex items-center gap-[5px] select-none font-semibold whitespace-nowrap"
+      style="border-radius: 9999px; padding: 3px 10px 3px 8px; font-size: 11px; line-height: 1; background-color: ${bg}; border: 1px solid ${border}; color: ${text};"
     >
-      <span class="w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold text-[9px] shrink-0" style="background-color: ${border}; color: ${text};">
-        ${icon}
+      <span class="inline-flex items-center justify-center shrink-0" style="color: ${text};">
+        ${iconSvg}
       </span>
       <span>${label}</span>
     </span>

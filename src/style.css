@@ -3,21 +3,29 @@
 @layer base {
   :root {
     --ground: #000000;
-    --surface: #121215;
-    --raised: #1A1A1F;
-    --border: rgba(255, 255, 255, 0.07);
-    --rule: rgba(255, 255, 255, 0.05);
-    --text: #ffffff;
+    --surface: #121214;
+    --raised: #18181B;
+    --border: #1F1F23;
+    --rule: #27272A;
+    --text: #F4F4F6;
     --muted: #71717A;
-    --accent: #FF69AF;
-    --domino-accent: #FF69AF;
-    --radius-card: 22px;
+    --accent: #FBCFE8;
+    --domino-accent: #FBCFE8;
+    --radius-card: 24px;
     --radius-btn: 9999px;
-    --spring-physics: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Curated Flat Soft Pastel Palette (Zero Neons) */
+    --pastel-lavender: #C4B5FD;
+    --pastel-periwinkle: #A5C4FF;
+    --pastel-mint: #A7F3D0;
+    --pastel-peach: #FDE6B8;
+    --pastel-rose: #FBCFE8;
+    --pastel-lime: #D9F99D;
+    --chalk-white: #F4F4F6;
   }
 
   body {
-    background-color: var(--ground);
+    background-color: #000000;
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Geist", "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -39,114 +47,56 @@
   }
 }
 
-/* Bento Design System Tokens */
+/* Primary Flat Matte Bento Card Surface (Reference 5 & 4) */
 .bento-card {
-  background-color: #121215;
-  border-radius: 22px;
+  background-color: #121214;
+  border-radius: 24px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.5);
+  border: 1px solid #1F1F23;
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease;
 }
 
+/* Inner Well Sub-Surface */
 .bento-subcard {
-  background-color: #1A1A1F;
-  border-radius: 14px;
+  background-color: #18181B;
+  border-radius: 18px;
+  border: 1px solid #27272A;
 }
 
-/* Vertical Hatch Pattern for Allocation Bars & Dynamic States (Reference 5) */
-.bg-hatch {
+/* Reference 5 Vertical Hatch Stripes (Solid Neutral Hatching) */
+.hatch-stripes {
   background-image: repeating-linear-gradient(
     90deg,
-    #27272A 0px,
-    #27272A 2px,
+    #A1A1AA 0px,
+    #A1A1AA 2px,
     transparent 2px,
-    transparent 6px
+    transparent 5px
   );
 }
 
-.bg-hatch-light {
+/* Reference 5 Fine Ruler Ticks */
+.ruler-ticks {
   background-image: repeating-linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.15) 0px,
-    rgba(255, 255, 255, 0.15) 2px,
-    transparent 2px,
-    transparent 6px
+    #27272A 0px 1.5px,
+    transparent 1.5px 7px
   );
 }
 
-.bg-hatch-accent {
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--domino-accent, #FF69AF) 0px,
-    var(--domino-accent, #FF69AF) 2px,
-    transparent 2px,
-    transparent 6px
-  );
-}
-
-/* Subtle Shimmer Animation for Completed Domino */
-@keyframes completedSweep {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 105, 175, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 4px rgba(255, 105, 175, 0.2);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 105, 175, 0);
-  }
-}
-
-.domino-completed-pulse {
-  animation: completedSweep 0.5s ease-out;
-}
-
-/* Custom Tactile OLED Range Slider */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: #1c1c21;
-  height: 6px;
-  border-radius: 9999px;
-  outline: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #ffffff;
-  cursor: pointer;
-  border: 3px solid var(--domino-accent, #FF69AF);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-  transition: transform 0.1s ease;
-}
-
-input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(1.25);
-}
-
-input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #ffffff;
-  cursor: pointer;
-  border: 3px solid var(--domino-accent, #FF69AF);
-}
-
-/* Tactile Button Feedback */
+/* Flat Tactile Button Feedback (Zero Glow) */
 .btn-tactile {
-  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease, background-color 0.15s ease;
 }
 
 .btn-tactile:active {
   transform: scale(0.96);
 }
 
-.liquid-progress {
-  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+/* Micro-transition for pill state */
+.capsule-pill {
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.capsule-pill:active {
+  transform: scale(0.95);
 }

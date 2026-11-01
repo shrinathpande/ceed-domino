@@ -11,14 +11,16 @@ import {
   resetState
 } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
+import { icons } from '../components/icons.js';
 
-const PALETTE_SWATCHES = [
-  { name: 'OLED Pink', hex: '#FF69AF' },
-  { name: 'Sky Blue', hex: '#38BDF8' },
-  { name: 'Electric Green', hex: '#10B981' },
-  { name: 'Solar Amber', hex: '#F59E0B' },
-  { name: 'Ultra Violet', hex: '#A855F7' },
-  { name: 'Pure White', hex: '#FFFFFF' }
+// The 6 Flat Soft Pastel Swatches (Zero Neons, Zero Glow)
+const PASTEL_SWATCHES = [
+  { name: 'Soft Blush Rose', hex: '#FBCFE8' },
+  { name: 'Soft Periwinkle', hex: '#A5C4FF' },
+  { name: 'Soft Sage Mint', hex: '#A7F3D0' },
+  { name: 'Soft Peach Butter', hex: '#FDE6B8' },
+  { name: 'Soft Lavender', hex: '#C4B5FD' },
+  { name: 'Crisp Chalk White', hex: '#F4F4F6' }
 ];
 
 export function renderSettingsView(container) {
@@ -27,91 +29,71 @@ export function renderSettingsView(container) {
   const currentAccent = getAccentColor();
 
   container.innerHTML = `
-    <section class="w-full max-w-[420px] mx-auto px-3.5 pt-2 pb-28 font-sans select-none" aria-label="Configuration Terminal">
+    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-sans select-none" aria-label="Configuration Terminal">
       
-      <!-- 1. Accent Palette Picker (Reference 1 & Instructions) -->
+      <!-- 1. Curated Soft Pastel Swatches (Zero Glow, Zero Toast Spam) -->
       <div class="bento-card mb-3.5">
         <div class="flex items-center justify-between mb-3">
           <div>
             <div class="text-[12px] font-medium text-[#71717A]">Tactile Appearance</div>
-            <div class="text-base font-bold text-white tracking-tight">OLED Accent Palette</div>
+            <div class="text-base font-bold text-[#F4F4F6] tracking-tight">Soft Pastel Palette</div>
           </div>
-          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1A1A1F] border border-white/10">
-            <span class="w-3 h-3 rounded-full" style="background-color: ${currentAccent};"></span>
-            <span class="text-xs font-mono font-bold text-white uppercase">${currentAccent}</span>
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#18181B] border border-[#27272A]">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${currentAccent};"></span>
+            <span class="text-xs font-mono font-medium text-[#F4F4F6] uppercase">${currentAccent}</span>
           </div>
         </div>
 
-        <!-- 6 Glowing Circular Swatches -->
-        <div class="flex items-center justify-between gap-2 mb-3 pt-1">
-          ${PALETTE_SWATCHES.map(s => {
+        <!-- 6 Flat Circular Swatches -->
+        <div class="flex items-center justify-between gap-2 pt-1">
+          ${PASTEL_SWATCHES.map(s => {
             const isSelected = s.hex.toLowerCase() === currentAccent.toLowerCase();
             return `
               <button
-                data-palette-hex="${s.hex}"
+                data-pastel-hex="${s.hex}"
                 class="w-10 h-10 rounded-full transition-all btn-tactile relative flex items-center justify-center ${
-                  isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110' : 'hover:scale-105'
+                  isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-105' : 'hover:opacity-90'
                 }"
-                style="background-color: ${s.hex}; box-shadow: 0 0 12px ${s.hex}60;"
+                style="background-color: ${s.hex}; border: 1px solid rgba(0,0,0,0.1);"
                 title="${s.name}"
                 aria-label="${s.name}"
               >
-                ${isSelected ? `<span class="w-2 h-2 rounded-full ${s.hex === '#FFFFFF' ? 'bg-black' : 'bg-white'}"></span>` : ''}
+                ${isSelected ? `<span class="w-2 h-2 rounded-full ${s.hex === '#F4F4F6' ? 'bg-black' : 'bg-[#09090B]'}"></span>` : ''}
               </button>
             `;
           }).join('')}
-        </div>
-
-        <!-- Custom Hex Input Field -->
-        <div class="flex items-center gap-2 pt-2 border-t border-white/[0.06]">
-          <input
-            type="text"
-            id="accent-custom-hex"
-            value="${currentAccent}"
-            placeholder="#38BDF8"
-            maxlength="7"
-            class="flex-1 bg-[#1A1A1F] border border-white/10 text-xs px-3 py-2 font-mono uppercase text-white rounded-full focus:outline-none focus:border-white font-bold"
-            aria-label="Custom Hex Code"
-          />
-          <button
-            id="btn-apply-hex"
-            class="h-8 px-4 rounded-full bg-white text-black text-xs font-bold uppercase btn-tactile shrink-0"
-          >
-            Apply
-          </button>
         </div>
       </div>
 
       <!-- 2. Domino Pillar Editor (Clean Bento Rows) -->
       <div class="bento-card mb-3.5">
-        <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/[0.06]">
+        <div class="flex items-center justify-between mb-3 pb-2 border-b border-[#1F1F23]">
           <div>
             <div class="text-[12px] font-medium text-[#71717A]">Pillars & Objectives</div>
-            <div class="text-base font-bold text-white tracking-tight">Domino Architecture</div>
+            <div class="text-base font-bold text-[#F4F4F6] tracking-tight">Domino Architecture</div>
           </div>
-          <button id="btn-reset-blocks" class="text-xs text-zinc-400 hover:text-white underline">Reset Defaults</button>
+          <button id="btn-reset-blocks" class="text-xs text-[#71717A] hover:text-[#F4F4F6] underline">Reset Defaults</button>
         </div>
 
         <div class="flex flex-col gap-2.5 mb-3.5">
           ${blocks.map((b) => {
-            const isMand = isDominoTask(b);
             const targetHrs = (b.targetMins / 60).toFixed(1);
             return `
-              <div class="p-3 rounded-2xl bg-[#1A1A1F] border border-white/[0.04] flex flex-col gap-2" data-block-id="${b.id}">
+              <div class="p-3.5 rounded-2xl bg-[#18181B] border border-[#27272A] flex flex-col gap-2" data-block-id="${b.id}">
                 <!-- Row 1: Badge + Category Pill + Delete -->
                 <div class="flex items-center justify-between gap-2">
                   <input
                     type="text"
                     data-edit-badge="${b.id}"
                     value="${b.badge}"
-                    class="w-28 bg-[#121215] border border-white/10 text-xs px-2.5 py-1 font-bold text-white uppercase rounded-full focus:outline-none"
+                    class="w-28 bg-[#121214] border border-[#27272A] text-xs px-2.5 py-1 font-semibold text-[#F4F4F6] uppercase rounded-full focus:outline-none"
                     placeholder="DOMINO 1"
                   />
 
                   <div class="flex items-center gap-2">
                     <select
                       data-edit-cat="${b.id}"
-                      class="bg-[#121215] border border-white/10 text-xs text-zinc-300 px-2.5 py-1 rounded-full focus:outline-none cursor-pointer"
+                      class="bg-[#121214] border border-[#27272A] text-xs text-[#A1A1AA] px-2.5 py-1 rounded-full focus:outline-none cursor-pointer"
                     >
                       <option value="STUDY" ${b.category === 'STUDY' ? 'selected' : ''}>STUDY</option>
                       <option value="WORK" ${b.category === 'WORK' ? 'selected' : ''}>WORK</option>
@@ -122,7 +104,7 @@ export function renderSettingsView(container) {
                     ${blocks.length > 1 ? `
                       <button
                         data-delete-block="${b.id}"
-                        class="w-7 h-7 rounded-full bg-red-950/40 border border-red-800/30 text-red-400 hover:bg-red-900 hover:text-white flex items-center justify-center text-xs font-bold btn-tactile"
+                        class="w-7 h-7 rounded-full bg-red-950/30 border border-red-900/30 text-red-400 hover:bg-red-900 hover:text-white flex items-center justify-center text-xs font-bold btn-tactile"
                         title="Delete Pillar"
                         aria-label="Delete Pillar"
                       >
@@ -138,28 +120,28 @@ export function renderSettingsView(container) {
                     type="text"
                     data-edit-name="${b.id}"
                     value="${b.name}"
-                    class="w-full bg-transparent text-sm text-white font-bold tracking-tight focus:outline-none placeholder-zinc-500"
+                    class="w-full bg-transparent text-sm text-[#F4F4F6] font-medium tracking-tight focus:outline-none placeholder-zinc-500"
                     placeholder="Pillar Name"
                   />
                 </div>
 
                 <!-- Row 3: Target Hours Steppers (-0.5h / +0.5h) -->
-                <div class="flex items-center justify-between pt-1 text-xs border-t border-white/[0.04]">
-                  <span class="text-zinc-500 font-medium">Daily Target Floor</span>
+                <div class="flex items-center justify-between pt-1 text-xs border-t border-[#27272A]">
+                  <span class="text-[#71717A] font-medium">Daily Target Floor</span>
                   <div class="flex items-center gap-2">
                     <button
                       data-step-target="${b.id}"
                       data-step-delta="-30"
-                      class="w-7 h-7 rounded-full bg-[#121215] border border-white/10 text-white font-bold flex items-center justify-center btn-tactile"
+                      class="w-7 h-7 rounded-full bg-[#121214] border border-[#27272A] text-[#F4F4F6] font-bold flex items-center justify-center btn-tactile text-sm"
                       aria-label="Decrease Target 30m"
                     >
                       -
                     </button>
-                    <span class="font-mono font-bold text-white text-xs w-10 text-center">${targetHrs}h</span>
+                    <span class="font-mono font-semibold text-[#F4F4F6] text-xs w-10 text-center">${targetHrs}h</span>
                     <button
                       data-step-target="${b.id}"
                       data-step-delta="30"
-                      class="w-7 h-7 rounded-full bg-[#121215] border border-white/10 text-white font-bold flex items-center justify-center btn-tactile"
+                      class="w-7 h-7 rounded-full bg-[#121214] border border-[#27272A] text-[#F4F4F6] font-bold flex items-center justify-center btn-tactile text-sm"
                       aria-label="Increase Target 30m"
                     >
                       +
@@ -173,7 +155,7 @@ export function renderSettingsView(container) {
 
         <button
           id="btn-add-pillar"
-          class="w-full h-11 rounded-full border border-dashed border-white/20 hover:border-white/40 bg-[#1A1A1F]/60 text-zinc-300 hover:text-white text-xs font-bold uppercase flex items-center justify-center gap-1.5 btn-tactile"
+          class="w-full h-11 rounded-full border border-dashed border-[#27272A] hover:border-[#3F3F46] bg-[#18181B] text-[#A1A1AA] hover:text-[#F4F4F6] text-xs font-semibold uppercase flex items-center justify-center gap-1.5 btn-tactile"
         >
           <span>+ Add New Domino Pillar</span>
         </button>
@@ -183,12 +165,12 @@ export function renderSettingsView(container) {
       <div class="bento-card mb-3.5 flex items-center justify-between">
         <div>
           <div class="text-[12px] font-medium text-[#71717A]">Gamification Guard</div>
-          <div class="text-sm font-bold text-white">Streak Shields (🛡️)</div>
-          <div class="text-[11px] text-zinc-500 mt-0.5">${state.shields || 0} of 3 active (+1 every 7-day streak)</div>
+          <div class="text-sm font-semibold text-[#F4F4F6]">Streak Shields</div>
+          <div class="text-[11px] text-[#71717A] mt-0.5">${state.shields || 0} of 3 active (+1 every 7-day streak)</div>
         </div>
         <button
           id="btn-add-shield"
-          class="px-4 py-2 rounded-full bg-white text-black text-xs font-bold btn-tactile shadow-md"
+          class="px-4 py-2 rounded-full bg-[#F4F4F6] text-[#09090B] text-xs font-semibold btn-tactile"
         >
           +1 Shield
         </button>
@@ -197,17 +179,17 @@ export function renderSettingsView(container) {
       <!-- 4. Backup & Factory Reset -->
       <div class="bento-card mb-3.5">
         <div class="text-[12px] font-medium text-[#71717A] mb-1">Data Portability</div>
-        <div class="text-sm font-bold text-white mb-3">Backup & Storage</div>
+        <div class="text-sm font-semibold text-[#F4F4F6] mb-3">Backup & Storage</div>
 
-        <div class="grid grid-cols-2 gap-2 mb-2">
+        <div class="grid grid-cols-2 gap-2.5 mb-2">
           <button
             id="btn-backup-json"
-            class="h-10 rounded-full bg-[#1A1A1F] border border-white/10 hover:border-white/20 text-xs font-semibold text-white flex items-center justify-center gap-1 btn-tactile"
+            class="h-10 rounded-full bg-[#18181B] border border-[#27272A] hover:border-[#3F3F46] text-xs font-medium text-[#F4F4F6] flex items-center justify-center gap-1.5 btn-tactile"
           >
             <span>↓</span>
             <span>Export JSON</span>
           </button>
-          <label class="h-10 rounded-full bg-[#1A1A1F] border border-white/10 hover:border-white/20 text-xs font-semibold text-white flex items-center justify-center gap-1 cursor-pointer btn-tactile">
+          <label class="h-10 rounded-full bg-[#18181B] border border-[#27272A] hover:border-[#3F3F46] text-xs font-medium text-[#F4F4F6] flex items-center justify-center gap-1.5 cursor-pointer btn-tactile">
             <span>↑</span>
             <span>Import JSON</span>
             <input type="file" id="file-import-json" accept=".json" class="hidden" />
@@ -216,7 +198,7 @@ export function renderSettingsView(container) {
 
         <button
           id="btn-factory-reset"
-          class="w-full h-10 mt-2 rounded-full bg-red-950/30 border border-red-800/40 text-red-400 hover:bg-red-900/40 hover:text-red-300 text-xs font-bold uppercase btn-tactile"
+          class="w-full h-10 mt-2 rounded-full bg-red-950/20 border border-red-900/30 text-red-400 hover:bg-red-950/40 text-xs font-semibold uppercase btn-tactile"
         >
           ⚠ Factory Reset All Data
         </button>
@@ -232,27 +214,14 @@ export function renderSettings(container) {
 }
 
 function bindSettingsEvents(container) {
-  // Swatch Click
-  container.querySelectorAll('[data-palette-hex]').forEach(btn => {
+  // Pastel Swatch Click (Zero toast spam, instant flat color application)
+  container.querySelectorAll('[data-pastel-hex]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const hex = btn.getAttribute('data-palette-hex');
+      const hex = btn.getAttribute('data-pastel-hex');
       setAccentColor(hex);
       playRelayClick();
       renderSettingsView(container);
     });
-  });
-
-  // Custom Hex Input Apply
-  container.querySelector('#btn-apply-hex')?.addEventListener('click', () => {
-    let val = container.querySelector('#accent-custom-hex')?.value?.trim();
-    if (val) {
-      if (!val.startsWith('#')) val = '#' + val;
-      if (/^#[0-9A-Fa-f]{6}$/.test(val) || /^#[0-9A-Fa-f]{3}$/.test(val)) {
-        setAccentColor(val);
-        playRelayClick();
-        renderSettingsView(container);
-      }
-    }
   });
 
   // +1 Shield

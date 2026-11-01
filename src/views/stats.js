@@ -3,10 +3,10 @@ import {
   getCumulativeTelemetry,
   getState,
   getBlocks,
-  isDominoTask,
-  getAccentColor
+  isDominoTask
 } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
+import { icons } from '../components/icons.js';
 
 const CAMPAIGN_START = '2026-10-22';
 const CAMPAIGN_DAYS = 87;
@@ -17,7 +17,6 @@ export function renderStatsView(container) {
   const state = getState();
   const blocks = getBlocks();
   const mandatoryIds = blocks.filter(isDominoTask).map(b => b.id);
-  const accentColor = getAccentColor();
 
   const totalProdHours = parseFloat(telemetry.totalProductiveHours) || 0;
   const masteryPct = Math.min(100, Math.round((totalProdHours / 500) * 100));
@@ -70,71 +69,88 @@ export function renderStatsView(container) {
   const avgHoursPerActiveDay = activeDaysCount > 0 ? (totalProdHours / activeDaysCount).toFixed(1) : '0.0';
   const topWindow = telemetry.peakWindows ? [...telemetry.peakWindows].sort((a, b) => b.mins - a.mins)[0] : null;
 
-  // 7 Circular indicators for last 7 days up to today
-  const last7Days = [];
+  // 6 Circular indicators for last 6 days up to today (Reference 2)
+  const last6Days = [];
   const todayDate = new Date();
-  for (let i = 6; i >= 0; i--) {
+  for (let i = 5; i >= 0; i--) {
     const d = new Date(todayDate);
     d.setDate(todayDate.getDate() - i);
     const dStr = d.toISOString().slice(0, 10);
     const mDay = matrixDays.find(x => x.dateStr === dStr);
-    last7Days.push(mDay?.allDominosDone || false);
+    last6Days.push(mDay?.allDominosDone || false);
   }
 
+  // Circadian pastels
+  const circadianColors = {
+    'Morning': '#FDE6B8',
+    'Afternoon': '#A5C4FF',
+    'Evening': '#C4B5FD',
+    'Night': '#A7F3D0'
+  };
+
   container.innerHTML = `
-    <section class="w-full max-w-[420px] mx-auto px-3.5 pt-2 pb-28 font-sans select-none" aria-label="Athletic Telemetry Stats">
+    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-sans select-none" aria-label="Athletic Telemetry Stats">
       
-      <!-- 1. Top Row: 2 Mini Bento Cards (Reference 2 Top Row) -->
-      <div class="grid grid-cols-2 gap-3 mb-3">
-        <!-- Mini Card 1: Active Days / Consistency -->
+      <!-- 1. Top Row: 2 Bento Cards (Reference 2 Top Row) -->
+      <div class="grid grid-cols-2 gap-3 mb-3.5">
+        <!-- Left Card: Double Check + Active Days -->
         <div class="bento-card p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-[#68A8F8]">
+            <span>${icons.doubleCheck(18)}</span>
+            <span class="text-[11px] font-medium text-[#71717A]">Campaign</span>
+          </div>
+          <div class="text-[26px] font-bold text-[#F4F4F6] tracking-tight my-1">
+            ${activeDaysCount} <span class="text-sm font-normal text-[#71717A]">/ 87</span>
+          </div>
           <div class="text-[12px] font-medium text-[#71717A]">Active Days</div>
-          <div class="text-[26px] font-extrabold text-white tracking-tight my-1">
-            ✓✓ ${activeDaysCount} <span class="text-sm font-normal text-zinc-500">/ 87</span>
-          </div>
-          <div class="text-[11px] font-medium text-emerald-400">
-            ${consistencyRate}% Consistency
-          </div>
         </div>
 
-        <!-- Mini Card 2: 500-Hour Mastery Progress -->
+        <!-- Right Card: 500h Mastery with Reference 5 White + Hatch Bar -->
         <div class="bento-card p-4 flex flex-col justify-between">
-          <div class="text-[12px] font-medium text-[#71717A]">500h Mastery</div>
-          <div class="text-[26px] font-extrabold text-[#34D399] tracking-tight my-1">
-            ^ ${masteryPct}%
+          <div class="flex items-center justify-between">
+            <span class="text-[12px] font-medium text-[#71717A]">500h Mastery</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#C6F6D5] text-[#18794E]">
+              ^ ${masteryPct}%
+            </span>
           </div>
-          <!-- 3-Texture Progress Bar (Solid Emerald + Hatched Remaining Track) -->
-          <div class="w-full h-2 rounded-full overflow-hidden flex bg-[#1A1A1F] border border-white/5">
-            <div class="h-full bg-[#34D399] rounded-full transition-all duration-300" style="width: ${masteryPct}%;"></div>
-            <div class="h-full bg-hatch flex-1"></div>
+          <div class="text-[26px] font-bold text-[#F4F4F6] tracking-tight my-1 font-mono">
+            ${totalProdHours.toFixed(1)}h
+          </div>
+          <!-- 3-Texture Progress Bar (Solid White + Hatch Stripe) -->
+          <div class="w-full h-2.5 rounded-full overflow-hidden flex bg-[#18181B] border border-[#27272A]">
+            <div class="h-full bg-[#F4F4F6] rounded-full transition-all duration-300" style="width: ${masteryPct}%;"></div>
+            <div class="h-full hatch-stripes flex-1"></div>
           </div>
         </div>
       </div>
 
-      <!-- 2. Consistency & 87-Day Matrix Bento Card (Reference 2 Middle) -->
-      <div class="bento-card mb-3" data-no-swipe>
-        <div class="flex items-center justify-between mb-3">
+      <!-- 2. Consistency Matrix Card (Reference 2 Middle) -->
+      <div class="bento-card mb-3.5" data-no-swipe>
+        <div class="flex items-start justify-between mb-3">
           <div>
-            <div class="text-[12px] font-medium text-[#71717A]">Consistency Matrix</div>
-            <div class="text-xl font-bold text-white tracking-tight">87-Day Trajectory</div>
+            <div class="flex items-center gap-1.5 text-sm font-medium text-[#71717A] mb-1">
+              <span>Consistency</span>
+              <span class="text-[#52525B]">${icons.helpCircle(13)}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[#71717A]">${icons.refresh(14)}</span>
+              <span class="text-[28px] font-bold text-[#F4F4F6] tracking-tight leading-none">${consistencyRate}%</span>
+            </div>
           </div>
-          <div class="text-xl font-extrabold text-white font-mono tabular-nums">
-            ${consistencyRate}%
+          <div class="text-[11px] font-mono text-[#71717A] pt-1">
+            Oct 22 – Jan 17
           </div>
         </div>
 
-        <!-- 13x7 Matrix with Sky-Blue / Accent Shades against #1C1C21 (Reference 2) -->
+        <!-- 13x7 Matrix: Single Soft Pastel Blue (#68A8F8) at 4 Opacities on #1C1C22 (Zero Glowing Box) -->
         <div class="grid gap-1 mb-3" style="grid-template-columns: repeat(13, minmax(0, 1fr));">
           ${matrixDays.map(cell => {
-            const isSelected = cell.dateStr === inspected?.dateStr;
-            const bgStyle = getMatrixCellColor(cell.dayTotalMins, accentColor);
+            const bg = getPastelBlueCellColor(cell.dayTotalMins);
             return `
               <button
                 data-matrix-date="${cell.dateStr}"
-                class="aspect-square rounded-[4px] transition-all btn-tactile ${
-                  isSelected ? 'ring-2 ring-white scale-110 z-10' : 'hover:opacity-80'
-                }"
-                style="${bgStyle}"
+                class="aspect-square rounded-[4px] transition-opacity btn-tactile hover:opacity-80"
+                style="background-color: ${bg};"
                 title="${cell.dateLabel}: ${cell.totalHours}h"
                 aria-label="${cell.dateLabel}"
               ></button>
@@ -143,34 +159,31 @@ export function renderStatsView(container) {
         </div>
 
         <!-- Clean 1-Line Inspection Subtitle (Reference 2) -->
-        <div class="p-2.5 rounded-xl bg-[#1A1A1F] border border-white/[0.04] text-xs flex items-center justify-between">
-          <div class="text-zinc-300 font-medium">
-            <strong class="text-white">${inspected.dateLabel}</strong> • Study: ${inspected.studyHours}h • Work: ${inspected.workHours}h
+        <div class="p-2.5 rounded-xl bg-[#18181B] border border-[#27272A] text-xs flex items-center justify-between">
+          <div class="text-[#A1A1AA] font-medium">
+            <strong class="text-[#F4F4F6] font-semibold">${inspected.dateLabel}</strong> • Study: ${inspected.studyHours}h • Work: ${inspected.workHours}h
           </div>
-          <div class="font-mono font-bold text-emerald-400">
+          <div class="font-mono font-bold text-[#68A8F8]">
             ${inspected.totalHours}h
           </div>
         </div>
       </div>
 
-      <!-- 3. 2-Column Streak Bento (Reference 2 Lower Middle) -->
-      <div class="grid grid-cols-2 gap-3 mb-3">
-        <!-- Current Streak -->
+      <!-- 3. Current Streak & Longest Streak (Reference 2 Lower Middle) -->
+      <div class="grid grid-cols-2 gap-3 mb-3.5">
+        <!-- Current Streak with 6 Hollow/Filled 18px Circles -->
         <div class="bento-card p-4 flex flex-col justify-between">
           <div class="text-[12px] font-medium text-[#71717A]">Current Streak</div>
-          <div class="text-[26px] font-extrabold text-white tracking-tight my-1.5 flex items-center gap-1.5">
-            <span>🔥</span>
+          <div class="text-[26px] font-bold text-[#F4F4F6] tracking-tight my-1 flex items-center gap-1.5">
+            <span>${icons.flame(18)}</span>
             <span>${telemetry.streak} days</span>
           </div>
-          <!-- Row of 7 circular indicators (Reference 2) -->
+          <!-- 6 hollow/filled 18px circles (Reference 2) -->
           <div class="flex items-center gap-1.5 pt-1">
-            ${last7Days.map(done => `
+            ${last6Days.map(done => `
               <div
-                class="w-3 h-3 rounded-full flex items-center justify-center transition-all ${
-                  done
-                    ? 'bg-[#34D399] shadow-sm shadow-[#34D399]/40'
-                    : 'bg-[#1C1C21] border border-white/10'
-                }"
+                class="rounded-full transition-all"
+                style="width: 18px; height: 18px; border: 1.5px solid #3F3F46; background-color: ${done ? '#68A8F8' : 'transparent'};"
               ></div>
             `).join('')}
           </div>
@@ -179,30 +192,29 @@ export function renderStatsView(container) {
         <!-- Longest Streak -->
         <div class="bento-card p-4 flex flex-col justify-between">
           <div class="text-[12px] font-medium text-[#71717A]">Longest Streak</div>
-          <div class="text-[26px] font-extrabold text-white tracking-tight my-1.5 flex items-center gap-1.5">
-            <span>🔥</span>
+          <div class="text-[26px] font-bold text-[#F4F4F6] tracking-tight my-1 flex items-center gap-1.5">
+            <span>${icons.flame(18)}</span>
             <span>${telemetry.bestStreak} days</span>
           </div>
-          <div class="text-[11px] font-medium text-zinc-500 truncate pt-1">
-            Oct 22 – Jan 17, 2027
+          <div class="text-[11px] font-medium text-[#71717A] truncate pt-1">
+            Oct 22 - Jan 17, 2027
           </div>
         </div>
       </div>
 
-      <!-- 4. Portfolio-Style Study vs. Work & Circadian Allocation Card (Reference 3) -->
-      <div class="bento-card mb-3">
+      <!-- 4. Volume & Circadian Split (Reference 3 & 4) -->
+      <div class="bento-card mb-3.5">
         <div class="flex items-baseline justify-between mb-2">
-          <div class="text-[12px] font-medium text-[#71717A]">Volume & Allocation</div>
-          <div class="text-xs font-mono font-bold text-zinc-400">
-            Study <strong class="text-white">${telemetry.cumulativeStudyHours}h</strong> • Work <strong class="text-white">${telemetry.cumulativeWorkHours}h</strong>
+          <div class="text-[12px] font-medium text-[#71717A]">Volume & Circadian Split</div>
+          <div class="text-xs font-mono text-[#A1A1AA]">
+            Study <strong class="text-[#F4F4F6]">${telemetry.cumulativeStudyHours}h</strong> • Work <strong class="text-[#F4F4F6]">${telemetry.cumulativeWorkHours}h</strong>
           </div>
         </div>
 
-        <!-- Multi-Segment Horizontal Bar with 4px Gaps (Reference 3) -->
-        <div class="h-2 rounded-full overflow-hidden flex gap-1 bg-[#1A1A1F] p-0.5 mb-3.5">
-          ${(telemetry.peakWindows || []).map((w, idx) => {
-            const colors = ['#38BDF8', '#34D399', '#A855F7', '#F59E0B'];
-            const col = colors[idx % colors.length];
+        <!-- Sleek 6px Rounded Multi-Segment Bar with 4px Gaps (Reference 3 & 4) -->
+        <div class="h-1.5 rounded-full overflow-hidden flex gap-1 bg-[#18181B] p-0 mb-3.5">
+          ${(telemetry.peakWindows || []).map(w => {
+            const col = circadianColors[w.label.split(' ')[0]] || '#A5C4FF';
             if (w.pct <= 0) return '';
             return `
               <div
@@ -214,49 +226,49 @@ export function renderStatsView(container) {
           }).join('')}
         </div>
 
-        <!-- Clean Dot Legend (Reference 3) -->
-        <div class="grid grid-cols-2 gap-2 text-xs font-medium text-zinc-400">
-          ${(telemetry.peakWindows || []).map((w, idx) => {
-            const colors = ['#38BDF8', '#34D399', '#A855F7', '#F59E0B'];
-            const col = colors[idx % colors.length];
+        <!-- Soft Pastel Dot Legend -->
+        <div class="grid grid-cols-2 gap-2 text-xs font-medium text-[#71717A]">
+          ${(telemetry.peakWindows || []).map(w => {
+            const key = w.label.split(' ')[0];
+            const col = circadianColors[key] || '#A5C4FF';
             return `
-              <div class="flex items-center gap-1.5">
+              <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${col};"></span>
-                <span class="text-zinc-300">${w.label.split(' ')[0]}</span>
-                <span class="font-mono text-zinc-500">${w.pct}%</span>
+                <span class="text-[#F4F4F6]">${key}</span>
+                <span class="font-mono text-[#71717A]">${w.pct}%</span>
               </div>
             `;
           }).join('')}
         </div>
       </div>
 
-      <!-- 5. ✦ Domino Intelligence Narrative Card (Reference 2 Bottom) -->
-      <div class="bento-card border border-amber-500/20 bg-[#141210] mb-3.5">
-        <div class="flex items-center gap-1.5 text-xs font-bold text-[#F59E0B] tracking-wide mb-2 uppercase">
-          <span>✦</span>
-          <span>Domino Intelligence</span>
+      <!-- 5. ✦ Domino Analysis Card (Reference 2 Bottom) -->
+      <div class="bento-card p-4 mb-4 border border-[#27272A] bg-[#141416]">
+        <div class="flex items-center gap-1.5 text-sm font-semibold text-[#FDBA74] tracking-wide mb-2">
+          <span>${icons.sparkle(15)}</span>
+          <span class="text-[#F4F4F6]">Domino Analysis</span>
         </div>
-        <p class="text-xs text-[#A1A1AA] leading-relaxed">
+        <p class="text-[13px] text-[#9CA3AF] leading-relaxed">
           You completed all mandatory Dominos on
-          <strong class="text-white font-bold">${fullDoneDaysCount} out of ${activeDaysCount} active days</strong>.
+          <strong class="text-[#F4F4F6] font-semibold">${fullDoneDaysCount} out of ${activeDaysCount} active days</strong>.
           Your peak biological output occurs in the
-          <strong class="text-white font-bold">${topWindow?.key || 'Evening'} (${topWindow?.pct || 0}% of volume)</strong>,
-          averaging <strong class="text-white font-bold">${avgHoursPerActiveDay}h per active day</strong>.
+          <strong class="text-[#F4F4F6] font-semibold">${topWindow?.key || 'Evening'} (${topWindow?.pct || 0}% of volume)</strong>,
+          averaging <strong class="text-[#F4F4F6] font-semibold">${avgHoursPerActiveDay}h per active day</strong>.
         </p>
       </div>
 
-      <!-- 6. Footer: Clean Pill Buttons for Export CSV and Backup JSON -->
+      <!-- 6. Footer: Clean Flat Pill Buttons for Export CSV and Backup JSON -->
       <div class="grid grid-cols-2 gap-2.5">
         <button
           id="btn-export-csv"
-          class="h-11 rounded-full bg-[#1A1A1F] border border-white/10 hover:border-white/20 text-xs font-semibold text-zinc-200 flex items-center justify-center gap-1.5 btn-tactile"
+          class="h-10 rounded-full bg-[#18181B] border border-[#27272A] hover:border-[#3F3F46] text-xs font-medium text-[#F4F4F6] flex items-center justify-center gap-1.5 btn-tactile"
         >
           <span>↓</span>
           <span>Export CSV</span>
         </button>
         <button
           id="btn-export-json"
-          class="h-11 rounded-full bg-[#1A1A1F] border border-white/10 hover:border-white/20 text-xs font-semibold text-zinc-200 flex items-center justify-center gap-1.5 btn-tactile"
+          class="h-10 rounded-full bg-[#18181B] border border-[#27272A] hover:border-[#3F3F46] text-xs font-medium text-[#F4F4F6] flex items-center justify-center gap-1.5 btn-tactile"
         >
           <span>↓</span>
           <span>Backup JSON</span>
@@ -272,20 +284,21 @@ export function renderStats(container) {
   renderStatsView(container);
 }
 
-function getMatrixCellColor(dayTotalMins, accentColor) {
+// Single Soft Pastel Blue (#68A8F8) at 4 Opacities on #1C1C22
+function getPastelBlueCellColor(dayTotalMins) {
   if (!dayTotalMins || dayTotalMins <= 0) {
-    return 'background-color: #1C1C21;';
+    return '#1C1C22';
   }
   if (dayTotalMins < 120) {
-    return `background-color: ${accentColor}40;`;
+    return 'rgba(104, 168, 248, 0.25)';
   }
   if (dayTotalMins < 240) {
-    return `background-color: ${accentColor}70;`;
+    return 'rgba(104, 168, 248, 0.50)';
   }
   if (dayTotalMins < 360) {
-    return `background-color: ${accentColor}A5;`;
+    return 'rgba(104, 168, 248, 0.75)';
   }
-  return `background-color: ${accentColor}; box-shadow: 0 0 6px ${accentColor}80;`;
+  return 'rgba(104, 168, 248, 1.0)';
 }
 
 function bindStatsEvents(container, state, blocks) {

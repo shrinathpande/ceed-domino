@@ -4,13 +4,14 @@ import { logHours } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
 import { getDayIndex } from '../utils/dates.js';
 import { renderStatusPill } from '../components/status-pill.js';
+import { icons } from '../components/icons.js';
 
 let activeDayIndex = 0;       // 0 to 86 (Day 1 to 87)
 let activeQuestionIndex = 0;  // 0 to 4 (Q1 to Q5)
 let activeCardSide = 'PROMPT'; // 'PROMPT' (left 82%) or 'STRATEGY' (right 82%)
 let oledDeskMode = false;
 let timerInterval = null;
-let timerState = null;        // { startedAt, durationSec, pausedRemaining }
+let timerState = null;        // { startedAt, durationSec }
 let wakeLockSentinel = null;
 
 const DEFAULT_CHECKLIST = [
@@ -71,22 +72,22 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
 
   const q = daySet.questions[activeQuestionIndex] || daySet.questions[0];
 
-  // Fullscreen OLED Desk Clock Mode
+  // Fullscreen OLED Desk Mode
   if (oledDeskMode) {
     acquireWakeLock();
     container.innerHTML = `
-      <div class="fixed inset-0 bg-black z-50 flex flex-col justify-between p-6 font-sans text-white select-none">
-        <div class="flex justify-between items-center text-xs text-zinc-400">
+      <div class="fixed inset-0 bg-black z-50 flex flex-col justify-between p-6 font-sans text-[#F4F4F6] select-none">
+        <div class="flex justify-between items-center text-xs text-[#71717A]">
           <span class="tracking-widest uppercase font-mono">Day ${daySet.day} // ${q.code}</span>
-          <button id="btn-exit-oled" class="px-4 py-2 rounded-full border border-white/20 bg-white/10 text-white font-medium text-xs btn-tactile">
+          <button id="btn-exit-oled" class="px-4 py-2 rounded-full border border-[#27272A] bg-[#18181B] text-[#F4F4F6] font-medium text-xs btn-tactile">
             Exit OLED ✕
           </button>
         </div>
         <div class="my-auto text-center">
-          <div id="studio-timer-display" class="text-8xl font-extrabold tracking-tight font-mono text-white tabular-nums">24:00</div>
-          <div class="text-sm text-zinc-400 mt-6 max-w-sm mx-auto line-clamp-3 leading-relaxed">${q.prompt}</div>
+          <div id="studio-timer-display" class="text-8xl font-bold tracking-tight font-mono text-[#F4F4F6] tabular-nums">24:00</div>
+          <div class="text-sm text-[#A1A1AA] mt-6 max-w-sm mx-auto line-clamp-3 leading-relaxed font-normal">${q.prompt}</div>
         </div>
-        <button id="btn-complete-sprint" class="w-full h-12 rounded-full bg-white text-black font-bold text-sm uppercase btn-tactile shadow-2xl">
+        <button id="btn-complete-sprint" class="w-full h-12 rounded-full bg-[#F4F4F6] text-[#09090B] font-semibold text-sm uppercase btn-tactile">
           Finish & Log Sprint (+24m)
         </button>
       </div>
@@ -101,19 +102,19 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
   const isPromptExpanded = activeCardSide === 'PROMPT';
 
   container.innerHTML = `
-    <section class="w-full max-w-[420px] mx-auto px-3.5 pt-2 pb-28 font-sans select-none" aria-label="Part B Studio Proctor">
+    <section class="w-full max-w-[420px] mx-auto px-4 pt-2 pb-28 font-sans select-none" aria-label="Part B Studio Proctor">
       
-      <!-- Top Navigation Pill & Switcher (Reference 5) -->
-      <div class="bento-card p-2.5 mb-3.5 flex items-center justify-between gap-2">
+      <!-- Top Navigation Pill (Reference 5) -->
+      <div class="bento-card p-3 mb-3.5 flex items-center justify-between gap-2">
         <!-- Day Selector Pill -->
-        <div class="flex items-center gap-1 bg-[#1A1A1F] rounded-full px-2 py-1 border border-white/5">
-          <button id="btn-prev-day" class="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-white btn-tactile font-bold" aria-label="Previous Day">‹</button>
-          <span class="text-xs font-bold text-white px-1">Day ${daySet.day} <span class="text-zinc-500 font-normal">of 87</span></span>
-          <button id="btn-next-day" class="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-white btn-tactile font-bold" aria-label="Next Day">›</button>
+        <div class="flex items-center gap-1 bg-[#18181B] rounded-full px-2.5 py-1 border border-[#27272A]">
+          <button id="btn-prev-day" class="w-6 h-6 rounded-full flex items-center justify-center text-[#A1A1AA] hover:text-[#F4F4F6] btn-tactile font-bold text-sm" aria-label="Previous Day">‹</button>
+          <span class="text-xs font-semibold text-[#F4F4F6] px-1">Day ${daySet.day} <span class="text-[#71717A] font-normal">of 87</span></span>
+          <button id="btn-next-day" class="w-6 h-6 rounded-full flex items-center justify-center text-[#A1A1AA] hover:text-[#F4F4F6] btn-tactile font-bold text-sm" aria-label="Next Day">›</button>
         </div>
 
         <!-- Q1 - Q5 Circular Switcher (Reference 5) -->
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-1.5">
           ${daySet.questions.map((item, idx) => {
             const isCurrent = idx === activeQuestionIndex;
             return `
@@ -121,8 +122,8 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
                 data-q-idx="${idx}"
                 class="w-7 h-7 rounded-full text-[11px] font-bold flex items-center justify-center transition-all btn-tactile ${
                   isCurrent
-                    ? 'bg-white text-black shadow-sm'
-                    : 'bg-[#1A1A1F] text-zinc-400 hover:text-white border border-white/5'
+                    ? 'bg-[#F4F4F6] text-[#09090B]'
+                    : 'bg-[#18181B] text-[#A1A1AA] hover:text-[#F4F4F6] border border-[#27272A]'
                 }"
                 aria-label="Question ${idx + 1}"
               >
@@ -133,69 +134,73 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
         </div>
       </div>
 
-      <!-- Asymmetric Peek Card Layout (Reference 6) -->
+      <!-- Asymmetric Peek Card Layout (Reference 6: My Journal / Evening Style) -->
       <div class="flex gap-2.5 mb-3.5 min-h-[380px] items-stretch">
         
         <!-- Main Card 1: Question Prompt Card -->
         <div
           id="card-prompt"
-          class="bento-card flex flex-col justify-between transition-all duration-300 relative overflow-hidden cursor-pointer ${
-            isPromptExpanded ? 'w-[82%] p-5' : 'w-[18%] p-2 flex items-center justify-center bg-[#1A1A1F]/80 hover:bg-[#1A1A1F]'
+          class="flex flex-col justify-between transition-all duration-300 relative overflow-hidden cursor-pointer ${
+            isPromptExpanded
+              ? 'w-[82%] p-5 rounded-[24px] bg-[#121214] border border-[#1F1F23]'
+              : 'w-[18%] p-2 rounded-[24px] flex items-center justify-center bg-[#27262B] border border-[#37363D] hover:bg-[#2D2C32]'
           }"
         >
           ${isPromptExpanded ? `
             <div class="flex flex-col gap-3">
               <div class="flex items-center justify-between">
                 ${renderStatusPill('LIVE', `${q.marks} Marks • ${q.mins}m`)}
-                <span class="text-[11px] font-mono text-zinc-500 font-bold">${q.code}</span>
+                <span class="text-[11px] font-mono text-[#71717A] font-bold">${q.code}</span>
               </div>
 
               <div>
-                <h2 class="text-lg font-bold text-white tracking-tight mb-2">${q.title}</h2>
-                <p class="text-[14px] text-zinc-300 leading-relaxed font-normal">${q.prompt}</p>
+                <h2 class="text-[17px] font-bold text-[#F4F4F6] tracking-tight mb-2">${q.title}</h2>
+                <p class="text-[14px] text-[#A1A1AA] leading-relaxed font-normal">${q.prompt}</p>
               </div>
             </div>
 
-            <div class="text-[11px] text-zinc-500 pt-3 border-t border-white/[0.06] flex items-center justify-between">
-              <span>Standard A4 Booklet Drill</span>
-              <span class="text-zinc-400 font-medium">Tap right tab for Checklist →</span>
+            <div class="text-[11px] text-[#71717A] pt-3 border-t border-[#1F1F23] flex items-center justify-between">
+              <span>IIT Bombay Answer Sheet Drill</span>
+              <span class="text-[#A1A1AA] font-medium">Checklist tab →</span>
             </div>
           ` : `
             <div class="h-full flex items-center justify-center">
-              <span class="transform -rotate-90 whitespace-nowrap text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+              <span class="transform -rotate-90 whitespace-nowrap text-[13px] font-medium tracking-tight text-[#E4E4E7]">
                 Question Prompt
               </span>
             </div>
           `}
         </div>
 
-        <!-- Peek Card 2: Strategy & Checklist (Reference 6) -->
+        <!-- Peek Card 2: Strategy & Checklist (Reference 6 Tactile Warm Stone Folder Tab) -->
         <div
           id="card-strategy"
-          class="bento-card flex flex-col justify-between transition-all duration-300 relative overflow-hidden cursor-pointer ${
-            !isPromptExpanded ? 'w-[82%] p-5' : 'w-[18%] p-2 flex items-center justify-center bg-[#1A1A1F]/80 hover:bg-[#1A1A1F]'
+          class="flex flex-col justify-between transition-all duration-300 relative overflow-hidden cursor-pointer ${
+            !isPromptExpanded
+              ? 'w-[82%] p-5 rounded-[24px] bg-[#121214] border border-[#1F1F23]'
+              : 'w-[18%] p-2 rounded-[24px] flex items-center justify-center bg-[#27262B] border border-[#37363D] hover:bg-[#2D2C32]'
           }"
         >
           ${!isPromptExpanded ? `
             <div class="flex flex-col gap-3">
               <div class="flex items-center justify-between">
                 ${renderStatusPill('PENDING', 'Examiner Strategy')}
-                <span class="text-[11px] font-mono text-zinc-500 font-bold">IIT Bombay Rubric</span>
+                <span class="text-[11px] font-mono text-[#71717A] font-bold">Rubric Protocol</span>
               </div>
 
               <!-- Examiner Trend Note -->
-              <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed">
-                <strong class="text-white block mb-0.5">High-Scoring Angle:</strong>
+              <div class="p-3 rounded-2xl bg-[#18181B] border border-[#27272A] text-xs text-[#FDE6B8] leading-relaxed">
+                <strong class="text-[#F4F4F6] block mb-0.5">High-Scoring Angle:</strong>
                 ${q.trend}
               </div>
 
               <!-- 4-Step Checklist -->
               <div>
-                <div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">4-Step Execution Protocol:</div>
+                <div class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-2">Pacing Protocol:</div>
                 <div class="flex flex-col gap-2">
-                  ${DEFAULT_CHECKLIST.map((item, idx) => `
-                    <label class="flex items-center gap-2.5 text-xs text-zinc-300 p-2 rounded-lg bg-[#1A1A1F]/70 border border-white/[0.03] cursor-pointer">
-                      <input type="checkbox" class="w-4 h-4 rounded text-blue-500 bg-black border-white/20 focus:ring-0 cursor-pointer" />
+                  ${DEFAULT_CHECKLIST.map((item) => `
+                    <label class="flex items-center gap-2.5 text-xs text-[#D4D4D8] p-2 rounded-xl bg-[#18181B] border border-[#27272A] cursor-pointer">
+                      <input type="checkbox" class="w-4 h-4 rounded text-[#A5C4FF] bg-black border-[#3F3F46] focus:ring-0 cursor-pointer" />
                       <span>${item}</span>
                     </label>
                   `).join('')}
@@ -203,13 +208,13 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
               </div>
             </div>
 
-            <div class="text-[11px] text-zinc-500 pt-3 border-t border-white/[0.06] flex items-center justify-between">
-              <span>Examiner Pacing Protocol</span>
-              <span class="text-zinc-400 font-medium">← Tap left tab for Prompt</span>
+            <div class="text-[11px] text-[#71717A] pt-3 border-t border-[#1F1F23] flex items-center justify-between">
+              <span>Standard 24m Pacing</span>
+              <span class="text-[#A1A1AA] font-medium">← Prompt tab</span>
             </div>
           ` : `
             <div class="h-full flex items-center justify-center">
-              <span class="transform -rotate-90 whitespace-nowrap text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+              <span class="transform -rotate-90 whitespace-nowrap text-[13px] font-medium tracking-tight text-[#E4E4E7]">
                 Strategy & Checklist
               </span>
             </div>
@@ -222,30 +227,30 @@ export function renderStudioProctor(container, onBack = null, initialDate = null
       <div class="bento-card p-3 flex items-center justify-between gap-3">
         <!-- Live Countdown Timer -->
         <div class="flex items-baseline gap-1.5 pl-1">
-          <span id="studio-timer-display" class="text-2xl font-extrabold font-mono text-white tabular-nums">24:00</span>
-          <span class="text-[11px] text-zinc-500 font-medium">remaining</span>
+          <span id="studio-timer-display" class="text-2xl font-bold font-mono text-[#F4F4F6] tabular-nums">24:00</span>
+          <span class="text-[11px] text-[#71717A] font-medium">countdown</span>
         </div>
 
         <div class="flex items-center gap-2">
           <!-- OLED Desk Clock Button -->
           <button
             id="btn-oled-mode"
-            class="h-10 px-3 rounded-full bg-[#1A1A1F] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 btn-tactile"
+            class="h-10 px-3.5 rounded-full bg-[#18181B] border border-[#27272A] hover:border-[#3F3F46] text-[#A1A1AA] hover:text-[#F4F4F6] text-xs font-medium flex items-center gap-1.5 btn-tactile"
             title="Fullscreen Desk Clock"
             aria-label="Fullscreen Desk Clock Mode"
           >
-            <span>⛶</span>
+            <span>${icons.maximize(13)}</span>
             <span>OLED</span>
           </button>
 
-          <!-- Crisp Solid White Pill CTA Button (Reference 5) -->
+          <!-- Pure Solid White Pill CTA Button (Reference 5: Zero Colored Play Square) -->
           <button
             id="btn-drill-cta"
-            class="h-10 px-5 rounded-full font-bold text-xs uppercase flex items-center gap-1.5 btn-tactile shadow-lg ${
-              timerState ? 'bg-emerald-400 text-black animate-pulse' : 'bg-white text-black hover:bg-zinc-100'
+            class="h-10 px-5 rounded-full font-semibold text-xs btn-tactile ${
+              timerState ? 'bg-[#FFD6D6] text-[#B91C1C]' : 'bg-[#F4F4F6] text-[#09090B] hover:bg-white'
             }"
           >
-            <span>${timerState ? '✓ Finish & Log' : '▶ Start Drill'}</span>
+            <span>${timerState ? 'Finish & Log' : 'Start Drill'}</span>
           </button>
         </div>
       </div>
@@ -321,7 +326,6 @@ function bindStudioEvents(container, bank, daySet, q, todayStr) {
 
 function handleSprintToggle(container, q, todayStr, bank) {
   if (timerState) {
-    // Finish and Commit elapsed minutes to Study Domino ('d2' or 'd3')
     const elapsedSec = Math.floor((Date.now() - timerState.startedAt) / 1000);
     const elapsedMins = Math.max(1, Math.round(elapsedSec / 60));
     timerState = null;
@@ -331,7 +335,6 @@ function handleSprintToggle(container, q, todayStr, bank) {
     playRelayClick();
     renderStudioProctor(container, null, todayStr, bank);
   } else {
-    // Start 24m timer
     timerState = {
       startedAt: Date.now(),
       durationSec: 24 * 60

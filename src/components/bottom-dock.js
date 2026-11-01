@@ -1,6 +1,5 @@
 // src/components/bottom-dock.js
 import { playRelayClick } from '../utils/sound.js';
-import { getAccentColor } from '../core/state.js';
 
 export function renderBottomDock(container, activeRoute = '#/') {
   let dock = document.getElementById('floatingBottomDock');
@@ -18,28 +17,28 @@ export function renderBottomDock(container, activeRoute = '#/') {
     {
       hash: '#/',
       label: 'Today',
-      icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`
+      icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/><path d="M8 15h2v2h-2z"/></svg>`
     },
     {
       hash: '#/stats',
       label: 'Stats',
-      icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>`
+      icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M20 18v-4"/><path d="M16 18v-8"/><path d="M12 18v-2"/><path d="M8 18v-5"/></svg>`
     },
     {
       hash: '#/studio',
       label: 'Studio',
-      icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>`
+      icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/></svg>`
     },
     {
       hash: '#/settings',
       label: 'Config',
-      icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>`
+      icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M6 4v4"/><path d="M6 12v8"/><path d="M10 16a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M12 4v10"/><path d="M12 18v2"/><path d="M16 7a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M18 4v1"/><path d="M18 9v11"/></svg>`
     }
   ];
 
   dock.innerHTML = `
     <div
-      class="flex items-center gap-1 px-2 py-1.5 rounded-full bg-[#16161A]/90 backdrop-blur-md border border-white/[0.08] shadow-2xl shadow-black/80"
+      class="flex items-center gap-1 px-2 py-1.5 rounded-full bg-[#121214] border border-[#1F1F23]"
       style="padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));"
     >
       ${tabs.map(tab => {
@@ -47,10 +46,10 @@ export function renderBottomDock(container, activeRoute = '#/') {
         return `
           <a
             href="${tab.hash}"
-            class="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium transition-all ${
+            class="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs transition-all btn-tactile ${
               isActive
-                ? 'bg-white text-black font-bold shadow-sm'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                ? 'bg-[#F4F4F6] text-[#09090B] font-semibold'
+                : 'text-[#A1A1AA] hover:text-[#F4F4F6] font-medium'
             }"
             aria-current="${isActive ? 'page' : 'false'}"
           >

@@ -720,6 +720,63 @@ Before modifying code, the upgrade plan was grilled against core requirements an
 - Domino Architecture Editor: Clean bento rows with title input, category pill selector, target hour `-0.5h / +0.5h` steppers, delete, and `+ Add New Domino Pillar`.
 - Backup & Reset pill buttons.
 
+### 12. Flat Matte Soft Pastel on AMOLED Overhaul
+
+**Date**: November 1, 2026  
+**Aesthetic**: Curated Flat Soft Pastels on Pure AMOLED Black (`#000000`). Zero Glow, Zero Raw Emojis, Precision Hardware Module Geometry.
+
+### 12.1 Visual Invariants Enforced
+- **Zero Glow Rule**: Completely removed all `box-shadow` glows (`shadow-[0_0_...]`, `completedSweep` keyframes, drop-shadows). All cards, check buttons, pills, and sliders are 100% flat matte.
+- **Zero Raw Emojis**: Removed all raw OS emojis (`🔥`, `🛡️`, `🔔`, `▶`, `⏹`, `✓`, `✕`, `✦`). Replaced with pristine Tabler SVG inline vector glyphs in `src/components/icons.js`.
+- **Surface Hierarchy**:
+  - App Canvas: Pure AMOLED Black (`#000000`).
+  - Primary Card Surface: Flat Matte Obsidian (`#121214`, `border-radius: 24px`, `padding: 20px`, `border: 1px solid #1F1F23`).
+  - Inner Well Sub-Surface: Deep Graphite (`#18181B`, `border-radius: 18px`, `border: 1px solid #27272A`).
+- **Curated Soft Pastel Palette**:
+  - Pastel Lavender: `#C4B5FD` (Deep ink: `#2E1065`)
+  - Pastel Periwinkle: `#A5C4FF` (Deep ink: `#1E3A8A`)
+  - Pastel Sage Mint: `#A7F3D0` (Deep ink: `#064E3B`)
+  - Pastel Peach Butter: `#FDE6B8` (Deep ink: `#78350F`)
+  - Pastel Blush Rose: `#FBCFE8` (Deep ink: `#831843`)
+  - Pastel Lime: `#D9F99D` (Deep ink: `#365314`)
+  - Crisp Chalk White: `#F4F4F6` (Deep ink: `#09090B`)
+
+### 12.2 Reference 1: Opaque Soft Pastel Status Pills
+- `Pending` (0.0h): Background `#FDE6C4`, border `#F5C986`, text & SVG `#9A5806` (Amber Ink), circle with `!`.
+- `In Progress` / `Live` (>0h): Background `#D8E2FF`, border `#ADC2FF`, text & SVG `#244BC5` (Cobalt Ink), circle with `↗`.
+- `Completed` (Target met): Background `#C6F6D5`, border `#9AE6B4`, text & SVG `#18794E` (Forest Ink), circle with `✓`.
+- `Under Floor`: Background `#FFD6D6`, border `#FEB2B2`, text & SVG `#B91C1C` (Crimson Ink), circle with `✕`.
+- `Routine`: Background `#E4E4E7`, border `#D4D4D8`, text & SVG `#27272A` (Charcoal Ink), clock glyph.
+
+### 12.3 Reference 5 & 4: Daily Planning Hero Card
+- Top Header: `Daily Planning` (`25px` medium sans-serif `#F4F4F6`) | vertical divider `#27272A` | `CEED Campaign` / `Day XX of 87 • 76d left`.
+- 3-Part Progress Bar (`height: 28px`, `gap: 6px`):
+  - Segment 1: Solid Crisp White `#F4F4F6` (completed domino hours).
+  - Segment 2: Vertical Hatch-Stripe pill (in-progress / partial hours).
+  - Segment 3: Flat Matte Charcoal `#27272A` (remaining daily target).
+- 3-Column Sub-Metrics Row: `Study logged` (`— 5.0h`), `Work & fitness` (`''' 1.5h`), `Dominos locked` (`— 2 / 4`).
+
+### 12.4 Reference 5: Domino Cards & Ruler-Pill Slider
+- Closed Card Face: Opaque pastel status pill, subtle category tag, clean 17px title, tabular hours (`1.5 / 1.5h`), and flat matte circular check button (`#18181B` unchecked / `#C6F6D5` mint checked with `#09090B` SVG check, zero glow).
+- Expanded Drawer:
+  - Row 1: Floating White Pin Callout `< ( 2.0h ) >` with micro-chevrons `<` / `>` and vertical stem.
+  - Row 2: Fine ruler ticks background + 8 discrete capsule pills filling with flat Soft Pastel Lime (`#D9F99D`).
+  - Row 3: Target floor readout + Solid White Pill Button (`Start Session` / `Stop • mm:ss`).
+
+### 12.5 Reference 2, 3 & 4: Stats View
+- Top Row: Left Bento (`✓✓` in `#68A8F8` + `1 / 87` + `Active Days`), Right Bento (`^ +8%` in mint + `500h Mastery` with Reference 5 white + hatch progress bar).
+- Consistency Matrix: Single soft pastel blue (`#68A8F8`) at 4 opacities on `#1C1C22`.
+- Streak Bento: Clean 2-tone SVG flame + 6 circular indicators (`#68A8F8` filled).
+- Volume & Circadian: 6px multi-segment bar with 4px gaps using Soft Peach, Soft Periwinkle, Soft Lavender, Soft Sage.
+- `✦ Domino Analysis`: 4-point sparkle SVG in `#FDBA74` + bold white metrics.
+
+### 12.6 Reference 6: Studio Peek Card
+- Inactive vertical Peek Tab has tactile warm stone/taupe surface (`#27262B`, `border: 1px solid #37363D`, `rounded-[24px]`) with clean `13px` `#E4E4E7` vertical text.
+- Solid white pill CTA button (`Start Drill` / `Finish & Log`).
+
+### 12.7 Config View
+- 6 Curated Soft Pastel Swatches (Blush Rose, Periwinkle, Sage Mint, Peach Butter, Lavender, Chalk White) with 1-tap instant application, zero glow, zero toast spam.
+
 ---
 
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*
