@@ -154,6 +154,34 @@ html.theme-light input::placeholder {
   -webkit-tap-highlight-color: transparent;
 }
 
+::selection {
+  background-color: var(--domino-accent);
+  color: #09090B;
+}
+
+:focus-visible {
+  outline: 2px solid var(--domino-accent);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 128, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 120, 128, 0.45);
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -203,6 +231,29 @@ html, body {
   background-color: var(--domino-accent) !important;
   color: #09090B !important;
   border: 1px solid rgba(0, 0, 0, 0.04) !important;
+}
+
+.card-infused .text-black\/60,
+.ron-top-sheet .text-black\/70 {
+  color: rgba(9, 9, 11, 0.72) !important;
+}
+
+.card-infused .text-black\/80 {
+  color: rgba(9, 9, 11, 0.88) !important;
+}
+
+/* Active running timer subtle breathing highlight */
+@keyframes timerBreath {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.35), 0 0 12px -2px rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.7), 0 0 20px 0px rgba(16, 185, 129, 0.35);
+  }
+}
+
+.timer-running-glow {
+  animation: timerBreath 2.4s ease-in-out infinite;
 }
 
 /* Reference 4, 6, 7: Primary Matte Obsidian Bento Card (Crisp Geometry, Less Circular) */

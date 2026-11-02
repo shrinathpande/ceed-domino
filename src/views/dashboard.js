@@ -103,7 +103,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   const isTodaySelected = activeDateStr === todayStr;
 
   container.innerHTML = `
-    <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none">
+    <div class="max-w-xl md:max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none">
       
       <!-- 7-Day Circular Calendar Strip with Today Indicator -->
       <div class="mb-4 stagger-item stagger-delay-1">
@@ -258,7 +258,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                 data-card-id="${block.id}"
                 role="button"
                 tabindex="0"
-                class="bento-card ${isCardsInfused ? 'card-infused' : ''} cursor-pointer transition-all ${isCompleted ? (isCardsInfused ? 'border-black/25' : 'border-white/[0.18]') : ''} ${isRunningThis ? (isCardsInfused ? 'ring-2 ring-black/40' : 'ring-1 ring-emerald-500/50') : ''}"
+                class="bento-card ${isCardsInfused ? 'card-infused' : ''} cursor-pointer transition-all ${isCompleted ? (isCardsInfused ? 'border-black/25' : 'border-white/[0.18]') : ''} ${isRunningThis ? (isCardsInfused ? 'ring-2 ring-black/40 timer-running-glow' : 'ring-1 ring-emerald-500/50 timer-running-glow') : ''}"
               >
                 <!-- Card Face Header: Title First, Status Below -->
                 <div class="flex items-center justify-between gap-3">
@@ -286,7 +286,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                     <button
                       type="button"
                       data-manual-toggle="${block.id}"
-                      aria-label="Toggle Complete"
+                      aria-label="${isCompleted ? 'Mark ' + (block.name || 'pillar') + ' incomplete' : 'Mark ' + (block.name || 'pillar') + ' complete'}"
                       class="w-[38px] h-[38px] rounded-full flex items-center justify-center transition-all btn-tactile ${
                         isCardsInfused
                           ? (isCompleted
@@ -379,6 +379,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           type="button"
                           data-set-mins="0"
                           data-block-id="${block.id}"
+                          aria-label="Reset logged duration to 0 hours"
                           class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                         >
                           Reset (0h)
@@ -387,6 +388,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           type="button"
                           data-set-mins="${targetMins}"
                           data-block-id="${block.id}"
+                          aria-label="Set logged duration to daily target floor (${targetHrs.toFixed(1)}h)"
                           class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/20 border border-black/30 text-[#09090B] font-bold' : 'bg-[#18191E] border border-[var(--domino-accent)]/40 text-[var(--domino-accent)] hover:text-white font-semibold'} text-[11px] btn-tactile whitespace-nowrap"
                         >
                           Target (${targetHrs.toFixed(1)}h)
@@ -395,6 +397,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           type="button"
                           data-step-mins="30"
                           data-block-id="${block.id}"
+                          aria-label="Add 30 minutes to logged duration"
                           class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                         >
                           +30m
@@ -403,6 +406,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           type="button"
                           data-step-mins="60"
                           data-block-id="${block.id}"
+                          aria-label="Add 1 hour to logged duration"
                           class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                         >
                           +1.0h
@@ -411,6 +415,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           type="button"
                           data-set-mins="240"
                           data-block-id="${block.id}"
+                          aria-label="Set logged duration to maximum 4 hours"
                           class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                         >
                           Max (4h)

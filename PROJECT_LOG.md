@@ -1207,4 +1207,38 @@ Implemented an Emil Kowalski-compliant 40ms cascading entrance system that trigg
 
 ---
 
+## 31. Impeccable 10-Command Suite Execution & Craft-Floor Hardening
+
+Executed the complete 10-stage Impeccable design suite: `{shape, distill, clarify, layout, typeset, colorize, adapt, animate, delight, polish}` aligned through interactive `/grill-me` interviews and strict `craft-floor.md` compliance.
+
+### 31.1 Architecture & Substance (`shape`, `distill`, `clarify`)
+- **Distilled Kicker / Eyebrow Ban**: Eliminated all decorative eyebrow labels across `src/views/settings.js`, `stats.js`, and `studio-proctor.js` (`Interface Aesthetic`, `Tactile Appearance`, `Pillars & Objectives`, `Data Portability`). Primary headings now lead directly with authentic presence.
+- **Clarified Action Verbs & Accessible Affordances**:
+  - Replaced ambiguous steppers with explicit screen-reader labels (`Decrease daily floor by 30 minutes`, `Increase daily floor by 30 minutes`).
+  - Updated factory reset button to `Restore Factory Defaults`.
+  - Upgraded studio proctor drill button to `Start 24m Drill` / `Pause Drill` / `Resume Drill`.
+  - Added explicit aria labels on countdown toggle, domino completion toggles, and quick time presets.
+
+### 31.2 Structural & Visual Foundation (`layout`, `typeset`, `colorize`, `adapt`)
+- **Responsive Bento Cockpit (`adapt`)**:
+  - Expanded root layout from mobile-only 390px to `max-w-xl md:max-w-4xl mx-auto px-4 sm:px-6`.
+  - Studio Proctor (`src/views/studio-proctor.js`): On desktop viewports (≥768px), Question Prompt and 24-Minute Pacing Checklist align side-by-side in a responsive 2-column bento grid, keeping problem statement and time milestones visible simultaneously without vertical scrolling.
+- **Craft Floor Color Discipline (`colorize`)**:
+  - Enforced tinted secondary text rule on pastel-infused surfaces (`.card-infused` and `.ron-top-sheet`): secondary indicators tint from deep ink (`rgba(9, 9, 11, 0.72)` / `rgba(9, 9, 11, 0.88)`), completely eliminating arbitrary slate gray.
+- **Touch Target Ergonomics (`layout`)**: Enforced 44px minimum touch target dimensions across all interactive buttons, calendar slots, and navigation tabs.
+
+### 31.3 Motion, Sensation & Polish (`animate`, `delight`, `polish`)
+- **Active Running Timer Halo (`animate`)**: Added `@keyframes timerBreath` (`.timer-running-glow`), a calm rhythmic breathing halo highlighting any active domino session.
+- **Browser Surface Theming (`delight`)**:
+  - Themed text selection (`::selection`) to active pastel accent with deep ink typography.
+  - Themed sleek 6px scrollbars (`::-webkit-scrollbar`) with rounded semi-transparent thumbs.
+  - Added high-visibility 2px offset `:focus-visible` outlines.
+- **Verification Gate (`polish`)**:
+  - `npm run build`: 29 modules compiled cleanly in 481ms.
+  - `lint.mjs`: **0 FAIL**, 115 WARN.
+  - `impeccable detect`: **0 FAIL** (zero contrast or slop antipatterns).
+  - Headless browser CDP multi-screen verification verified mobile (390px) and desktop (1200px) viewports across all views.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

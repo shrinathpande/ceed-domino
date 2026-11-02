@@ -36,20 +36,19 @@ export function renderSettingsView(container) {
   const isBrutalist = isBrutalistMode();
 
   container.innerHTML = `
-    <section class="w-full max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none" aria-label="Configuration Terminal">
+    <section class="w-full max-w-xl md:max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none" aria-label="Configuration Terminal">
       
       <!-- 0. Terminal Brutalist UI Mode Switch -->
       <div class="bento-card mb-3.5 stagger-item stagger-delay-0">
         <div class="flex items-center justify-between gap-3">
           <div>
-            <div class="text-[12px] font-medium text-[#71717A]">Interface Aesthetic</div>
             <div class="text-base font-bold text-[#F4F4F6] tracking-tight">Terminal Brutalist Mode</div>
             <div class="text-xs text-[#71717A] mt-0.5">0px sharp geometry, 2px stark borders, zero shadows & monospace typography</div>
           </div>
           <button
             id="btn-brutalist-toggle"
             type="button"
-            class="px-3.5 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider btn-tactile transition-all shrink-0 flex items-center gap-1.5 ${
+            class="px-4 py-2 rounded-full text-xs font-mono font-bold tracking-wider btn-tactile transition-all shrink-0 flex items-center gap-1.5 ${
               isBrutalist
                 ? 'bg-[#F4F4F6] text-[#09090B] border-2 border-[#F4F4F6] shadow-sm'
                 : 'bg-[#18181B] text-[#71717A] border border-[#27272A] hover:text-[#F4F4F6]'
@@ -66,8 +65,8 @@ export function renderSettingsView(container) {
       <div class="bento-card mb-3.5 stagger-item stagger-delay-1">
         <div class="flex items-center justify-between mb-3">
           <div>
-            <div class="text-[12px] font-medium text-[#71717A]">Tactile Appearance</div>
             <div class="text-base font-bold text-[#F4F4F6] tracking-tight">Soft Pastel Palette</div>
+            <div class="text-xs text-[#71717A] mt-0.5">Card background tint and focal accent hue</div>
           </div>
           <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#18181B] border border-[#27272A]">
             <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${currentAccent};"></span>
@@ -184,10 +183,10 @@ export function renderSettingsView(container) {
       <div class="bento-card mb-3.5 stagger-item stagger-delay-2">
         <div class="flex items-center justify-between mb-3 pb-2 border-b border-[#1F1F23]">
           <div>
-            <div class="text-[12px] font-medium text-[#71717A]">Pillars & Objectives</div>
             <div class="text-base font-bold text-[#F4F4F6] tracking-tight">Domino Architecture</div>
+            <div class="text-xs text-[#71717A] mt-0.5">Custom daily targets & categories</div>
           </div>
-          <button id="btn-reset-blocks" class="text-xs text-[#71717A] hover:text-[#F4F4F6] underline">Reset Defaults</button>
+          <button id="btn-reset-blocks" class="text-xs text-[#71717A] hover:text-[#F4F4F6] underline" aria-label="Restore factory default domino pillars">Restore Factory Defaults</button>
         </div>
 
         <div class="flex flex-col gap-2.5 mb-3.5">
@@ -203,12 +202,14 @@ export function renderSettingsView(container) {
                     value="${b.badge}"
                     class="w-28 bg-[#121214] border border-[#27272A] text-xs px-2.5 py-1 font-semibold text-[#F4F4F6] uppercase rounded-full focus:outline-none"
                     placeholder="DOMINO 1"
+                    aria-label="Pillar badge identifier"
                   />
 
                   <div class="flex items-center gap-2">
                     <select
                       data-edit-cat="${b.id}"
                       class="bg-[#121214] border border-[#27272A] text-xs text-[#A1A1AA] px-2.5 py-1 rounded-full focus:outline-none cursor-pointer"
+                      aria-label="Pillar activity category"
                     >
                       <option value="STUDY" ${b.category === 'STUDY' ? 'selected' : ''}>STUDY</option>
                       <option value="WORK" ${b.category === 'WORK' ? 'selected' : ''}>WORK</option>
@@ -219,9 +220,9 @@ export function renderSettingsView(container) {
                     ${blocks.length > 1 ? `
                       <button
                         data-delete-block="${b.id}"
-                        class="w-7 h-7 rounded-full bg-red-950/30 border border-red-900/30 text-red-400 hover:bg-red-900 hover:text-white flex items-center justify-center btn-tactile"
+                        class="w-8 h-8 rounded-full bg-red-950/30 border border-red-900/30 text-red-400 hover:bg-red-900 hover:text-white flex items-center justify-center btn-tactile"
                         title="Delete Pillar"
-                        aria-label="Delete Pillar"
+                        aria-label="Delete this domino pillar"
                       >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                       </button>
@@ -237,6 +238,7 @@ export function renderSettingsView(container) {
                     value="${b.name}"
                     class="w-full bg-transparent text-sm text-[#F4F4F6] font-medium tracking-tight focus:outline-none placeholder-zinc-500"
                     placeholder="Pillar Name"
+                    aria-label="Pillar title"
                   />
                 </div>
 
@@ -247,8 +249,8 @@ export function renderSettingsView(container) {
                     <button
                       data-step-target="${b.id}"
                       data-step-delta="-30"
-                      class="w-7 h-7 rounded-full bg-[#121214] border border-[#27272A] text-[#F4F4F6] font-bold flex items-center justify-center btn-tactile text-sm"
-                      aria-label="Decrease Target 30m"
+                      class="w-8 h-8 rounded-full bg-[#121214] border border-[#27272A] text-[#F4F4F6] font-bold flex items-center justify-center btn-tactile text-sm"
+                      aria-label="Decrease daily floor by 30 minutes"
                     >
                       -
                     </button>
@@ -256,8 +258,8 @@ export function renderSettingsView(container) {
                     <button
                       data-step-target="${b.id}"
                       data-step-delta="30"
-                      class="w-7 h-7 rounded-full bg-[#121214] border border-[#27272A] text-[#F4F4F6] font-bold flex items-center justify-center btn-tactile text-sm"
-                      aria-label="Increase Target 30m"
+                      class="w-8 h-8 rounded-full bg-[#121214] border border-[#27272A] text-[#F4F4F6] font-bold flex items-center justify-center btn-tactile text-sm"
+                      aria-label="Increase daily floor by 30 minutes"
                     >
                       +
                     </button>
@@ -278,7 +280,6 @@ export function renderSettingsView(container) {
 
       <!-- 3. Backup & Factory Reset -->
       <div class="bento-card mb-3.5 stagger-item stagger-delay-3">
-        <div class="text-[12px] font-medium text-[#71717A] mb-1">Data Portability</div>
         <div class="text-sm font-semibold text-[#F4F4F6] mb-3">Backup & Storage</div>
 
         <div class="grid grid-cols-2 gap-2.5 mb-2">

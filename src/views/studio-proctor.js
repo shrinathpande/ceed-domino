@@ -119,7 +119,7 @@ export function renderStudioProctor(container) {
   }
 
   container.innerHTML = `
-    <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-6 space-y-3.5 select-none">
+    <div class="max-w-xl md:max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-6 space-y-3.5 select-none">
 
       <!-- Day Stepper & Q1-Q5 Pill Switcher -->
       <div class="flex items-center justify-between gap-2 stagger-item stagger-delay-1">
@@ -139,77 +139,84 @@ export function renderStudioProctor(container) {
                   ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                   : 'bg-[var(--surface-well)] text-[#71717A] border border-[var(--border-subtle)]'
               }"
+              aria-label="Studio Question ${idx + 1}"
             >Q${idx + 1}</button>
           `).join('')}
         </div>
       </div>
 
-      <!-- CARD 1: Question Prompt (Clean Stacked Card) -->
-      <section class="bento-card stagger-item stagger-delay-2">
-        <div class="flex items-center justify-between gap-2 mb-3">
-          <span class="status-pill-beveled pill-inprogress !py-1 !px-2.5 !text-[11.5px]">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 15 15 9"/><path d="M10 9h5v5"/></svg>
-            <span>${q.marks || 20} Marks • ${q.timeMins || 24}m</span>
-          </span>
-          <span class="text-[11px] font-semibold tracking-wider uppercase text-[#71717A]">
-            ${q.shortTitle || q.category || 'SKETCH'}
-          </span>
-        </div>
+      <!-- Studio Work Arena: 2-Column Responsive Grid on Desktop -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 items-stretch">
+        
+        <!-- CARD 1: Question Prompt -->
+        <section class="bento-card stagger-item stagger-delay-2 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="status-pill-beveled pill-inprogress !py-1 !px-2.5 !text-[11.5px]">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 15 15 9"/><path d="M10 9h5v5"/></svg>
+                <span>${q.marks || 20} Marks • ${q.timeMins || 24}m</span>
+              </span>
+              <span class="text-[11px] font-semibold tracking-wider uppercase text-[#71717A]">
+                ${q.shortTitle || q.category || 'SKETCH'}
+              </span>
+            </div>
 
-        <h2 class="text-[19px] font-semibold text-[#F4F4F6] leading-snug mb-2.5">
-          ${q.title || 'Part B Studio Problem'}
-        </h2>
+            <h2 class="text-[19px] font-semibold text-[#F4F4F6] leading-snug mb-2.5">
+              ${q.title || 'Part B Studio Problem'}
+            </h2>
 
-        <p class="text-[13.5px] text-[#D4D4D8] leading-[1.58] mb-3.5">
-          ${scenario}
-        </p>
+            <p class="text-[13.5px] text-[#D4D4D8] leading-[1.58] mb-3.5">
+              ${scenario}
+            </p>
+          </div>
 
-        <!-- Structured Task Callout Well -->
-        <div class="recessed-well border-l-2 !border-l-[var(--domino-accent)]">
-          <div class="text-[10.5px] font-bold uppercase tracking-wider text-[var(--domino-accent)] mb-1">Mandatory Deliverables:</div>
-          <p class="text-[13px] text-[#A1A1AA] leading-relaxed">
-            ${task}
-          </p>
-        </div>
-      </section>
+          <!-- Structured Task Callout Well -->
+          <div class="recessed-well border border-[var(--domino-accent)]/30 mt-3">
+            <p class="text-[13px] text-[#F4F4F6] font-medium leading-relaxed">
+              ${task}
+            </p>
+          </div>
+        </section>
 
-      <!-- CARD 2 (Right Below It): Strategy & 24m Pacing Checklist -->
-      <section class="bento-card stagger-item stagger-delay-3">
-        <div class="flex items-center justify-between mb-3">
-          <span class="status-pill-beveled pill-pending !py-1 !px-2.5 !text-[11.5px]">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span>Examiner Strategy & Rubric</span>
-          </span>
-          <span class="text-[11px] text-[#71717A]">IIT Bombay</span>
-        </div>
+        <!-- CARD 2: Strategy & 24m Pacing Checklist -->
+        <section class="bento-card stagger-item stagger-delay-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="status-pill-beveled pill-pending !py-1 !px-2.5 !text-[11.5px]">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>Examiner Rubric</span>
+              </span>
+              <span class="text-[11px] text-[#71717A]">IIT Bombay</span>
+            </div>
 
-        <div class="recessed-well mb-3.5 border-l-2 !border-l-[#F59E0B]">
-          <div class="text-[11.5px] font-semibold text-[#F4F4F6] mb-1">High-Scoring Angle</div>
-          <p class="text-[12.5px] text-[#A1A1AA] leading-relaxed">
-            ${strategy}
-          </p>
-        </div>
+            <div class="recessed-well mb-3.5 border border-amber-500/30">
+              <p class="text-[12.5px] text-[#A1A1AA] leading-relaxed">
+                ${strategy}
+              </p>
+            </div>
 
-        <div class="text-[11px] font-semibold uppercase tracking-wider text-[#71717A] mb-2">
-          24-Minute Pacing Protocol (Checklist)
-        </div>
-        <div class="space-y-2">
-          ${pacingMilestones.map((step, idx) => {
-            const isChecked = savedChecks.includes(idx);
-            return `
-              <label class="recessed-well !py-2.5 !px-3 flex items-center gap-2.5 text-[12.5px] cursor-pointer hover:bg-white/[0.02]">
-                <input
-                  type="checkbox"
-                  data-step-check="${idx}"
-                  ${isChecked ? 'checked' : ''}
-                  class="w-4 h-4 accent-[var(--domino-accent)] rounded cursor-pointer transition-transform duration-150 active:scale-90"
-                />
-                <span class="transition-all duration-150 ${isChecked ? 'line-through text-[#71717A]' : 'text-[#E4E4E7]'}">${step}</span>
-              </label>
-            `;
-          }).join('')}
-        </div>
-      </section>
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-[#71717A] mb-2">
+              24-Minute Pacing Checklist
+            </div>
+            <div class="space-y-2">
+              ${pacingMilestones.map((step, idx) => {
+                const isChecked = savedChecks.includes(idx);
+                return `
+                  <label class="recessed-well !py-2.5 !px-3 flex items-center gap-2.5 text-[12.5px] cursor-pointer hover:bg-white/[0.02]">
+                    <input
+                      type="checkbox"
+                      data-step-check="${idx}"
+                      ${isChecked ? 'checked' : ''}
+                      class="w-4 h-4 accent-[var(--domino-accent)] rounded cursor-pointer transition-transform duration-150 active:scale-90"
+                    />
+                    <span class="transition-all duration-150 ${isChecked ? 'line-through text-[#71717A]' : 'text-[#E4E4E7]'}">${step}</span>
+                  </label>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </section>
+      </div>
 
       <!-- Bottom Scheduler Action Bar -->
       <div class="recessed-well !rounded-[12px] !p-3.5 flex items-center justify-between gap-2 stagger-item stagger-delay-4">
@@ -223,9 +230,10 @@ export function renderStudioProctor(container) {
             type="button"
             id="btn-oled-mode"
             class="px-3.5 py-2.5 rounded-full bg-[#23242A] text-[#D4D4D8] text-[12px] font-medium border border-white/[0.07] btn-tactile flex items-center gap-1.5"
+            title="Switch to full-screen OLED clock"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-            OLED
+            OLED Focus
           </button>
           <button
             type="button"
@@ -236,7 +244,7 @@ export function renderStudioProctor(container) {
                 : 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
             }"
           >
-            ${drillRunning ? 'Pause Drill' : (drillSecondsRemaining < 1440 ? 'Resume Drill' : 'Start Drill')}
+            ${drillRunning ? 'Pause Drill' : (drillSecondsRemaining < 1440 ? 'Resume Drill' : 'Start 24m Drill')}
           </button>
         </div>
       </div>

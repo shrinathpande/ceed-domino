@@ -220,40 +220,40 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
     : `${examCountdown.compact} to CEED`;
 
   headerEl.innerHTML = `
-    <div class="max-w-xl mx-auto px-4 sm:px-6 pt-2 pb-2 stagger-item stagger-delay-0">
+    <div class="max-w-xl md:max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-2 stagger-item stagger-delay-0">
       <!-- Row 1: Telemetry, Countdown Pill, Sun/Moon Theme Toggle & Streak -->
       <div class="flex items-center justify-between mb-2">
         <!-- Left: Day of 87 + Interactive [XXd to CEED] Pill -->
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-2">
           <span class="text-sm font-semibold text-[var(--text-primary)] tracking-tight">
             Day <span class="font-bold text-[var(--domino-accent)]">${String(dayIndex + 1).padStart(2, '0')}</span> <span class="text-[var(--text-secondary)] font-normal">of 87</span>
           </span>
           <button
             id="btn-exam-countdown"
             type="button"
-            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-medium bg-[var(--surface-well)] hover:opacity-90 text-[var(--text-secondary)] hover:text-[var(--domino-accent)] border border-[var(--border-subtle)] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none active:scale-95"
-            title="Tap for exact CEED exam timing & countdown"
-            aria-label="Exam Countdown Details"
+            class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--surface-well)] hover:opacity-90 text-[var(--text-secondary)] hover:text-[var(--domino-accent)] border border-[var(--border-subtle)] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none active:scale-95"
+            title="Tap for exact CEED exam timing & live countdown"
+            aria-label="Toggle exact countdown to CEED exam"
           >
             <span id="countdown-pill-text" class="tabular-nums font-mono">${pillLabel}</span>
           </button>
         </div>
 
         <!-- Right: Sun/Moon Theme Toggle + Streak Pill (Shield Completely Removed) -->
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-2">
           <!-- Night/Light Mode Toggle Button -->
           <button
             id="btn-color-mode-toggle"
             type="button"
-            aria-label="Toggle Night/Light Mode"
-            class="w-[28px] h-[28px] rounded-full flex items-center justify-center bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] btn-tactile"
+            aria-label="Toggle between Light and Night display modes"
+            class="w-[32px] h-[32px] rounded-full flex items-center justify-center bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] btn-tactile"
             title="${isLight ? 'Switch to Night Mode' : 'Switch to Light Mode'}"
           >
-            ${isLight ? icons.moon(13) : icons.sun(13)}
+            ${isLight ? icons.moon(14) : icons.sun(14)}
           </button>
 
           <!-- Streak Pill with 2-Tone SVG Flame -->
-          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-primary)]">
+          <div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11.5px] font-bold bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-primary)]">
             <span>${icons.flame(13)}</span>
             <span>${telemetry.streak}d</span>
           </div>
@@ -265,7 +265,7 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
         ${tabs.map(tab => `
           <a
             href="${tab.hash}"
-            class="flex items-center justify-center gap-1.5 py-1.5 rounded-full text-[11.5px] transition-all btn-tactile ${
+            class="flex items-center justify-center gap-1.5 py-2 rounded-full text-[12px] transition-all btn-tactile ${
               tab.isActive
                 ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium'
