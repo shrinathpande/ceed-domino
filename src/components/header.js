@@ -231,7 +231,7 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
           <button
             id="btn-exam-countdown"
             type="button"
-            class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--surface-well)] hover:opacity-90 text-[var(--text-secondary)] hover:text-[var(--domino-accent)] border border-[var(--border-subtle)] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none active:scale-95"
+            class="inline-flex items-center px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-medium bg-[var(--surface-well)] hover:opacity-90 text-[var(--text-secondary)] hover:text-[var(--domino-accent)] border border-[var(--border-subtle)] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none active:scale-95"
             title="Tap for exact CEED exam timing & live countdown"
             aria-label="Toggle exact countdown to CEED exam"
           >
@@ -246,7 +246,7 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
             id="btn-color-mode-toggle"
             type="button"
             aria-label="Toggle between Light and Night display modes"
-            class="w-[32px] h-[32px] rounded-full flex items-center justify-center bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] btn-tactile"
+            class="w-[36px] h-[36px] sm:w-[32px] sm:h-[32px] rounded-full flex items-center justify-center bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer btn-tactile"
             title="${isLight ? 'Switch to Night Mode' : 'Switch to Light Mode'}"
           >
             ${isLight ? icons.moon(14) : icons.sun(14)}

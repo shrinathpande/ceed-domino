@@ -117,15 +117,18 @@ export function renderStats(container) {
           </span>
         </div>
 
-        <!-- Glitch-Free 13-Column Grid using explicit CSS Grid style -->
+        <!-- Glitch-Free 13-Column Grid using explicit CSS Grid style with keyboard accessibility -->
         <div class="p-2 rounded-xl bg-[#16171B] border border-white/[0.04] mb-3">
           <div style="display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 4.5px;">
             ${matrixCells.map(cell => `
               <div
+                role="button"
+                tabindex="${cell.inCampaign ? '0' : '-1'}"
+                aria-label="${cell.iso}: ${cell.hrs.toFixed(1)} hours logged"
                 data-matrix-day="Day ${cell.dayIndex} (${cell.iso})"
                 data-matrix-hrs="${cell.hrs.toFixed(1)}"
                 style="background-color: ${cell.bgHex};"
-                class="w-full aspect-square rounded-[3px] ${cell.inCampaign ? 'cursor-pointer hover:ring-1 hover:ring-white/60' : 'opacity-20'} transition-transform"
+                class="w-full aspect-square rounded-[3px] ${cell.inCampaign ? 'cursor-pointer hover:ring-1 hover:ring-white/60 focus:outline-none focus:ring-2 focus:ring-[var(--domino-accent)]' : 'opacity-20'} transition-transform"
                 title="${cell.iso}: ${cell.hrs.toFixed(1)}h"
               ></div>
             `).join('')}
@@ -289,12 +292,19 @@ export function renderStats(container) {
   `;
 
   container.querySelectorAll('[data-matrix-day]').forEach(el => {
-    el.addEventListener('click', () => {
+    const inspectDay = () => {
       const hud = container.querySelector('#matrix-hud');
       if (hud) {
-        hud.innerHTML = `<span class="text-[#F4F4F6] font-semibold">${el.dataset.matrixDay}</span><span class="text-[#3898FF] font-bold">${el.dataset.matrixHrs}h logged</span>`;
+        hud.innerHTML = `<span class="text-[var(--text-primary)] font-semibold">${el.dataset.matrixDay}</span>: <strong class="text-[var(--domino-accent)]">${el.dataset.matrixHrs}h logged</strong>`;
       }
       playRelayClick();
+    };
+    el.addEventListener('click', inspectDay);
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        inspectDay();
+      }
     });
   });
 
