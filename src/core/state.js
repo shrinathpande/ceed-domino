@@ -10,7 +10,8 @@ const LEGACY_STORAGE_KEY = 'ceed_domino_state_v2';
 export const THEMES = [
   { id: 'cyber', label: 'CYBER', name: 'Cyber-Tactile OLED' },
   { id: 'brutalist', label: 'BRUTAL', name: 'Industrial Brutalist' },
-  { id: 'stealth', label: 'STEALTH', name: 'Stealth Monochrome' }
+  { id: 'stealth', label: 'STEALTH', name: 'Stealth Monochrome' },
+  { id: 'apple', label: 'APPLE', name: 'macOS Studio Graphite' }
 ];
 
 export const DEFAULT_BLOCKS = [
@@ -415,6 +416,15 @@ export function isBrutalistMode() {
 
 export function setBrutalistMode(enabled) {
   const targetTheme = enabled ? 'brutalist' : 'cyber';
+  return setTheme(targetTheme);
+}
+
+export function isAppleMode() {
+  return getTheme() === 'apple';
+}
+
+export function setAppleMode(enabled) {
+  const targetTheme = enabled ? 'apple' : 'cyber';
   return setTheme(targetTheme);
 }
 

@@ -1268,4 +1268,47 @@ Applied the `ui-ux-pro-max` intelligence system to review and harden CEED DOMINO
 
 ---
 
+## 33. Apple Design Mode & macOS Studio Graphite Architecture
+
+Implemented full **Apple Design System** transformation with **macOS Studio Graphite** visual hierarchy, continuous 18px squircles, interactive window titlebars with traffic lights, and WWDC 2018 fluid physics, governed by mutual exclusivity with Terminal Brutalist Mode.
+
+### 33.1 Design Alignment & Skill Integration
+- Integrated instructions and guidelines from `apple-design` skill (`https://github.com/emilkowalski/skills`).
+- Resolved specifications through `/grill-me` alignment:
+  - **Aesthetic Paradigm**: macOS Big Sur / Sequoia Studio Graphite.
+  - **Switch Placement**: Dedicated Apple Design Mode card at top of Config tab (`src/views/settings.js`), placed alongside Terminal Brutalist Mode in a responsive 2-column bento grid.
+  - **Mutual Exclusivity**: Turning Apple Mode ON deactivates Brutalist Mode; turning Brutalist Mode ON deactivates Apple Mode.
+  - **Fluid Physics**: WWDC 2018 instant pointer-down scale feedback (`scale(0.97)`), smooth sliding segmented pill indicators, and acrylic frosted backdrops.
+
+### 33.2 Core State & Theme Management (`src/core/state.js`)
+- Added `{ id: 'apple', label: 'APPLE', name: 'macOS Studio Graphite' }` to `THEMES` array.
+- Exported `isAppleMode()` (`getTheme() === 'apple'`) and `setAppleMode(enabled)` (`setTheme(enabled ? 'apple' : 'cyber')`).
+- Leveraged existing reactive `theme-changed` CustomEvent to seamlessly trigger view re-renders across all tabs upon theme toggle.
+
+### 33.3 Material Hierarchy & Fluid Motion Styles (`src/style.css`)
+- **Graphite & Aluminum Canvas**:
+  - Dark mode: `--bg-canvas: #16161A`, surfaces `#202024`, recessed wells `#28282D`.
+  - Light mode: `--bg-canvas: #EDEDF0` (bead-blasted Apple silver aluminum), surfaces `#FFFFFF`, wells `#E5E5EA`.
+- **Continuous Apple Squircle (`border-radius: 18px`)**:
+  - Applied to `.bento-card` and `.ron-top-sheet` with inset specular highlights (`inset 0 1px 0 rgba(255, 255, 255, 0.1)`) and soft diffused elevation shadows.
+- **macOS Window Traffic Lights (`.macos-traffic-lights`)**:
+  - Close (`#FF5F56`), Minimize (`#FFBD2E`), and Zoom (`#27C93F`) interactive dots with subtle hover glyphs (✕, −, +) and tactile relay click sound on tap.
+- **macOS Segmented Control Navigation**:
+  - Frosted acrylic backdrop blur (`backdrop-filter: blur(28px) saturate(190%)`), hairline border (`0.5px solid rgba(255, 255, 255, 0.08)`), and continuous capsule tabs.
+- **WWDC 2018 Fluid Press Physics**:
+  - Instant pointer-down compression: `transform: scale(0.97)` with `cubic-bezier(0.2, 0, 0, 1)` spring recovery.
+
+### 33.4 View Updates (`src/components/header.js`, `src/views/settings.js`)
+- **macOS Header Bar**: Renders window controls, centered ` CEED Domino — Studio Workstation` title, and `macOS Sequoia` version indicator when `isAppleMode()` is active.
+- **Dual Switch Bento Section**: Config tab provides side-by-side interactive toggles for Apple Design Mode and Terminal Brutalist Mode with live `ACTIVE [ON]` / `OFF` indicator pills.
+
+### 33.5 Verification & Testing
+- **Production Build**: `npm run build` compiled 29 modules cleanly in 330ms with zero errors.
+- **Headless Chrome CDP Verification**:
+  - Verified toggle activation of Apple Mode (`theme-apple`, `data-theme="apple"`, `border-radius: 18px`, 3 traffic light dots).
+  - Verified mutual exclusivity: activating Brutalist Mode automatically deactivates Apple Mode (card radius transforms from `18px` to `0px`); activating Apple Mode automatically deactivates Brutalist Mode.
+  - Verified visual fidelity across Dark Graphite and Light Aluminum modes on desktop and mobile viewports.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

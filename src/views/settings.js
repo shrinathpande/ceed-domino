@@ -12,6 +12,8 @@ import {
   setCardInfusionScope,
   isBrutalistMode,
   setBrutalistMode,
+  isAppleMode,
+  setAppleMode,
   resetState
 } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
@@ -34,30 +36,63 @@ export function renderSettingsView(container) {
   const currentScope = getCardInfusionScope();
   const isCustomPreset = !PASTEL_SWATCHES.some(s => s.hex.toLowerCase() === currentAccent.toLowerCase());
   const isBrutalist = isBrutalistMode();
+  const isApple = isAppleMode();
 
   container.innerHTML = `
     <section class="w-full max-w-xl md:max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none" aria-label="Configuration Terminal">
       
-      <!-- 0. Terminal Brutalist UI Mode Switch -->
-      <div class="bento-card mb-3.5 stagger-item stagger-delay-0">
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <div class="text-base font-bold text-[#F4F4F6] tracking-tight">Terminal Brutalist Mode</div>
-            <div class="text-xs text-[#71717A] mt-0.5">0px sharp geometry, 2px stark borders, zero shadows & monospace typography</div>
+      <!-- 0. Design System Modes (Apple Mode & Brutalist Mode) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3.5 stagger-item stagger-delay-0">
+        <!-- Apple Design Mode Switch Card -->
+        <div class="bento-card flex flex-col justify-between">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" class="text-[var(--text-primary)]"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.93-2.85-.9.04-1.99.6-2.63 1.35-.57.65-1.06 1.72-.93 2.74 1 .08 2.01-.49 2.63-1.24z"/></svg>
+                <span class="text-base font-bold text-[#F4F4F6] tracking-tight">Apple Design Mode</span>
+              </div>
+              <div class="text-xs text-[#71717A] mt-1">macOS Studio Graphite aesthetic, 18px squircles, window controls & fluid physics</div>
+            </div>
+            <button
+              id="btn-apple-toggle"
+              type="button"
+              class="px-3.5 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider btn-tactile transition-all shrink-0 flex items-center gap-1.5 ${
+                isApple
+                  ? 'bg-blue-600 text-white border border-blue-500 shadow-sm'
+                  : 'bg-[#18181B] text-[#71717A] border border-[#27272A] hover:text-[#F4F4F6]'
+              }"
+              aria-label="Toggle Apple Design Mode"
+            >
+              <span class="w-2 h-2 rounded-full ${isApple ? 'bg-white' : 'bg-[#71717A]'}"></span>
+              <span>${isApple ? 'ACTIVE [ON]' : 'OFF'}</span>
+            </button>
           </div>
-          <button
-            id="btn-brutalist-toggle"
-            type="button"
-            class="px-4 py-2 rounded-full text-xs font-mono font-bold tracking-wider btn-tactile transition-all shrink-0 flex items-center gap-1.5 ${
-              isBrutalist
-                ? 'bg-[#F4F4F6] text-[#09090B] border-2 border-[#F4F4F6] shadow-sm'
-                : 'bg-[#18181B] text-[#71717A] border border-[#27272A] hover:text-[#F4F4F6]'
-            }"
-            aria-label="Toggle Terminal Brutalist UI"
-          >
-            <span class="w-2 h-2 rounded-full ${isBrutalist ? 'bg-[#09090B]' : 'bg-[#71717A]'}"></span>
-            <span>${isBrutalist ? 'ACTIVE [ON]' : 'OFF'}</span>
-          </button>
+        </div>
+
+        <!-- Terminal Brutalist UI Mode Switch Card -->
+        <div class="bento-card flex flex-col justify-between">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--text-primary)]"><rect x="3" y="3" width="18" height="18" rx="0"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+                <span class="text-base font-bold text-[#F4F4F6] tracking-tight">Terminal Brutalist Mode</span>
+              </div>
+              <div class="text-xs text-[#71717A] mt-1">0px sharp geometry, 2px stark industrial borders, zero soft shadows</div>
+            </div>
+            <button
+              id="btn-brutalist-toggle"
+              type="button"
+              class="px-3.5 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider btn-tactile transition-all shrink-0 flex items-center gap-1.5 ${
+                isBrutalist
+                  ? 'bg-[#F4F4F6] text-[#09090B] border-2 border-[#F4F4F6] shadow-sm'
+                  : 'bg-[#18181B] text-[#71717A] border border-[#27272A] hover:text-[#F4F4F6]'
+              }"
+              aria-label="Toggle Terminal Brutalist UI"
+            >
+              <span class="w-2 h-2 rounded-full ${isBrutalist ? 'bg-[#09090B]' : 'bg-[#71717A]'}"></span>
+              <span>${isBrutalist ? 'ACTIVE [ON]' : 'OFF'}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -316,6 +351,13 @@ export function renderSettings(container) {
 }
 
 function bindSettingsEvents(container) {
+  // Apple Design Mode Toggle
+  container.querySelector('#btn-apple-toggle')?.addEventListener('click', () => {
+    const next = !isAppleMode();
+    setAppleMode(next);
+    renderSettingsView(container);
+  });
+
   // Terminal Brutalist Mode Toggle
   container.querySelector('#btn-brutalist-toggle')?.addEventListener('click', () => {
     const next = !isBrutalistMode();
