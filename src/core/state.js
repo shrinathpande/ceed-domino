@@ -1,5 +1,6 @@
 // src/core/state.js
 import { playRelayClick } from '../utils/sound.js';
+import { getDevDataset, WORST_CASE_BLOCKS, ONE_BLOCK, get1000Blocks } from '../utils/dev-fixtures.js';
 
 export const STATE_KEY = 'ceed_v2_state';
 export const BLOCKS_KEY = 'ceed_v2_blocks';
@@ -36,6 +37,12 @@ export function isDominoTask(block) {
 }
 
 export function getBlocks() {
+  const dataset = getDevDataset();
+  if (dataset === 'worst') return structuredClone(WORST_CASE_BLOCKS);
+  if (dataset === 'empty') return [];
+  if (dataset === 'one') return structuredClone(ONE_BLOCK);
+  if (dataset === '1000') return get1000Blocks();
+
   try {
     const raw = localStorage.getItem(BLOCKS_KEY);
     if (!raw) return structuredClone(DEFAULT_BLOCKS);
@@ -192,6 +199,56 @@ export function saveState(state = _stateCache) {
 }
 
 export function getDayRecord(dateStr) {
+  const dataset = getDevDataset();
+  if (dataset === 'worst') {
+    return {
+      durations: {
+        d1_worst: 1284,
+        d2_worst: 0,
+        d3_worst: 60,
+        d4_worst: 0.3
+      },
+      completed: ['d1_worst', 'd3_worst'],
+      logs: [
+        { id: 'log_1', time: '04:12', hour24: 4, blockId: 'd1_worst', category: 'INTERNATIONAL_COGNITIVE_STUDIO_RESEARCH_AND_DEVELOPMENT', mins: 1284, label: 'Đặng Thị Ngọc Hân Marathon' }
+      ],
+      customMins: [],
+      partACount: 1,
+      partABonusClaimed: false,
+      emergency: false,
+      shieldUsed: false,
+      notes: {
+        d1_worst: 'Line one\nLine two with a 2,000-character description <script>alert(1)</script> bartholomew.fitzgerald@northwind-industries-holdings.example.com'
+      }
+    };
+  }
+  if (dataset === 'empty') {
+    return {
+      durations: {},
+      completed: [],
+      logs: [],
+      customMins: [],
+      partACount: 0,
+      partABonusClaimed: false,
+      emergency: false,
+      shieldUsed: false,
+      notes: {}
+    };
+  }
+  if (dataset === 'one') {
+    return {
+      durations: { d1_one: 60 },
+      completed: ['d1_one'],
+      logs: [],
+      customMins: [],
+      partACount: 1,
+      partABonusClaimed: false,
+      emergency: false,
+      shieldUsed: false,
+      notes: {}
+    };
+  }
+
   const state = getState();
   if (!state.records[dateStr]) {
     state.records[dateStr] = {
@@ -318,6 +375,56 @@ function parseHour24Fallback(logItem) {
 }
 
 export function getCumulativeTelemetry() {
+  const dataset = getDevDataset();
+  if (dataset === 'worst') {
+    return {
+      cumulativeStudyHours: '984.5',
+      cumulativeWorkHours: '1240.2',
+      cumulativeWalkHours: '10120.9',
+      totalProductiveHours: '12345.6',
+      totalCompletedDominos: 1,
+      totalPartASolved: 1,
+      level: 1,
+      streak: 1,
+      bestStreak: 1284,
+      peakWindows: [
+        { key: 'NIGHT SPRINT (02:00–04:59)', label: 'NIGHT SPRINT (02:00–04:59)', hours: '1284.0', mins: 77040, pct: 142 },
+        { key: 'AFTERNOON (12:00–16:59)', label: 'AFTERNOON (12:00–16:59)', hours: '300.0', mins: 18000, pct: 33 }
+      ],
+      topWindowName: 'NIGHT SPRINT (02:00–04:59) (142%)'
+    };
+  }
+  if (dataset === 'empty') {
+    return {
+      cumulativeStudyHours: '0.0',
+      cumulativeWorkHours: '0.0',
+      cumulativeWalkHours: '0.0',
+      totalProductiveHours: '0.0',
+      totalCompletedDominos: 0,
+      totalPartASolved: 0,
+      level: 0,
+      streak: 0,
+      bestStreak: 0,
+      peakWindows: [],
+      topWindowName: 'NO DATA YET'
+    };
+  }
+  if (dataset === 'one') {
+    return {
+      cumulativeStudyHours: '1.0',
+      cumulativeWorkHours: '0.0',
+      cumulativeWalkHours: '0.0',
+      totalProductiveHours: '1.0',
+      totalCompletedDominos: 1,
+      totalPartASolved: 1,
+      level: 1,
+      streak: 1,
+      bestStreak: 1,
+      peakWindows: [{ key: 'WALK', label: 'WALK', hours: '1.0', mins: 60, pct: 100 }],
+      topWindowName: 'WALK (100%)'
+    };
+  }
+
   const state = getState();
   const blocks = getBlocks();
   const blockMap = Object.fromEntries(blocks.map(b => [b.id, b]));

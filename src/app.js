@@ -7,6 +7,7 @@ import { renderHeader } from './components/header.js';
 import { renderBottomDock } from './components/bottom-dock.js';
 import { initGestureNavigation } from './utils/gestures.js';
 import { getTheme, setTheme } from './core/state.js';
+import { mountDevFixtureDock } from './utils/dev-fixtures.js';
 
 let _appContainer = null;
 let _viewContainer = null;
@@ -41,6 +42,12 @@ export function initApp(container) {
 
   // Listen for color mode changes (Light / Night toggle)
   document.addEventListener('color-mode-changed', () => route());
+
+  // Listen for dev dataset changes (break-ui stress testing)
+  document.addEventListener('dev-dataset-changed', () => route());
+
+  // Mount dev fixture toggle dock (dev-only)
+  mountDevFixtureDock();
 
   route();
 }

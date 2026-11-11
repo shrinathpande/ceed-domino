@@ -3,6 +3,8 @@ import {
   getState,
   getDayRecord,
   getBlocks,
+  saveBlocks,
+  DEFAULT_BLOCKS,
   isDominoTask,
   setDominoDuration,
   toggleDominoComplete,
@@ -234,7 +236,25 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
 
       <!-- Domino Cards Stream -->
       <div class="space-y-3">
-        ${blocks.map((block, index) => {
+        ${blocks.length === 0 ? `
+          <div class="bento-card text-center py-10 px-6 stagger-item stagger-delay-3 flex flex-col items-center justify-center select-none">
+            <div class="w-12 h-12 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)] flex items-center justify-center mb-3 text-[var(--domino-accent)]">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/>
+              </svg>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">No Domino Pillars Configured</h3>
+            <p class="text-xs text-[var(--text-secondary)] max-w-xs mx-auto mb-4">You have zero active study pillars in your circadian schedule. Configure custom blocks or restore defaults to start logging.</p>
+            <div class="flex items-center gap-2">
+              <a href="#/settings" class="px-4 py-2 rounded-full text-xs font-bold bg-[var(--domino-accent)] text-[#09090B] btn-tactile shadow-sm">
+                Open Settings
+              </a>
+              <button id="btn-empty-restore-defaults" type="button" class="px-4 py-2 rounded-full text-xs font-semibold bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:text-white btn-tactile">
+                Restore Defaults
+              </button>
+            </div>
+          </div>
+        ` : blocks.map((block, index) => {
           const loggedMins = rec.durations?.[block.id] || 0;
           const loggedHrs = loggedMins / 60;
           const targetHrs = (block.targetMins || block.floor || 90) / 60;
@@ -258,28 +278,37 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                 data-card-id="${block.id}"
                 role="button"
                 tabindex="0"
-                class="bento-card ${isCardsInfused ? 'card-infused' : ''} cursor-pointer transition-all ${isCompleted ? (isCardsInfused ? 'border-black/25' : 'border-white/[0.18]') : ''} ${isRunningThis ? (isCardsInfused ? 'ring-2 ring-black/40 timer-running-glow' : 'ring-1 ring-emerald-500/50 timer-running-glow') : ''}"
+                class="bento-card ${isCardsInfused ? 'card-infused' : ''} cursor-pointer transition-all select-none min-h-[56px] ${isCompleted ? (isCardsInfused ? 'border-black/25' : 'border-white/[0.18]') : ''} ${isRunningThis ? (isCardsInfused ? 'ring-2 ring-black/40 timer-running-glow' : 'ring-1 ring-emerald-500/50 timer-running-glow') : ''}"
+                style="touch-action: manipulation;"
               >
                 <!-- Card Face Header: Title First, Status Below -->
-                <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center justify-between gap-2.5">
                   <div class="min-w-0 flex-1">
-                    <!-- Title First! -->
-                    <h2 class="text-[16.5px] font-bold ${isCardsInfused ? 'text-[#09090B]' : 'text-[#F4F4F6]'} truncate">
+                    <!-- Title First! 2-line clamp with title attribute -->
+                    <h2
+                      class="text-[16px] sm:text-[16.5px] font-bold ${isCardsInfused ? 'text-[#09090B]' : 'text-[#F4F4F6]'} line-clamp-2 leading-snug"
+                      title="${(block.name || block.title || '').replace(/"/g, '&quot;')}"
+                      style="overflow-wrap: anywhere; word-break: break-word;"
+                    >
                       ${index + 1}. ${block.name || block.title}
                     </h2>
 
                     <!-- Status Pill and Category Shoved BELOW Text! -->
-                    <div class="flex items-center gap-2 mt-2">
+                    <div class="flex items-center gap-1.5 sm:gap-2 mt-2 min-w-0 flex-wrap">
                       ${renderStatusPill(pillState, true)}
-                      <span class="text-[12px] font-medium capitalize ${isCardsInfused ? 'text-black/60' : 'text-[#A1A1AA]'}">
+                      <span
+                        class="text-[11.5px] sm:text-[12px] font-medium capitalize truncate ${isCardsInfused ? 'text-black/60' : 'text-[#A1A1AA]'}"
+                        title="${(block.category || 'Study').toLowerCase()}"
+                        style="max-width: min(200px, calc(100vw - 190px));"
+                      >
                         ${(block.category || 'Study').toLowerCase()}
                       </span>
                     </div>
                   </div>
 
-                  <!-- Right Readout & Circular Check Toggle -->
-                  <div class="flex items-center gap-3 shrink-0">
-                    <span class="text-[13.5px] font-mono tabular-nums ${isCardsInfused ? 'text-black/80' : 'text-[#A1A1AA]'}">
+                  <!-- Right Readout & Circular Check Toggle (Ergonomic 44x44 Touch Target) -->
+                  <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                    <span class="text-[13px] sm:text-[13.5px] font-mono tabular-nums ${isCardsInfused ? 'text-black/80' : 'text-[#A1A1AA]'}">
                       <strong class="${isCardsInfused ? 'text-[#09090B] font-bold' : 'text-[#F4F4F6] font-semibold'}">${loggedHrs.toFixed(1)}</strong> / ${targetHrs.toFixed(1)}h
                     </span>
 
@@ -287,7 +316,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                       type="button"
                       data-manual-toggle="${block.id}"
                       aria-label="${isCompleted ? 'Mark ' + (block.name || 'pillar') + ' incomplete' : 'Mark ' + (block.name || 'pillar') + ' complete'}"
-                      class="w-[38px] h-[38px] rounded-full flex items-center justify-center transition-all btn-tactile ${
+                      class="w-[44px] h-[44px] rounded-full flex items-center justify-center transition-all btn-tactile shrink-0 ${
                         isCardsInfused
                           ? (isCompleted
                               ? 'bg-[#09090B] text-white border border-[#09090B] font-bold shadow-md'
@@ -373,8 +402,54 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                         </div>
                       </div>
 
-                      <!-- Quick Preset Chips -->
-                      <div class="flex items-center gap-1.5 my-3 overflow-x-auto py-1">
+                      <!-- Quick Preset Chips with Flex-Wrap -->
+                      <div class="flex items-center gap-1.5 my-3 flex-wrap py-1">
+                        <button
+                          type="button"
+                          data-set-mins="0"
+                          data-block-id="${block.id}"
+                          aria-label="Reset logged duration to 0 hours"
+                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                        >
+                          Reset (0h)
+                        </button>
+                        <button
+                          type="button"
+                          data-set-mins="${targetMins}"
+                          data-block-id="${block.id}"
+                          aria-label="Set logged duration to daily target floor (${targetHrs.toFixed(1)}h)"
+                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/20 border border-black/30 text-[#09090B] font-bold' : 'bg-[#18191E] border border-[var(--domino-accent)]/40 text-[var(--domino-accent)] hover:text-white font-semibold'} text-[11px] btn-tactile whitespace-nowrap"
+                        >
+                          Target (${targetHrs.toFixed(1)}h)
+                        </button>
+                        <button
+                          type="button"
+                          data-step-mins="30"
+                          data-block-id="${block.id}"
+                          aria-label="Add 30 minutes to logged duration"
+                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                        >
+                          +30m
+                        </button>
+                        <button
+                          type="button"
+                          data-step-mins="60"
+                          data-block-id="${block.id}"
+                          aria-label="Add 1 hour to logged duration"
+                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                        >
+                          +1.0h
+                        </button>
+                        <button
+                          type="button"
+                          data-set-mins="240"
+                          data-block-id="${block.id}"
+                          aria-label="Set logged duration to maximum 4 hours"
+                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                        >
+                          Max (4h)
+                        </button>
+                      </div>
                         <button
                           type="button"
                           data-set-mins="0"
@@ -498,6 +573,13 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
 }
 
 function bindDashboardEvents(container) {
+  // Restore Defaults button from Empty State
+  container.querySelector('#btn-empty-restore-defaults')?.addEventListener('click', () => {
+    saveBlocks(structuredClone(DEFAULT_BLOCKS));
+    playRelayClick();
+    renderDashboard(container);
+  });
+
   // Hero countdown click -> Exact exam timing toast
   container.querySelector('#btn-hero-countdown')?.addEventListener('click', (e) => {
     e.stopPropagation();

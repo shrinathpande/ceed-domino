@@ -1311,4 +1311,52 @@ Implemented full **Apple Design System** transformation with **macOS Studio Grap
 
 ---
 
+## 34. Break-UI Adversarial Stress Testing, Throttled 3G Verification & Touch Hardening
+
+Conducted comprehensive multi-viewport stress testing under touch emulation and throttled Fast 3G network conditions (150ms latency, 1.6 Mbps download, 750 kbps upload) based on Emil Kowalski's `break-ui` skill and worst-case catalog.
+
+### 34.1 Break-UI Architecture & Dev Fixtures (`src/utils/dev-fixtures.js`)
+- **Dev-Only Multi-State Dock (`#dev-break-ui-dock`)**:
+  - Mounted neutral segmented pill dock fixed at bottom-center: `[Demo] [Worst case] [Empty] [One] [1,000 rows]`.
+  - Persisted selection in URL parameter (`?data=worst`, `?data=empty`, `?data=one`, `?data=1000`) and session storage.
+  - Swaps mock datasets at data boundary (`src/core/state.js`) without mutating production components.
+
+### 34.2 Breakages Identified & Resolved
+1. **Category Badge Text Overflow (320px / 390px)**:
+   - *Break*: Long unbreakable category strings (`INTERNATIONAL_COGNITIVE_STUDIO_RESEARCH_AND_DEVELOPMENT`) extended 149px past card borders, bleeding behind and through checkmark buttons.
+   - *Fix*: Applied `min-w-0 flex-1 flex-wrap` on header rows and `truncate max-w-[min(200px,calc(100vw-190px))]` with `title` tooltip on category badge spans (`src/views/dashboard.js`).
+2. **Quick Preset Chips Clipping in Drawer (320px)**:
+   - *Break*: Preset buttons (`+15m`, `+30m`, `+45m`, `+1.0h`, `Max (4h)`) sat in a single `whitespace-nowrap` flex row without wrapping, pushing trailing buttons 85px off-screen.
+   - *Fix*: Added `flex-wrap: wrap` on the chip container, gracefully wrapping buttons into two rows at 320px without overflow.
+3. **Empty Collection State Callout**:
+   - *Break*: Empty block arrays rendered a blank black void under the planning top sheet with zero guidance.
+   - *Fix*: Added a dedicated empty state bento card with an SVG icon, explanatory copy, "Open Settings" button, and "Restore Defaults" button (`src/views/dashboard.js`).
+4. **Card Title Truncation & CJK Identifiers**:
+   - *Break*: Long titles and URLs (`王秀英 — CJK Perspective & https:...`) truncated at 24 characters without tooltips.
+   - *Fix*: Upgraded to `line-clamp-2` with `overflow-wrap: anywhere` and full title attribute for accessibility and complete inspection.
+5. **Touch Ergonomics & Single-Letter Titles (`2. J`)**:
+   - *Break*: Narrow pointer targets on short-titled cards.
+   - *Fix*: Enlarged manual completion toggle buttons to 44×44px (meeting iOS/WCAG touch guidelines) and added `touch-action: manipulation` across card headers.
+6. **Unbounded Form Inputs**:
+   - *Break*: Config inputs lacked length validation, allowing accidental or paste-based layout corruption.
+   - *Fix*: Added `maxlength="24"` on badge inputs and `maxlength="80"` on name inputs (`src/views/settings.js`).
+
+### 34.3 Multi-Viewport Verification & Screenshot Ledger
+- **Test Environments**: Headless Chrome with `Network.emulateNetworkConditions` (Fast 3G), `Emulation.setTouchEmulationEnabled`, across viewports 320px, 390px, 768px, and 1200px.
+- **Before / After Artifacts**:
+  - `before_fix1_category_overflow_320px.png` ➔ `after_fix1_category_overflow_320px.png`
+  - `before_fix2_presets_overflow_320px.png` ➔ `after_fix2_presets_overflow_320px.png`
+  - `before_fix3_empty_state_390px.png` ➔ `after_fix3_empty_state_390px.png`
+  - `before_fix4_title_truncation_390px.png` ➔ `after_fix4_title_truncation_390px.png`
+  - `before_fix5_touch_target_390px.png` ➔ `after_fix5_touch_target_390px.png`
+  - `before_fix6_unbounded_inputs_390px.png` ➔ `after_fix6_unbounded_inputs_390px.png`
+  - `before_fix8_desktop_1200px.png` ➔ `after_fix8_desktop_1200px.png`
+- **Measurements**:
+  - `catBadgeFound`: `true`
+  - `doesCatOverflow`: `false`
+  - `checkBtnWidth`: `44px`
+  - `checkBtnHeight`: `44px`
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*
