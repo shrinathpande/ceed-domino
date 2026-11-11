@@ -37,7 +37,7 @@ export function initApp(container) {
   // Listen for dynamic accent color changes
   document.addEventListener('accent-changed', () => route());
 
-  // Listen for theme changes (Terminal Brutalist toggle)
+  // Listen for theme changes (OLED mode toggle)
   document.addEventListener('theme-changed', () => route());
 
   // Listen for color mode changes (Light / Night toggle)

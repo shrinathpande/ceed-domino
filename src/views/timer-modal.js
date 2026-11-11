@@ -1,5 +1,5 @@
 /**
- * Timer Modal — Industrial Brutalist Stopwatch Panel.
+ * Timer Modal — Stopwatch Panel.
  * Supports Ambient Fullscreen Focus Mode, keyboard shortcuts, and clean lifecycle management.
  */
 import { icon } from '../icons/index.js';

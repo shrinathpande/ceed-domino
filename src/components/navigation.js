@@ -1,5 +1,5 @@
 /**
- * Bottom Navigation Bar Component — Industrial Brutalist Dock.
+ * Bottom Navigation Bar Component — Continuous Tactile Dock.
  * Quick 1-tap switching between Dashboard, Telemetry Stats, Studio Proctor, and System Settings.
  */
 import { icon } from '../icons/index.js';

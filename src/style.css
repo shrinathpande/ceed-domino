@@ -520,305 +520,115 @@ html, body {
 }
 
 /* ==========================================================================
-   10. Ultra-Raw Terminal Brutalist Mode
+   10. AMOLED Pitch-Black OLED Mode (User-Color Accented)
    ========================================================================== */
-html.theme-brutalist,
-html[data-theme="brutalist"] {
-  --border-subtle: #52525B;
-  --border-well: #3F3F46;
+html.theme-oled:not(.theme-light),
+html[data-theme="oled"]:not(.theme-light) {
+  --bg-canvas: #000000;
+  --ground: #000000;
+  --surface-sheet: #0A0A0C;
+  --surface-card: #0A0A0C;
+  --surface: #0A0A0C;
+  --surface-well: #121216;
+  --surface-peek: #1A1A22;
+  --raised: #121216;
+  --border-subtle: color-mix(in srgb, var(--domino-accent) 18%, rgba(255, 255, 255, 0.08));
+  --border-well: color-mix(in srgb, var(--domino-accent) 12%, rgba(255, 255, 255, 0.05));
+  --border: color-mix(in srgb, var(--domino-accent) 18%, rgba(255, 255, 255, 0.08));
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+  --text: #FFFFFF;
 }
 
-html.theme-brutalist.theme-light,
-html[data-theme="brutalist"].theme-light {
-  --border-subtle: #09090B;
-  --border-well: #09090B;
+html.theme-oled:not(.theme-light) .bento-card,
+html[data-theme="oled"]:not(.theme-light) .bento-card {
+  background-color: #0A0A0C;
+  border: 1px solid color-mix(in srgb, var(--domino-accent) 22%, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 1), 0 4px 24px -2px rgba(0, 0, 0, 0.8);
+  border-radius: 14px;
 }
 
-/* 1. Strict 0px sharp corners everywhere */
-html.theme-brutalist *,
-html.theme-brutalist *::before,
-html.theme-brutalist *::after,
-html[data-theme="brutalist"] *,
-html[data-theme="brutalist"] *::before,
-html[data-theme="brutalist"] *::after {
-  border-radius: 0px !important;
+html.theme-oled:not(.theme-light) .bento-card:hover,
+html[data-theme="oled"]:not(.theme-light) .bento-card:hover {
+  border-color: color-mix(in srgb, var(--domino-accent) 45%, rgba(255, 255, 255, 0.15));
 }
 
-/* 2. Zero soft shadows */
-html.theme-brutalist .bento-card,
-html.theme-brutalist .recessed-well,
-html.theme-brutalist .ron-top-sheet,
-html.theme-brutalist button,
-html.theme-brutalist input,
-html.theme-brutalist select,
-html.theme-brutalist nav,
-html[data-theme="brutalist"] .bento-card,
-html[data-theme="brutalist"] .recessed-well,
-html[data-theme="brutalist"] .ron-top-sheet,
-html[data-theme="brutalist"] button,
-html[data-theme="brutalist"] input,
-html[data-theme="brutalist"] select,
-html[data-theme="brutalist"] nav {
-  box-shadow: none !important;
+html.theme-oled:not(.theme-light) .recessed-well,
+html[data-theme="oled"]:not(.theme-light) .recessed-well {
+  background-color: #121216;
+  border: 1px solid color-mix(in srgb, var(--domino-accent) 15%, rgba(255, 255, 255, 0.06));
+  border-radius: 10px;
 }
 
-/* 3. High-contrast 2px stark industrial borders */
-html.theme-brutalist .bento-card,
-html.theme-brutalist .ron-top-sheet,
-html[data-theme="brutalist"] .bento-card,
-html[data-theme="brutalist"] .ron-top-sheet {
-  border-width: 2px !important;
-  border-color: #52525B !important;
+html.theme-oled:not(.theme-light) header#topInstrumentHeader,
+html[data-theme="oled"]:not(.theme-light) header#topInstrumentHeader {
+  background-color: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid color-mix(in srgb, var(--domino-accent) 20%, rgba(255, 255, 255, 0.08));
 }
 
-html.theme-brutalist.theme-light .bento-card,
-html.theme-brutalist.theme-light .ron-top-sheet,
-html[data-theme="brutalist"].theme-light .bento-card,
-html[data-theme="brutalist"].theme-light .ron-top-sheet {
-  border-color: #09090B !important;
+html.theme-oled:not(.theme-light) nav,
+html[data-theme="oled"]:not(.theme-light) nav {
+  background-color: #0A0A0C;
+  border: 1px solid color-mix(in srgb, var(--domino-accent) 18%, rgba(255, 255, 255, 0.08));
 }
 
-html.theme-brutalist .recessed-well,
-html[data-theme="brutalist"] .recessed-well {
-  border-width: 2px !important;
-  border-color: #3F3F46 !important;
+/* OLED Hero Card & Infused Cards Dark Treatment with User Accent Borders */
+html.theme-oled:not(.theme-light) .ron-top-sheet {
+  background-color: #0A0A0C !important;
+  border: 1px solid color-mix(in srgb, var(--domino-accent) 30%, rgba(255, 255, 255, 0.08)) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 1), 0 4px 24px -2px rgba(0, 0, 0, 0.8);
 }
 
-html.theme-brutalist.theme-light .recessed-well,
-html[data-theme="brutalist"].theme-light .recessed-well {
-  border-color: #09090B !important;
+html.theme-oled:not(.theme-light) .ron-top-sheet h1,
+html.theme-oled:not(.theme-light) .ron-top-sheet .text-\[\#09090B\] {
+  color: #FFFFFF !important;
 }
 
-html.theme-brutalist header#topInstrumentHeader,
-html[data-theme="brutalist"] header#topInstrumentHeader {
-  border-bottom-width: 2px !important;
+html.theme-oled:not(.theme-light) .ron-top-sheet .text-black\/70,
+html.theme-oled:not(.theme-light) .ron-top-sheet .text-black\/40 {
+  color: #A1A1AA !important;
 }
 
-html.theme-brutalist nav,
-html[data-theme="brutalist"] nav {
-  border-width: 2px !important;
+html.theme-oled:not(.theme-light) .ron-top-sheet .border-black\/20 {
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
-/* 4. Technical Monospace uppercase typography on headings and badges */
-html.theme-brutalist h1,
-html.theme-brutalist h2,
-html.theme-brutalist h3,
-html.theme-brutalist h4,
-html.theme-brutalist .font-pixel-display,
-html[data-theme="brutalist"] h1,
-html[data-theme="brutalist"] h2,
-html[data-theme="brutalist"] h3,
-html[data-theme="brutalist"] h4,
-html[data-theme="brutalist"] .font-pixel-display {
-  font-family: var(--font-mono) !important;
-  text-transform: uppercase !important;
-  letter-spacing: -0.02em !important;
+html.theme-oled:not(.theme-light) .ron-top-sheet #btn-hero-countdown {
+  color: var(--domino-accent) !important;
 }
 
-/* 5. Mechanical tactile button press */
-html.theme-brutalist button:active,
-html.theme-brutalist .btn-tactile:active,
-html[data-theme="brutalist"] button:active,
-html[data-theme="brutalist"] .btn-tactile:active {
-  transform: translate(2px, 2px) !important;
+html.theme-oled:not(.theme-light) .card-infused {
+  background-color: #0A0A0C !important;
+  color: #FFFFFF !important;
+  border: 1px solid color-mix(in srgb, var(--domino-accent) 26%, rgba(255, 255, 255, 0.08)) !important;
 }
 
-/* 6. Status pills in Brutalist mode */
-html.theme-brutalist .status-pill-beveled,
-html[data-theme="brutalist"] .status-pill-beveled {
-  border-width: 2px !important;
-  text-transform: uppercase !important;
-  font-family: var(--font-mono) !important;
+html.theme-oled:not(.theme-light) .card-infused h2,
+html.theme-oled:not(.theme-light) .card-infused .text-\[\#09090B\] {
+  color: #FFFFFF !important;
 }
 
-/* ==========================================================================
-   11. macOS Studio Graphite Mode (Apple Design System)
-   ========================================================================== */
-html.theme-apple,
-html[data-theme="apple"] {
-  --bg-canvas: #16161A;
-  --surface-sheet: #202024;
-  --surface-card: #202024;
-  --surface-well: #28282D;
-  --surface-peek: #323238;
-  --border-subtle: rgba(255, 255, 255, 0.09);
-  --border-well: rgba(255, 255, 255, 0.06);
-  --text-primary: #F5F5F7;
-  --text-secondary: #A1A1A6;
-  --text-muted: #86868B;
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Geist Sans', system-ui, sans-serif;
+html.theme-oled:not(.theme-light) .card-infused .text-black\/60,
+html.theme-oled:not(.theme-light) .card-infused .text-black\/70,
+html.theme-oled:not(.theme-light) .card-infused .text-black\/80 {
+  color: #A1A1AA !important;
 }
 
-html.theme-apple.theme-light,
-html[data-theme="apple"].theme-light {
-  --bg-canvas: #EDEDF0;
-  --surface-sheet: #FFFFFF;
-  --surface-card: #FFFFFF;
-  --surface-well: #E5E5EA;
-  --surface-peek: #D1D1D6;
-  --border-subtle: rgba(0, 0, 0, 0.08);
-  --border-well: rgba(0, 0, 0, 0.05);
-  --text-primary: #1D1D1F;
-  --text-secondary: #6E6E73;
-  --text-muted: #86868B;
+html.theme-oled:not(.theme-light) .card-infused .border-black\/25 {
+  border-color: color-mix(in srgb, var(--domino-accent) 35%, rgba(255, 255, 255, 0.12)) !important;
 }
 
-/* 1. Continuous Apple Squircle 18px and Smooth Inset Specular */
-html.theme-apple .bento-card,
-html.theme-apple .ron-top-sheet,
-html[data-theme="apple"] .bento-card,
-html[data-theme="apple"] .ron-top-sheet {
-  border-radius: 18px !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 20px rgba(0, 0, 0, 0.35) !important;
-  transition: transform 180ms cubic-bezier(0.2, 0, 0, 1), box-shadow 180ms cubic-bezier(0.2, 0, 0, 1) !important;
+/* Fluid pointer-down tactile press */
+html.theme-oled button:active,
+html.theme-oled .btn-tactile:active,
+html[data-theme="oled"] button:active,
+html[data-theme="oled"] .btn-tactile:active {
+  transform: scale(0.97);
+  transition: transform 100ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-html.theme-apple.theme-light .bento-card,
-html.theme-apple.theme-light .ron-top-sheet,
-html[data-theme="apple"].theme-light .bento-card,
-html[data-theme="apple"].theme-light .ron-top-sheet {
-  border: 0.5px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.04), 0 10px 25px rgba(0, 0, 0, 0.06) !important;
-}
 
-/* 2. Recessed Wells with continuous 12px squircle */
-html.theme-apple .recessed-well,
-html[data-theme="apple"] .recessed-well {
-  border-radius: 12px !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
-}
-
-html.theme-apple.theme-light .recessed-well,
-html[data-theme="apple"].theme-light .recessed-well {
-  border: 0.5px solid rgba(0, 0, 0, 0.06) !important;
-}
-
-/* 3. WWDC 2018 Fluid Pointer-Down Scale Feedback */
-html.theme-apple button:active,
-html.theme-apple .btn-tactile:active,
-html[data-theme="apple"] button:active,
-html[data-theme="apple"] .btn-tactile:active {
-  transform: scale(0.97) !important;
-  transition: transform 100ms cubic-bezier(0.2, 0, 0, 1) !important;
-}
-
-/* 4. macOS Window Header & Toolbar */
-html.theme-apple header#topInstrumentHeader,
-html[data-theme="apple"] header#topInstrumentHeader {
-  background-color: rgba(22, 22, 26, 0.82) !important;
-  backdrop-filter: blur(28px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-html.theme-apple.theme-light header#topInstrumentHeader,
-html[data-theme="apple"].theme-light header#topInstrumentHeader {
-  background-color: rgba(237, 237, 240, 0.82) !important;
-  backdrop-filter: blur(28px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-  border-bottom: 0.5px solid rgba(0, 0, 0, 0.09) !important;
-}
-
-/* 5. macOS Traffic Lights */
-.macos-traffic-lights {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.macos-traffic-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 0.5px solid rgba(0, 0, 0, 0.25);
-  position: relative;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: filter 120ms ease, transform 100ms cubic-bezier(0.2, 0, 0, 1);
-}
-
-.macos-traffic-dot:active {
-  transform: scale(0.88) !important;
-}
-
-.macos-dot-close {
-  background-color: #FF5F56;
-}
-
-.macos-dot-minimize {
-  background-color: #FFBD2E;
-}
-
-.macos-dot-zoom {
-  background-color: #27C93F;
-}
-
-.macos-traffic-lights:hover .macos-dot-close::before {
-  content: '✕';
-  font-size: 7px;
-  font-weight: 800;
-  color: rgba(77, 0, 0, 0.75);
-  line-height: 1;
-}
-
-.macos-traffic-lights:hover .macos-dot-minimize::before {
-  content: '−';
-  font-size: 9px;
-  font-weight: 800;
-  color: rgba(90, 60, 0, 0.8);
-  line-height: 1;
-}
-
-.macos-traffic-lights:hover .macos-dot-zoom::before {
-  content: '+';
-  font-size: 8px;
-  font-weight: 800;
-  color: rgba(0, 60, 0, 0.8);
-  line-height: 1;
-}
-
-/* 6. macOS Segmented Control Navigation */
-html.theme-apple nav,
-html[data-theme="apple"] nav {
-  background-color: rgba(0, 0, 0, 0.28) !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25) !important;
-  padding: 3px !important;
-  border-radius: 12px !important;
-}
-
-html.theme-apple.theme-light nav,
-html[data-theme="apple"].theme-light nav {
-  background-color: rgba(0, 0, 0, 0.06) !important;
-  border: 0.5px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-html.theme-apple nav a,
-html[data-theme="apple"] nav a {
-  border-radius: 9px !important;
-  font-weight: 500 !important;
-  transition: all 180ms cubic-bezier(0.2, 0, 0, 1) !important;
-}
-
-html.theme-apple nav a[aria-current="page"],
-html[data-theme="apple"] nav a[aria-current="page"] {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.3) !important;
-}
-
-html.theme-apple.theme-light nav a[aria-current="page"],
-html[data-theme="apple"].theme-light nav a[aria-current="page"] {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.8) !important;
-}
-
-/* 7. Apple Mode Status Pills */
-html.theme-apple .status-pill-beveled,
-html[data-theme="apple"] .status-pill-beveled {
-  border-radius: 6px !important;
-  letter-spacing: -0.01em !important;
-  font-weight: 600 !important;
-}

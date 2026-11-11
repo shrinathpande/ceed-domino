@@ -1,5 +1,5 @@
 // src/components/header.js
-import { getState, getCumulativeTelemetry, isAppleMode } from '../core/state.js';
+import { getState, getCumulativeTelemetry } from '../core/state.js';
 import { getDayIndex, getExamCountdown } from '../utils/dates.js';
 import { icons } from './icons.js';
 import { getColorMode, toggleColorMode } from './theme-toggle.js';
@@ -178,7 +178,6 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
   const dayIndex = getDayIndex(todayStr);
   const examCountdown = getExamCountdown();
   const isLight = getColorMode() === 'light';
-  const isApple = isAppleMode();
   const cleanRoute = (activeRoute || window.location.hash || '#/').split('?')[0];
 
   const tabs = [
@@ -222,23 +221,6 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
 
   headerEl.innerHTML = `
     <div class="max-w-xl md:max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-2 stagger-item stagger-delay-0">
-      ${isApple ? `
-        <!-- macOS Studio Titlebar (Window Traffic Lights & Centered Title) -->
-        <div class="macos-window-header flex items-center justify-between px-1 pt-0.5 pb-2 mb-2 border-b border-[var(--border-subtle)] text-[11px] select-none">
-          <div class="macos-traffic-lights flex items-center gap-1.5" aria-label="macOS Window Controls">
-            <button type="button" class="macos-traffic-dot macos-dot-close" title="Close Window" aria-label="Close Window"></button>
-            <button type="button" class="macos-traffic-dot macos-dot-minimize" title="Minimize Window" aria-label="Minimize Window"></button>
-            <button type="button" class="macos-traffic-dot macos-dot-zoom" title="Zoom Window" aria-label="Zoom Window"></button>
-          </div>
-          <div class="macos-window-title flex items-center gap-1.5 font-medium tracking-tight text-[var(--text-secondary)]">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="opacity-75"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.93-2.85-.9.04-1.99.6-2.63 1.35-.57.65-1.06 1.72-.93 2.74 1 .08 2.01-.49 2.63-1.24z"/></svg>
-            <span>CEED Domino — Studio Workstation</span>
-          </div>
-          <div class="macos-window-actions text-[10px] font-mono text-[var(--text-muted)] tracking-wider uppercase hidden sm:block">
-            macOS Sequoia
-          </div>
-        </div>
-      ` : ''}
       <!-- Row 1: Telemetry, Countdown Pill, Sun/Moon Theme Toggle & Streak -->
       <div class="flex items-center justify-between mb-2">
         <!-- Left: Day of 87 + Interactive [XXd to CEED] Pill -->
@@ -340,14 +322,4 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
       playRelayClick();
     });
   });
-
-  // Bind macOS traffic lights in Apple mode
-  if (isApple) {
-    headerEl.querySelectorAll('.macos-traffic-dot').forEach(dot => {
-      dot.addEventListener('click', (e) => {
-        e.stopPropagation();
-        playRelayClick();
-      });
-    });
-  }
 }

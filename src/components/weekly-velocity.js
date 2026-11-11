@@ -1,6 +1,6 @@
 /**
  * Weekly Velocity & Burn-Down Chart Component.
- * Industrial Brutalist ledger breakdown: Weekly cumulative completed hours per pillar
+ * Ledger breakdown: Weekly cumulative completed hours per pillar
  * compared against total targets.
  */
 import { getState } from '../core/state.js';

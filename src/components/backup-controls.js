@@ -1,5 +1,5 @@
 /**
- * Backup Controls Component — Industrial Brutalist Storage Module.
+ * Backup Controls Component — Data Storage & Export Module.
  */
 import { exportStateAsJSON, importStateFromFile } from '../core/state.js';
 import { icon } from '../icons/index.js';

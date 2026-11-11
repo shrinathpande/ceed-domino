@@ -1,5 +1,5 @@
 /**
- * Domino Card Component — Industrial Brutalist Task Unit.
+ * Domino Card Component — High-Precision Task Unit.
  * High-legibility typography, crisp border tokens, exact time budgets, and tactile feedback.
  */
 import { icon } from '../icons/index.js';
@@ -28,7 +28,7 @@ export function renderDominoCard(domino, dateStr, onTimerStart, onOpenStudio) {
       ? 'domino-card-mandatory'
       : 'domino-card-routine opacity-90'
   } ${
-    done ? 'domino-done-brutalist' : ''
+    done ? 'domino-done' : ''
   }`;
   card.setAttribute('data-domino-id', domino.id);
   card.setAttribute('data-state', done ? 'completed' : 'pending');

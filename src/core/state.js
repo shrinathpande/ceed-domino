@@ -9,10 +9,8 @@ export const THEME_KEY = 'ceed_v2_theme';
 const LEGACY_STORAGE_KEY = 'ceed_domino_state_v2';
 
 export const THEMES = [
-  { id: 'cyber', label: 'CYBER', name: 'Cyber-Tactile OLED' },
-  { id: 'brutalist', label: 'BRUTAL', name: 'Industrial Brutalist' },
-  { id: 'stealth', label: 'STEALTH', name: 'Stealth Monochrome' },
-  { id: 'apple', label: 'APPLE', name: 'macOS Studio Graphite' }
+  { id: 'oled', label: 'OLED', name: 'AMOLED Pitch-Black' },
+  { id: 'cyber', label: 'DARK', name: 'Charcoal Dark' }
 ];
 
 export const DEFAULT_BLOCKS = [
@@ -25,7 +23,7 @@ export const DEFAULT_BLOCKS = [
 const DEFAULT_SETTINGS = {
   startDate: '2026-10-22',
   endDate: '2027-01-17',
-  theme: 'cyber',
+  theme: 'oled',
   accentColor: '#C4B5FD',
   cardInfusion: 'all'
 };
@@ -508,36 +506,28 @@ export function getCumulativeTelemetry() {
   };
 }
 
-// Theme Management (3 Themes: cyber, brutalist, stealth)
+// Theme Management (2 Themes: oled, cyber)
 export function getTheme() {
   try {
     const saved = localStorage.getItem(THEME_KEY);
-    if (saved && THEMES.some(t => t.id === saved)) return saved;
+    if (saved === 'oled' || saved === 'cyber') return saved;
+    if (saved === 'apple' || saved === 'brutalist' || saved === 'stealth') return 'oled';
   } catch {}
-  return 'cyber';
+  return 'oled';
 }
 
-export function isBrutalistMode() {
-  return getTheme() === 'brutalist';
+export function isOledMode() {
+  return getTheme() === 'oled';
 }
 
-export function setBrutalistMode(enabled) {
-  const targetTheme = enabled ? 'brutalist' : 'cyber';
-  return setTheme(targetTheme);
-}
-
-export function isAppleMode() {
-  return getTheme() === 'apple';
-}
-
-export function setAppleMode(enabled) {
-  const targetTheme = enabled ? 'apple' : 'cyber';
+export function setOledMode(enabled) {
+  const targetTheme = enabled ? 'oled' : 'cyber';
   return setTheme(targetTheme);
 }
 
 export function setTheme(themeId) {
   const match = THEMES.find(t => t.id === themeId);
-  const valid = match ? match.id : 'cyber';
+  const valid = match ? match.id : 'oled';
   localStorage.setItem(THEME_KEY, valid);
   document.documentElement.setAttribute('data-theme', valid);
   THEMES.forEach(t => {

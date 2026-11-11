@@ -1359,4 +1359,48 @@ Conducted comprehensive multi-viewport stress testing under touch emulation and 
 
 ---
 
+## 35. Purge of Apple & Brutalist Modes & AMOLED Pitch-Black OLED Mode Ingestion
+
+### 35.1 Complete Elimination of Legacy Design Modes
+- **Apple Mode Purge**:
+  - Removed macOS titlebar, window traffic light controls (`.macos-traffic-lights`), and centered Sequoia window title from [`src/components/header.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/components/header.js).
+  - Deleted `theme-apple` CSS block (191 lines) from [`src/style.css`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/style.css).
+  - Removed `isAppleMode()` and `setAppleMode()` from [`src/core/state.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/core/state.js) and [`src/views/settings.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/views/settings.js).
+- **Brutalist Mode Purge**:
+  - Deleted `theme-brutalist` CSS block (109 lines) enforcing 0px sharp corners, 2px industrial borders, and monospace uppercase overrides from [`src/style.css`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/style.css).
+  - Removed `isBrutalistMode()` and `setBrutalistMode()` from [`src/core/state.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/core/state.js).
+  - Cleaned up leftover docstrings and legacy class names across all components (`domino-card.js`, `backup-controls.js`, `duration-modal.js`, `navigation.js`, `weekly-velocity.js`, `timer-modal.js`).
+- **State Sanitization & Migration**:
+  - Sanitized `getTheme()` in [`src/core/state.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/core/state.js): any legacy `localStorage` keys (`apple`, `brutalist`, `stealth`) automatically fallback and migrate to `oled`.
+  - Maintained 2-theme engine: `oled` (AMOLED Pitch-Black, default) and `cyber` (Charcoal Dark fallback).
+
+### 35.2 AMOLED Pitch-Black OLED Mode Architecture
+- **Pitch-Black Ground (`#000000`)**: Complete true-black pixel shutoff across canvas and body background for maximum contrast and battery conservation on OLED/AMOLED displays.
+- **Deep Obsidian Surfaces**: Cards set to `#0A0A0C` with recessed wells at `#121216` and peeks at `#1A1A22`.
+- **Dynamic User-Chosen Color Infusion**:
+  - Border hairlines illuminate dynamically with the user's selected accent color: `color-mix(in srgb, var(--domino-accent) 22%, rgba(255, 255, 255, 0.08))`.
+  - Card hover glows illuminate with `color-mix(in srgb, var(--domino-accent) 45%, rgba(255, 255, 255, 0.15))`.
+  - Recessed wells utilize `color-mix(in srgb, var(--domino-accent) 15%, rgba(255, 255, 255, 0.06))`.
+  - Top header and navigation dock adapt with `rgba(0, 0, 0, 0.92)` backdrop blur and accent-tinted bottom border.
+- **Card Geometry & Tactile Physics**:
+  - Restored continuous 14px squircle card geometry (`border-radius: 14px`) and 10px recessed wells.
+  - Active button and card press physics tuned to fluid pointer-down tactile compression (`transform: scale(0.97)`).
+- **Dedicated Config Tab Switch**:
+  - Single streamlined switch card at top of Config view: `AMOLED Pitch-Black OLED Mode` with `ACTIVE [ON]` / `OFF` indicator pill (`#btn-oled-toggle`).
+  - Seamless coexistence with the header Sun/Moon button for light mode toggling.
+
+### 35.3 Production Verification & Visual Audit
+- **Vite Build**: Compiled client environment in 337ms with 0 errors (`dist/assets/index-CDd_Banu.css` at 71.94 kB, `dist/assets/index-QW70HDxx.js` at 465.91 kB).
+- **Chrome DevTools Protocol (CDP) Verification**:
+  - Verified `#btn-oled-toggle` presence and state toggle (`ACTIVE [ON]` ↔ `OFF`).
+  - Verified pure `#000000` canvas and body background (`rgb(0, 0, 0)`).
+  - Verified color swatch switching: clicking Soft Sage Mint (`#A7F3D0`) dynamically updated `--domino-accent` and all hairline border `color-mix` values in real time without page reload.
+  - Verified Today Dashboard: confirmed zero macOS titlebar elements, verified 14px squircle card geometry and radiant user-color hairline borders (`color(srgb 0.718 0.962 0.849 / 0.318)`).
+- **Screenshots Generated**:
+  - `oled_mode_settings.png`: Config view showing the new dedicated OLED toggle card and pastel swatches.
+  - `oled_mode_mint_accent.png`: Live radiant mint hairline border infusion on pitch black ground.
+  - `oled_mode_today.png`: Today Dashboard in OLED mode with obsidian cards and user-color borders.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

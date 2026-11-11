@@ -1,5 +1,5 @@
 /**
- * Duration Modal — Industrial Brutalist Time Logger & Adjuster.
+ * Duration Modal — Time Logger & Adjuster.
  * Allows candidates to record exact logged time (more or less than the required floor).
  */
 import { ensureDayRecord, getDominoDuration, setDominoDuration, formatDetailedHours } from '../core/state.js';
