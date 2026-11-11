@@ -70,7 +70,9 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   const dayNum = getCampaignDayNumber(activeDateStr);
   const countdown = getExamCountdown();
   const timerState = getActiveTimerState();
-  const isCardsInfused = getCardInfusionScope() === 'all';
+  const isLight = document.documentElement.classList.contains('theme-light');
+  const isOled = !isLight;
+  const isCardsInfused = isLight && getCardInfusionScope() === 'all';
 
   const mandatoryBlocks = blocks.filter(isDominoTask);
   const lockedCount = mandatoryBlocks.filter(b => rec.completed.includes(b.id)).length;
@@ -159,15 +161,15 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
       <!-- Planning Hero Card - Full Soft Pastel Accent Infusion -->
       <section class="ron-top-sheet mb-4 stagger-item stagger-delay-2">
         <div class="flex items-start justify-between gap-4 mb-5">
-          <h1 class="text-2xl sm:text-[28px] font-bold tracking-tight text-[#09090B] leading-none">
+          <h1 class="text-2xl sm:text-[28px] font-bold tracking-tight ${isOled ? 'text-[#FFFFFF]' : 'text-[#09090B]'} leading-none">
             Planning
           </h1>
-          <div class="pl-4 border-l border-black/20 text-right">
-            <div class="text-[15px] font-bold text-[#09090B] leading-tight">CEED Campaign</div>
+          <div class="pl-4 ${isOled ? 'border-l border-white/15' : 'border-l border-black/20'} text-right">
+            <div class="text-[15px] font-bold ${isOled ? 'text-[#FFFFFF]' : 'text-[#09090B]'} leading-tight">CEED Campaign</div>
             <button
               type="button"
               id="btn-hero-countdown"
-              class="text-[12px] text-black/70 hover:text-black font-semibold tabular-nums mt-0.5 transition-colors cursor-pointer text-right block ml-auto"
+              class="text-[12px] ${isOled ? 'text-[var(--domino-accent)] hover:underline' : 'text-black/70 hover:text-black'} font-semibold tabular-nums mt-0.5 transition-colors cursor-pointer text-right block ml-auto"
               title="Tap for exact CEED exam timing & countdown"
             >
               Day ${dayNum} of 87 • ${countdown.days}d left
@@ -179,17 +181,17 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
         <div class="flex items-center gap-1.5 h-[36px] mb-4">
           <div
             style="flex: ${solidFlex}"
-            class="h-full bg-[#09090B] rounded-[9px] transition-all duration-300 shadow-sm"
+            class="h-full ${isOled ? 'bg-[var(--domino-accent)] shadow-[0_0_14px_var(--domino-accent)]' : 'bg-[#09090B] shadow-sm'} rounded-[9px] transition-all duration-300"
             title="Completed Hours"
           ></div>
           <div
             style="flex: ${hatchFlex}"
-            class="h-full bg-barcode-hatch-dark rounded-[9px] transition-all duration-300"
+            class="h-full ${isOled ? 'bg-barcode-hatch-accent border border-[var(--domino-accent)]/40' : 'bg-barcode-hatch-dark'} rounded-[9px] transition-all duration-300"
             title="In-Progress / Queued Hours"
           ></div>
           <div
             style="flex: ${slateFlex}"
-            class="h-full bg-black/15 rounded-[9px] transition-all duration-300"
+            class="h-full ${isOled ? 'bg-[#181822] border border-white/10' : 'bg-black/15'} rounded-[9px] transition-all duration-300"
             title="Remaining Target Floor"
           ></div>
         </div>
@@ -197,24 +199,24 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
         <!-- 3-Column Sub-Metrics with Deep Ink Typography -->
         <div class="grid grid-cols-3 gap-2 pt-1">
           <div>
-            <div class="text-[11.5px] font-semibold text-black/70 mb-1">Study logged</div>
+            <div class="text-[11.5px] font-semibold ${isOled ? 'text-[#A1A1AA]' : 'text-black/70'} mb-1">Study logged</div>
             <div class="flex items-start gap-1.5">
-              <span class="w-2.5 h-[3px] rounded-full bg-[#09090B] mt-2"></span>
-              <span class="text-[20px] font-bold text-[#09090B] tabular-nums leading-none">${studyHours.toFixed(1)}h</span>
+              <span class="w-2.5 h-[3px] rounded-full ${isOled ? 'bg-[var(--domino-accent)] shadow-[0_0_8px_var(--domino-accent)]' : 'bg-[#09090B]'} mt-2"></span>
+              <span class="text-[20px] font-bold ${isOled ? 'text-[#FFFFFF]' : 'text-[#09090B]'} tabular-nums leading-none">${studyHours.toFixed(1)}h</span>
             </div>
           </div>
           <div>
-            <div class="text-[11.5px] font-semibold text-black/70 mb-1">Work & fitness</div>
+            <div class="text-[11.5px] font-semibold ${isOled ? 'text-[#A1A1AA]' : 'text-black/70'} mb-1">Work & fitness</div>
             <div class="flex items-start gap-1.5">
-              <span class="text-[11px] font-mono text-black/70 font-bold leading-none mt-1">'''</span>
-              <span class="text-[20px] font-bold text-[#09090B] tabular-nums leading-none">${workWalkHours.toFixed(1)}h</span>
+              <span class="text-[11px] font-mono ${isOled ? 'text-[var(--domino-accent)]' : 'text-black/70'} font-bold leading-none mt-1">'''</span>
+              <span class="text-[20px] font-bold ${isOled ? 'text-[#FFFFFF]' : 'text-[#09090B]'} tabular-nums leading-none">${workWalkHours.toFixed(1)}h</span>
             </div>
           </div>
           <div>
-            <div class="text-[11.5px] font-semibold text-black/70 mb-1">Dominos locked</div>
+            <div class="text-[11.5px] font-semibold ${isOled ? 'text-[#A1A1AA]' : 'text-black/70'} mb-1">Dominos locked</div>
             <div class="flex items-start gap-1.5">
-              <span class="w-2.5 h-[3px] rounded-full bg-black/40 mt-2"></span>
-              <span class="text-[20px] font-bold text-[#09090B] tabular-nums leading-none">${lockedCount} / ${mandatoryBlocks.length}</span>
+              <span class="w-2.5 h-[3px] rounded-full ${isOled ? 'bg-white/40' : 'bg-black/40'} mt-2"></span>
+              <span class="text-[20px] font-bold ${isOled ? 'text-[#FFFFFF]' : 'text-[#09090B]'} tabular-nums leading-none">${lockedCount} / ${mandatoryBlocks.length}</span>
             </div>
           </div>
         </div>
@@ -308,8 +310,8 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
 
                   <!-- Right Readout & Circular Check Toggle (Ergonomic 44x44 Touch Target) -->
                   <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                    <span class="text-[13px] sm:text-[13.5px] font-mono tabular-nums ${isCardsInfused ? 'text-black/80' : 'text-[#A1A1AA]'}">
-                      <strong class="${isCardsInfused ? 'text-[#09090B] font-bold' : 'text-[#F4F4F6] font-semibold'}">${loggedHrs.toFixed(1)}</strong> / ${targetHrs.toFixed(1)}h
+                    <span class="text-[13px] sm:text-[13.5px] font-mono tabular-nums ${isOled ? 'text-[var(--text-secondary)]' : (isCardsInfused ? 'text-black/80' : 'text-[#A1A1AA]')}">
+                      <strong class="${isOled ? 'text-[var(--domino-accent)] font-bold' : (isCardsInfused ? 'text-[#09090B] font-bold' : 'text-[#F4F4F6] font-semibold')}">${loggedHrs.toFixed(1)}</strong> / ${targetHrs.toFixed(1)}h
                     </span>
 
                     <button
@@ -317,13 +319,17 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                       data-manual-toggle="${block.id}"
                       aria-label="${isCompleted ? 'Mark ' + (block.name || 'pillar') + ' incomplete' : 'Mark ' + (block.name || 'pillar') + ' complete'}"
                       class="w-[44px] h-[44px] rounded-full flex items-center justify-center transition-all btn-tactile shrink-0 ${
-                        isCardsInfused
+                        isOled
                           ? (isCompleted
-                              ? 'bg-[#09090B] text-white border border-[#09090B] font-bold shadow-md'
-                              : 'bg-transparent text-black/70 border border-black/25 hover:bg-black/5')
-                          : (isCompleted
-                              ? 'bg-[var(--domino-accent)] text-[#09090B] border border-[var(--domino-accent)] font-bold shadow-sm'
-                              : 'bg-transparent text-[#71717A] border border-white/20 hover:border-white/40')
+                              ? 'bg-[var(--domino-accent)] text-[#09090B] border border-[var(--domino-accent)] font-bold shadow-[0_0_12px_var(--domino-accent)]'
+                              : 'bg-white/[0.04] text-[var(--domino-accent)] border border-[var(--domino-accent)]/40 hover:bg-[var(--domino-accent)]/15')
+                          : (isCardsInfused
+                              ? (isCompleted
+                                  ? 'bg-[#09090B] text-white border border-[#09090B] font-bold shadow-md'
+                                  : 'bg-transparent text-black/70 border border-black/25 hover:bg-black/5')
+                              : (isCompleted
+                                  ? 'bg-[var(--domino-accent)] text-[#09090B] border border-[var(--domino-accent)] font-bold shadow-sm'
+                                  : 'bg-transparent text-[#71717A] border border-white/20 hover:border-white/40'))
                       }"
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="${isCompleted ? 'check-pop-enter' : ''}">
@@ -334,12 +340,14 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                 </div>
 
                 <!-- Subtle progress bar on card bottom -->
-                <div class="w-full ${isCardsInfused ? 'bg-black/15' : 'bg-[#1C1D22]'} h-1.5 rounded-full mt-3 overflow-hidden">
+                <div class="w-full ${isOled ? 'bg-[#181822] border border-white/[0.05]' : (isCardsInfused ? 'bg-black/15' : 'bg-[#1C1D22]')} h-1.5 rounded-full mt-3 overflow-hidden">
                   <div
                     class="h-full rounded-full transition-all duration-300 ${
-                      isCardsInfused
-                        ? 'bg-[#09090B]'
-                        : (isCompleted ? 'bg-[var(--domino-accent)]' : (isRunningThis ? 'bg-[var(--domino-accent)]' : 'bg-white/40'))
+                      isOled
+                        ? (isCompleted || isRunningThis ? 'bg-[var(--domino-accent)] shadow-[0_0_8px_var(--domino-accent)]' : (pct > 0 ? 'bg-[var(--domino-accent)]/70' : 'bg-transparent'))
+                        : (isCardsInfused
+                            ? 'bg-[#09090B]'
+                            : (isCompleted ? 'bg-[var(--domino-accent)]' : (isRunningThis ? 'bg-[var(--domino-accent)]' : 'bg-white/40')))
                     }"
                     style="width: ${pct}%;"
                   ></div>
@@ -352,24 +360,24 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                       
                       <!-- Hero Slider Header & Quick Step -->
                       <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-semibold ${isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]'}">Log Session Hours</span>
+                        <span class="text-xs font-semibold ${isOled ? 'text-[var(--text-muted)]' : (isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]')}">Log Session Hours</span>
                         <div class="flex items-center gap-2">
                           <button
                             type="button"
                             data-step-mins="-15"
                             data-block-id="${block.id}"
-                            class="w-7 h-7 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-[#09090B] hover:bg-black/20' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8]'} flex items-center justify-center text-sm font-bold btn-tactile"
+                            class="w-7 h-7 rounded-full ${isOled ? 'bg-[#181822] border border-white/10 text-[#FFFFFF] hover:border-[var(--domino-accent)]' : (isCardsInfused ? 'bg-black/10 border border-black/20 text-[#09090B] hover:bg-black/20' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8]')} flex items-center justify-center text-sm font-bold btn-tactile"
                             title="Decrease 15m"
                             aria-label="Decrease logged duration by 15 minutes"
                           >–</button>
-                          <span class="text-[17px] font-mono font-bold ${isCardsInfused ? 'text-[#09090B] bg-black/10 border border-black/20' : 'text-[#F4F4F6] bg-[var(--surface-well)] border border-[var(--border-subtle)]'} tabular-nums px-2 py-0.5 rounded-lg">
+                          <span class="text-[17px] font-mono font-bold ${isOled ? 'text-[var(--domino-accent)] bg-[#181822] border border-[var(--domino-accent)]/30' : (isCardsInfused ? 'text-[#09090B] bg-black/10 border border-black/20' : 'text-[#F4F4F6] bg-[var(--surface-well)] border border-[var(--border-subtle)]')} tabular-nums px-2 py-0.5 rounded-lg">
                             ${loggedHrs.toFixed(2)}h
                           </span>
                           <button
                             type="button"
                             data-step-mins="15"
                             data-block-id="${block.id}"
-                            class="w-7 h-7 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-[#09090B] hover:bg-black/20' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8]'} flex items-center justify-center text-sm font-bold btn-tactile"
+                            class="w-7 h-7 rounded-full ${isOled ? 'bg-[#181822] border border-white/10 text-[#FFFFFF] hover:border-[var(--domino-accent)]' : (isCardsInfused ? 'bg-black/10 border border-black/20 text-[#09090B] hover:bg-black/20' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[#D4D4D8]')} flex items-center justify-center text-sm font-bold btn-tactile"
                             title="Increase 15m"
                             aria-label="Increase logged duration by 15 minutes"
                           >+</button>
@@ -386,14 +394,16 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           value="${loggedHrs}"
                           data-slider-block="${block.id}"
                           aria-label="Logged session hours for ${block.name || 'Pillar'}: ${loggedHrs.toFixed(2)} hours"
-                          class="w-full h-2.5 rounded-lg appearance-none cursor-pointer ${isCardsInfused ? 'bg-black/15 accent-[#09090B]' : 'bg-[#1C1D22] accent-[var(--domino-accent)]'}"
+                          class="w-full h-2.5 rounded-lg appearance-none cursor-pointer ${isOled ? 'bg-[#181822] accent-[var(--domino-accent)]' : (isCardsInfused ? 'bg-black/15 accent-[#09090B]' : 'bg-[#1C1D22] accent-[var(--domino-accent)]')}"
                           style="${
-                            isCardsInfused
-                              ? `background: linear-gradient(to right, #09090B 0%, #09090B ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) 100%); /* taste-skill-ignore */`
-                              : `background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, var(--surface-well) ${(loggedHrs / 6) * 100}%, var(--surface-well) 100%); /* taste-skill-ignore */`
+                            isOled
+                              ? `background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, #181822 ${(loggedHrs / 6) * 100}%, #181822 100%); /* taste-skill-ignore */`
+                              : (isCardsInfused
+                                  ? `background: linear-gradient(to right, #09090B 0%, #09090B ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) ${(loggedHrs / 6) * 100}%, rgba(0,0,0,0.18) 100%); /* taste-skill-ignore */`
+                                  : `background: linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(loggedHrs / 6) * 100}%, var(--surface-well) ${(loggedHrs / 6) * 100}%, var(--surface-well) 100%); /* taste-skill-ignore */`)
                           }"
                         />
-                        <div class="flex justify-between text-[11px] font-mono ${isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]'} mt-1.5">
+                        <div class="flex justify-between text-[11px] font-mono ${isOled ? 'text-[var(--text-muted)]' : (isCardsInfused ? 'text-black/70' : 'text-[var(--text-muted)]')} mt-1.5">
                           <span>0.0h</span>
                           <span>1.5h</span>
                           <span>3.0h</span>
@@ -409,7 +419,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           data-set-mins="0"
                           data-block-id="${block.id}"
                           aria-label="Reset logged duration to 0 hours"
-                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                          class="px-2.5 py-1 rounded-full ${isOled ? 'bg-[#181822] border border-white/10 text-[#A1A1AA] hover:text-white' : (isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white')} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                         >
                           Reset (0h)
                         </button>
@@ -418,7 +428,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           data-set-mins="${targetMins}"
                           data-block-id="${block.id}"
                           aria-label="Set logged duration to daily target floor (${targetHrs.toFixed(1)}h)"
-                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/20 border border-black/30 text-[#09090B] font-bold' : 'bg-[#18191E] border border-[var(--domino-accent)]/40 text-[var(--domino-accent)] hover:text-white font-semibold'} text-[11px] btn-tactile whitespace-nowrap"
+                          class="px-2.5 py-1 rounded-full ${isOled ? 'bg-[#181822] border border-[var(--domino-accent)] text-[var(--domino-accent)] font-bold shadow-sm' : (isCardsInfused ? 'bg-black/20 border border-black/30 text-[#09090B] font-bold' : 'bg-[#18191E] border border-[var(--domino-accent)]/40 text-[var(--domino-accent)] hover:text-white font-semibold')} text-[11px] btn-tactile whitespace-nowrap"
                         >
                           Target (${targetHrs.toFixed(1)}h)
                         </button>
@@ -427,7 +437,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           data-step-mins="30"
                           data-block-id="${block.id}"
                           aria-label="Add 30 minutes to logged duration"
-                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                          class="px-2.5 py-1 rounded-full ${isOled ? 'bg-[#181822] border border-white/10 text-[#A1A1AA] hover:text-white' : (isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white')} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                         >
                           +30m
                         </button>
@@ -436,7 +446,7 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           data-step-mins="60"
                           data-block-id="${block.id}"
                           aria-label="Add 1 hour to logged duration"
-                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                          class="px-2.5 py-1 rounded-full ${isOled ? 'bg-[#181822] border border-white/10 text-[#A1A1AA] hover:text-white' : (isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white')} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                         >
                           +1.0h
                         </button>
@@ -445,64 +455,18 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
                           data-set-mins="240"
                           data-block-id="${block.id}"
                           aria-label="Set logged duration to maximum 4 hours"
-                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
-                        >
-                          Max (4h)
-                        </button>
-                      </div>
-                        <button
-                          type="button"
-                          data-set-mins="0"
-                          data-block-id="${block.id}"
-                          aria-label="Reset logged duration to 0 hours"
-                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
-                        >
-                          Reset (0h)
-                        </button>
-                        <button
-                          type="button"
-                          data-set-mins="${targetMins}"
-                          data-block-id="${block.id}"
-                          aria-label="Set logged duration to daily target floor (${targetHrs.toFixed(1)}h)"
-                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/20 border border-black/30 text-[#09090B] font-bold' : 'bg-[#18191E] border border-[var(--domino-accent)]/40 text-[var(--domino-accent)] hover:text-white font-semibold'} text-[11px] btn-tactile whitespace-nowrap"
-                        >
-                          Target (${targetHrs.toFixed(1)}h)
-                        </button>
-                        <button
-                          type="button"
-                          data-step-mins="30"
-                          data-block-id="${block.id}"
-                          aria-label="Add 30 minutes to logged duration"
-                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
-                        >
-                          +30m
-                        </button>
-                        <button
-                          type="button"
-                          data-step-mins="60"
-                          data-block-id="${block.id}"
-                          aria-label="Add 1 hour to logged duration"
-                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
-                        >
-                          +1.0h
-                        </button>
-                        <button
-                          type="button"
-                          data-set-mins="240"
-                          data-block-id="${block.id}"
-                          aria-label="Set logged duration to maximum 4 hours"
-                          class="px-2.5 py-1 rounded-full ${isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white'} text-[11px] font-semibold btn-tactile whitespace-nowrap"
+                          class="px-2.5 py-1 rounded-full ${isOled ? 'bg-[#181822] border border-white/10 text-[#A1A1AA] hover:text-white' : (isCardsInfused ? 'bg-black/10 border border-black/20 text-black/80 hover:bg-black/20' : 'bg-[#18191E] border border-white/[0.08] text-[#A1A1AA] hover:text-white')} text-[11px] font-semibold btn-tactile whitespace-nowrap"
                         >
                           Max (4h)
                         </button>
                       </div>
 
                       <!-- Recessed Bottom Well with Target Floor & Session Trigger -->
-                      <div class="mt-2 flex items-center justify-between gap-3 ${isCardsInfused ? 'bg-black/10 border border-black/15 p-3 rounded-[10px]' : 'recessed-well'}">
+                      <div class="mt-2 flex items-center justify-between gap-3 ${isOled ? 'bg-[#14141C] border border-white/10 p-3 rounded-[10px]' : (isCardsInfused ? 'bg-black/10 border border-black/15 p-3 rounded-[10px]' : 'recessed-well')}">
                         <div>
-                          <div class="text-[11px] ${isCardsInfused ? 'text-black/70 font-semibold' : 'text-[#71717A]'}">Target Floor</div>
-                          <div class="text-[15px] font-bold ${isCardsInfused ? 'text-[#09090B]' : 'text-[#F4F4F6]'} tabular-nums mt-0.5">
-                            ${targetHrs.toFixed(1)} <span class="text-[12px] ${isCardsInfused ? 'text-black/60 font-medium' : 'text-[#71717A] font-normal'}">hrs / day</span>
+                          <div class="text-[11px] ${isOled ? 'text-[var(--text-muted)] font-medium' : (isCardsInfused ? 'text-black/70 font-semibold' : 'text-[#71717A]')}">Target Floor</div>
+                          <div class="text-[15px] font-bold ${isOled ? 'text-[#FFFFFF]' : (isCardsInfused ? 'text-[#09090B]' : 'text-[#F4F4F6]')} tabular-nums mt-0.5">
+                            ${targetHrs.toFixed(1)} <span class="text-[12px] ${isOled ? 'text-[var(--text-muted)] font-normal' : (isCardsInfused ? 'text-black/60 font-medium' : 'text-[#71717A] font-normal')}">hrs / day</span>
                           </div>
                         </div>
 
@@ -695,7 +659,8 @@ function bindDashboardEvents(container) {
       const hours = parseFloat(e.target.value);
       const mins = Math.round(hours * 60);
       setDominoDuration(blockId, activeDateStr, mins);
-      const isInfused = getCardInfusionScope() === 'all';
+      const isLight = document.documentElement.classList.contains('theme-light');
+      const isInfused = isLight && getCardInfusionScope() === 'all';
       slider.style.background = isInfused
         ? `linear-gradient(to right, #09090B 0%, #09090B ${(hours / 6) * 100}%, rgba(0,0,0,0.18) ${(hours / 6) * 100}%, rgba(0,0,0,0.18) 100%)` /* taste-skill-ignore */
         : `linear-gradient(to right, var(--domino-accent) 0%, var(--domino-accent) ${(hours / 6) * 100}%, var(--surface-well) ${(hours / 6) * 100}%, var(--surface-well) 100%)`; /* taste-skill-ignore */

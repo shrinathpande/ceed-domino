@@ -526,15 +526,15 @@ html.theme-oled:not(.theme-light),
 html[data-theme="oled"]:not(.theme-light) {
   --bg-canvas: #000000;
   --ground: #000000;
-  --surface-sheet: #0A0A0C;
-  --surface-card: #0A0A0C;
-  --surface: #0A0A0C;
-  --surface-well: #121216;
-  --surface-peek: #1A1A22;
-  --raised: #121216;
-  --border-subtle: color-mix(in srgb, var(--domino-accent) 18%, rgba(255, 255, 255, 0.08));
-  --border-well: color-mix(in srgb, var(--domino-accent) 12%, rgba(255, 255, 255, 0.05));
-  --border: color-mix(in srgb, var(--domino-accent) 18%, rgba(255, 255, 255, 0.08));
+  --surface-sheet: #0D0E12;
+  --surface-card: #0D0E12;
+  --surface: #0D0E12;
+  --surface-well: #161720;
+  --surface-peek: #1E1F28;
+  --raised: #161720;
+  --border-subtle: color-mix(in srgb, var(--domino-accent) 35%, rgba(255, 255, 255, 0.10));
+  --border-well: color-mix(in srgb, var(--domino-accent) 22%, rgba(255, 255, 255, 0.06));
+  --border: color-mix(in srgb, var(--domino-accent) 35%, rgba(255, 255, 255, 0.10));
   --text-primary: #FFFFFF;
   --text-secondary: #A1A1AA;
   --text-muted: #71717A;
@@ -543,21 +543,22 @@ html[data-theme="oled"]:not(.theme-light) {
 
 html.theme-oled:not(.theme-light) .bento-card,
 html[data-theme="oled"]:not(.theme-light) .bento-card {
-  background-color: #0A0A0C;
-  border: 1px solid color-mix(in srgb, var(--domino-accent) 22%, rgba(255, 255, 255, 0.08));
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 1), 0 4px 24px -2px rgba(0, 0, 0, 0.8);
+  background-color: #0D0E12;
+  border: 1px solid color-mix(in srgb, var(--domino-accent) 38%, rgba(255, 255, 255, 0.10));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 1), 0 4px 24px -2px rgba(0, 0, 0, 0.8), 0 0 20px -8px color-mix(in srgb, var(--domino-accent) 28%, transparent);
   border-radius: 14px;
 }
 
 html.theme-oled:not(.theme-light) .bento-card:hover,
 html[data-theme="oled"]:not(.theme-light) .bento-card:hover {
-  border-color: color-mix(in srgb, var(--domino-accent) 45%, rgba(255, 255, 255, 0.15));
+  border-color: color-mix(in srgb, var(--domino-accent) 65%, rgba(255, 255, 255, 0.25));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 1), 0 6px 28px -2px rgba(0, 0, 0, 0.9), 0 0 25px -4px color-mix(in srgb, var(--domino-accent) 45%, transparent);
 }
 
 html.theme-oled:not(.theme-light) .recessed-well,
 html[data-theme="oled"]:not(.theme-light) .recessed-well {
-  background-color: #121216;
-  border: 1px solid color-mix(in srgb, var(--domino-accent) 15%, rgba(255, 255, 255, 0.06));
+  background-color: #161720;
+  border: 1px solid color-mix(in srgb, var(--domino-accent) 22%, rgba(255, 255, 255, 0.08));
   border-radius: 10px;
 }
 
@@ -566,60 +567,57 @@ html[data-theme="oled"]:not(.theme-light) header#topInstrumentHeader {
   background-color: rgba(0, 0, 0, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid color-mix(in srgb, var(--domino-accent) 20%, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid color-mix(in srgb, var(--domino-accent) 30%, rgba(255, 255, 255, 0.10));
 }
 
 html.theme-oled:not(.theme-light) nav,
 html[data-theme="oled"]:not(.theme-light) nav {
-  background-color: #0A0A0C;
-  border: 1px solid color-mix(in srgb, var(--domino-accent) 18%, rgba(255, 255, 255, 0.08));
+  background-color: #0D0E12;
+  border: 1px solid color-mix(in srgb, var(--domino-accent) 30%, rgba(255, 255, 255, 0.10));
 }
 
 /* OLED Hero Card & Infused Cards Dark Treatment with User Accent Borders */
 html.theme-oled:not(.theme-light) .ron-top-sheet {
-  background-color: #0A0A0C !important;
-  border: 1px solid color-mix(in srgb, var(--domino-accent) 30%, rgba(255, 255, 255, 0.08)) !important;
+  background-color: #0D0E12 !important;
+  border: 1px solid color-mix(in srgb, var(--domino-accent) 45%, rgba(255, 255, 255, 0.12)) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 1), 0 4px 24px -2px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 1), 0 4px 24px -2px rgba(0, 0, 0, 0.8), 0 0 24px -6px color-mix(in srgb, var(--domino-accent) 35%, transparent) !important;
 }
 
-html.theme-oled:not(.theme-light) .ron-top-sheet h1,
-html.theme-oled:not(.theme-light) .ron-top-sheet .text-\[\#09090B\] {
-  color: #FFFFFF !important;
+html.theme-oled:not(.theme-light) .bg-barcode-hatch-accent {
+  background-image: repeating-linear-gradient(90deg, var(--domino-accent) 0px, var(--domino-accent) 2px, transparent 2px, transparent 6px) !important;
+  background-color: color-mix(in srgb, var(--domino-accent) 20%, #161720) !important;
 }
 
-html.theme-oled:not(.theme-light) .ron-top-sheet .text-black\/70,
-html.theme-oled:not(.theme-light) .ron-top-sheet .text-black\/40 {
+/* Status Pills in OLED Mode */
+html.theme-oled:not(.theme-light) .pill-pending {
+  background-color: rgba(251, 191, 36, 0.14) !important;
+  border-color: rgba(251, 191, 36, 0.40) !important;
+  color: #FBBF24 !important;
+}
+
+html.theme-oled:not(.theme-light) .pill-inprogress {
+  background-color: rgba(56, 152, 255, 0.14) !important;
+  border-color: rgba(56, 152, 255, 0.40) !important;
+  color: #60A5FA !important;
+}
+
+html.theme-oled:not(.theme-light) .pill-completed {
+  background-color: rgba(16, 185, 129, 0.14) !important;
+  border-color: rgba(16, 185, 129, 0.40) !important;
+  color: #34D399 !important;
+}
+
+html.theme-oled:not(.theme-light) .pill-failed {
+  background-color: rgba(239, 68, 68, 0.14) !important;
+  border-color: rgba(239, 68, 68, 0.40) !important;
+  color: #F87171 !important;
+}
+
+html.theme-oled:not(.theme-light) .pill-routine {
+  background-color: rgba(161, 161, 170, 0.12) !important;
+  border-color: rgba(161, 161, 170, 0.30) !important;
   color: #A1A1AA !important;
-}
-
-html.theme-oled:not(.theme-light) .ron-top-sheet .border-black\/20 {
-  border-color: rgba(255, 255, 255, 0.12) !important;
-}
-
-html.theme-oled:not(.theme-light) .ron-top-sheet #btn-hero-countdown {
-  color: var(--domino-accent) !important;
-}
-
-html.theme-oled:not(.theme-light) .card-infused {
-  background-color: #0A0A0C !important;
-  color: #FFFFFF !important;
-  border: 1px solid color-mix(in srgb, var(--domino-accent) 26%, rgba(255, 255, 255, 0.08)) !important;
-}
-
-html.theme-oled:not(.theme-light) .card-infused h2,
-html.theme-oled:not(.theme-light) .card-infused .text-\[\#09090B\] {
-  color: #FFFFFF !important;
-}
-
-html.theme-oled:not(.theme-light) .card-infused .text-black\/60,
-html.theme-oled:not(.theme-light) .card-infused .text-black\/70,
-html.theme-oled:not(.theme-light) .card-infused .text-black\/80 {
-  color: #A1A1AA !important;
-}
-
-html.theme-oled:not(.theme-light) .card-infused .border-black\/25 {
-  border-color: color-mix(in srgb, var(--domino-accent) 35%, rgba(255, 255, 255, 0.12)) !important;
 }
 
 /* Fluid pointer-down tactile press */

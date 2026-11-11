@@ -1403,4 +1403,49 @@ Conducted comprehensive multi-viewport stress testing under touch emulation and 
 
 ---
 
+## 36. Dev Dock Removal, OLED Color Invisibility Resolution & Kinetic Domino Chain Prototype
+
+### 36.1 Complete Removal of Highlighted Dev Fixture Dock
+- Removed the `#dev-break-ui-dock` segmented control dock (`DATA: Demo | Worst case | Empty | One | 1,000 rows`) that was mounted at bottom center.
+- Cleaned up imports and invocations in [`src/app.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/app.js) and safe no-op implementation in [`src/utils/dev-fixtures.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/utils/dev-fixtures.js).
+
+### 36.2 Resolution of OLED Mode Color Invisibility
+- **Root Cause Analysis**: The Planning Hero card and domino card sub-elements previously contained hardcoded dark ink classes (`bg-[#09090B]`, `bg-barcode-hatch-dark`, `bg-black/15`, `text-[#09090B]`, `border-black/25`) from the original light-pastel design system. When the card ground was switched to `#0A0A0C` obsidian, these elements became pitch black on pitch black (invisible).
+- **Planning Hero Gauge**:
+  - Replaced invisible black bars with dynamic user-color illumination:
+    - **Completed Segment**: Solid luminous fill using `var(--domino-accent)` with soft ambient bloom.
+    - **In-Progress Segment**: Dedicated `bg-barcode-hatch-accent` with repeating lines illuminated by `var(--domino-accent)`.
+    - **Remaining Floor**: Sleek `#181822` obsidian well with subtle border.
+  - Sub-metrics and countdown: Submetric dots and ticks illuminated with `var(--domino-accent)` and primary numbers in `#FFFFFF`.
+- **Domino Cards & Controls**:
+  - Card progress track: upgraded to `#181822` well with `var(--domino-accent)` glowing progress fill.
+  - Checkmark toggle: pending state displays an active accent border (`var(--domino-accent)/40`) and accent icon; completed state fills in solid `var(--domino-accent)`.
+  - Time Adjuster Drawer: stepper buttons and slider tracks illuminate with `var(--domino-accent)` gradient on dark `#181822` ground.
+  - Eliminated accidental duplicate preset buttons in the drawer.
+
+### 36.3 New Feature Prototype: Kinetic Domino Chain Reaction Streak
+- Implemented [`src/components/kinetic-domino-chain.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/components/kinetic-domino-chain.js) and mounted it at the top of [`src/views/stats.js`](file:///c:/Users/SHRINATH/Downloads/CEED%20DOMINO/src/views/stats.js).
+- **Features**:
+  - Interactive HTML5 canvas rendering an 87-day domino kinetic track leading to the carved golden stone **CEED 2027 Monolith**.
+  - All past completed days stand fallen at a 56° cascade resting angle, highlighted in the user's selected accent color.
+  - Today stands at the active tipping point (28° angle) with a glowing beacon.
+  - Interactive **TEST CASCADE** button replays the sequential domino topple animation with Web Audio API mechanical relay clicks (`playRelayClick()`) and victory chime.
+  - Interactive hover/tap tooltip displays exact day numbers, dates, and logged hours.
+  - Live telemetry readout: "X of 87 Dominoes Knocked Down • Yd left to CEED Monolith".
+
+### 36.4 Multi-Route Chrome Audit & Verification
+- **Audit Metrics**:
+  - `/` (Today): `docOverflowX: false`, `clientWidth: 412`, `scrollWidth: 412`, `dockPresent: false`
+  - `/stats` (Stats): `docOverflowX: false`, `clientWidth: 412`, `scrollWidth: 412`, `dockPresent: false`
+  - `/studio` (Studio Proctor): `docOverflowX: false`, `clientWidth: 412`, `scrollWidth: 412`, `dockPresent: false`
+  - `/settings` (Config): `docOverflowX: false`, `clientWidth: 412`, `scrollWidth: 412`, `dockPresent: false`
+  - Console Exceptions: `0`
+- **Screenshots Generated**:
+  - `fixed_oled_today_lavender.png`: Luminous lavender accent illumination in Planning Hero gauge and cards.
+  - `fixed_oled_today_mint.png`: Real-time transition to radiant Sage Mint accent.
+  - `prototype_stats_kinetic_chain.png`: Kinetic Domino Chain Reaction canvas stage on Stats page.
+  - `fixed_oled_studio.png` & `fixed_oled_settings.png`: Flawless OLED visual parity across views.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

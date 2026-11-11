@@ -3,6 +3,7 @@ import { getState, getBlocks, isDominoTask } from '../core/state.js';
 import { exportTelemetryCSV, exportTelemetryJSON } from '../core/telemetry.js';
 import { playRelayClick } from '../utils/sound.js';
 import { formatDateLocal } from '../utils/dates.js';
+import { renderKineticDominoChain } from '../components/kinetic-domino-chain.js';
 
 export function renderStats(container) {
   const state = getState();
@@ -290,6 +291,12 @@ export function renderStats(container) {
 
     </div>
   `;
+
+  // Mount Kinetic Domino Chain Reaction Streak Prototype
+  const statsRoot = container.firstElementChild;
+  if (statsRoot) {
+    renderKineticDominoChain(statsRoot);
+  }
 
   container.querySelectorAll('[data-matrix-day]').forEach(el => {
     const inspectDay = () => {

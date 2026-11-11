@@ -101,83 +101,8 @@ export function isDevEnvironment() {
   );
 }
 
-/** Mount the floating segmented control dock at bottom center */
+/** Remove the floating dev dock completely */
 export function mountDevFixtureDock() {
-  if (!isDevEnvironment()) return;
-  let dock = document.getElementById('dev-break-ui-dock');
-  if (!dock) {
-    dock = document.createElement('div');
-    dock.id = 'dev-break-ui-dock';
-    document.body.appendChild(dock);
-  }
-
-  const current = getDevDataset();
-  const options = [
-    { id: 'demo', label: 'Demo' },
-    { id: 'worst', label: 'Worst case' },
-    { id: 'empty', label: 'Empty' },
-    { id: 'one', label: 'One' },
-    { id: '1000', label: '1,000 rows' }
-  ];
-
-  dock.innerHTML = `
-    <div style="
-      position: fixed;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 999999;
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      background: rgba(18, 18, 22, 0.92);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      padding: 3px;
-      border-radius: 9999px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 11px;
-      font-weight: 500;
-      user-select: none;
-    ">
-      <div style="padding: 0 8px 0 6px; color: #71717A; font-family: monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.05em;">
-        DATA:
-      </div>
-      ${options.map(opt => {
-        const isActive = opt.id === current;
-        return `
-          <button
-            type="button"
-            data-dev-dataset="${opt.id}"
-            style="
-              padding: 4px 10px;
-              border-radius: 9999px;
-              border: none;
-              cursor: pointer;
-              background: ${isActive ? '#FFFFFF' : 'transparent'};
-              color: ${isActive ? '#09090B' : '#A1A1AA'};
-              font-weight: ${isActive ? '700' : '500'};
-              font-size: 11px;
-              transition: all 120ms ease;
-              outline: none;
-              white-space: nowrap;
-            "
-          >
-            ${opt.label}
-          </button>
-        `;
-      }).join('')}
-    </div>
-  `;
-
-  dock.querySelectorAll('[data-dev-dataset]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const targetMode = btn.getAttribute('data-dev-dataset');
-      setDevDataset(targetMode);
-      mountDevFixtureDock();
-    });
-  });
+  const existing = document.getElementById('dev-break-ui-dock');
+  if (existing) existing.remove();
 }
