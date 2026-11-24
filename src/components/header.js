@@ -221,7 +221,7 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
   if (!headerEl) {
     headerEl = document.createElement('header');
     headerEl.id = 'topInstrumentHeader';
-    headerEl.className = 'sticky top-0 z-50 bg-[var(--bg-canvas)]/90 backdrop-blur-md border-b border-[var(--border-subtle)] select-none pt-[env(safe-area-inset-top,0px)] transition-colors duration-200';
+    headerEl.className = 'sticky top-0 z-40 bg-[var(--bg-canvas)]/92 backdrop-blur-xl border-b border-[var(--border-subtle)] select-none pt-[env(safe-area-inset-top,10px)] transition-colors duration-200';
     container.prepend(headerEl);
   }
 
@@ -231,19 +231,19 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
 
   headerEl.innerHTML = `
     <div class="max-w-xl md:max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-2 stagger-item stagger-delay-0">
-      <!-- Row 1: Telemetry, Countdown Pill, Sun/Moon Theme Toggle & Streak -->
-      <div class="flex items-center justify-between mb-2">
-        <!-- Left: Day of XX + Timeline Switcher + Interactive [XXd to CEED] Pill -->
+      <!-- Unified iOS Navigation Bar Row -->
+      <div class="flex items-center justify-between gap-2">
+        <!-- Left: Day XX of YY + Timeline Switcher -->
         <div class="flex items-center gap-1.5 sm:gap-2">
-          <span class="text-xs sm:text-sm font-semibold text-[var(--text-primary)] tracking-tight">
-            Day <span class="font-bold text-[var(--domino-accent)]">${String(dayIndex + 1).padStart(2, '0')}</span> <span class="text-[var(--text-secondary)] font-normal text-[11px] sm:text-xs">of ${totalDays}</span>
+          <span class="text-sm sm:text-base font-bold text-[var(--text-primary)] tracking-tight">
+            Day <span class="font-extrabold text-[var(--domino-accent)]">${String(dayIndex + 1).padStart(2, '0')}</span> <span class="text-[var(--text-secondary)] font-normal text-xs sm:text-sm">of ${totalDays}</span>
           </span>
           <button
             id="btn-timeline-toggle"
             type="button"
-            class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold tracking-wider uppercase border transition-all cursor-pointer select-none active:scale-95 ${
+            class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase border transition-all cursor-pointer select-none ios-spring ${
               isMitra
-                ? 'bg-[#F59E0B]/15 text-[#F59E0B] border-[#F59E0B]/35 hover:bg-[#F59E0B]/25'
+                ? 'bg-[#F59E0B]/15 text-[#F59E0B] border-[#F59E0B]/40 hover:bg-[#F59E0B]/25'
                 : 'bg-[var(--surface-well)] text-[var(--text-secondary)] border-[var(--border-subtle)] hover:text-[var(--text-primary)]'
             }"
             title="Toggle between 54-Day MITRA AIR 1 Sprint and 87-Day Legacy Campaign"
@@ -251,44 +251,45 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
           >
             ${isMitra ? 'MITRA 54' : 'CEED 87'}
           </button>
+        </div>
+
+        <!-- Right: Countdown Pill + Sun/Moon Toggle + Streak Pill -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
           <button
             id="btn-exam-countdown"
             type="button"
-            class="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 min-h-[28px] sm:min-h-[32px] rounded-full text-[10px] sm:text-[11px] font-medium bg-[var(--surface-well)] hover:opacity-90 text-[var(--text-secondary)] hover:text-[var(--domino-accent)] border border-[var(--border-subtle)] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none active:scale-95"
+            class="inline-flex items-center px-2.5 py-1 min-h-[30px] rounded-full text-[10.5px] sm:text-[11px] font-medium bg-[var(--surface-well)] hover:opacity-90 text-[var(--text-secondary)] hover:text-[var(--domino-accent)] border border-[var(--border-subtle)] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none ios-spring"
             title="Tap for exact CEED exam timing & live countdown"
             aria-label="Toggle exact countdown to CEED exam"
           >
             <span id="countdown-pill-text" class="tabular-nums font-mono">${pillLabel}</span>
           </button>
-        </div>
 
-        <!-- Right: Sun/Moon Theme Toggle + Streak Pill (Shield Completely Removed) -->
-        <div class="flex items-center gap-2">
-          <!-- Night/Light Mode Toggle Button -->
+          <!-- Sun/Moon Mode Toggle Button -->
           <button
             id="btn-color-mode-toggle"
             type="button"
             aria-label="Toggle between Light and Night display modes"
-            class="w-[36px] h-[36px] sm:w-[32px] sm:h-[32px] rounded-full flex items-center justify-center bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer btn-tactile"
+            class="w-[30px] h-[30px] sm:w-[32px] sm:h-[32px] rounded-full flex items-center justify-center bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer ios-spring"
             title="${isLight ? 'Switch to Night Mode' : 'Switch to Light Mode'}"
           >
-            ${isLight ? icons.moon(14) : icons.sun(14)}
+            ${isLight ? icons.moon(13) : icons.sun(13)}
           </button>
 
-          <!-- Streak Pill with 2-Tone SVG Flame -->
-          <div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11.5px] font-bold bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-primary)]">
-            <span>${icons.flame(13)}</span>
+          <!-- Streak Pill with Flame -->
+          <div class="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-primary)]">
+            <span>${icons.flame(12)}</span>
             <span>${telemetry.streak}d</span>
           </div>
         </div>
       </div>
 
-      <!-- Row 2: Sticky 5-Tab Navigation Bar (Today, Goal [AIR 1], Stats, Studio, Config) -->
-      <nav class="grid grid-cols-5 gap-0.5 sm:gap-1 p-1 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)]" aria-label="Main Navigation">
+      <!-- Desktop-Only Nav (On Mobile, iOS Bottom Tab Bar handles navigation) -->
+      <nav class="hidden md:grid grid-cols-5 gap-1 p-1 mt-2 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)]" aria-label="Desktop Navigation">
         ${tabs.map(tab => `
           <a
             href="${tab.hash}"
-            class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2 px-1 rounded-full text-[11px] sm:text-[12px] transition-all btn-tactile ${
+            class="flex items-center justify-center gap-1.5 py-1.5 px-1 rounded-full text-[12px] transition-all ${
               tab.isActive
                 ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium'
@@ -298,7 +299,7 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
             ${tab.icon}
             <span class="truncate">${tab.label}</span>
             ${tab.badge ? `
-              <span class="hidden sm:inline-flex items-center px-1 py-0.2 rounded text-[8px] font-mono font-black uppercase leading-none ${
+              <span class="inline-flex items-center px-1 py-0.2 rounded text-[8px] font-mono font-black uppercase leading-none ${
                 tab.isActive
                   ? 'bg-black/25 text-[#09090B]'
                   : 'bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/40'

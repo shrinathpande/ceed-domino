@@ -629,4 +629,62 @@ html[data-theme="oled"] .btn-tactile:active {
   transition: transform 100ms cubic-bezier(0.2, 0, 0, 1);
 }
 
+/* ==========================================================================
+   iPhone 12 & Mobile iOS Native Performance & Ergonomics (Apple HIG + Emil Kowalski)
+   ========================================================================== */
+
+html, body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent iOS Safari auto-zoom on input focus (Hard rule: >= 16px) */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Touch manipulation optimization */
+button, a, input, select, textarea, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Apple Inset-Grouped Surface System */
+.ios-inset-group {
+  background-color: #0D0E12;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.ios-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 12px 14px;
+}
+
+.ios-divider {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Minimum 44x44pt touch target guard */
+.tap-target-44 {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* iOS Spring Press */
+.ios-spring {
+  transition: transform 120ms cubic-bezier(0.25, 1, 0.5, 1), opacity 120ms ease;
+}
+.ios-spring:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
 

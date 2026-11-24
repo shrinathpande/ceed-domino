@@ -8,9 +8,10 @@ import {
   isDominoTask,
   setDominoDuration,
   toggleDominoComplete,
-  getCardInfusionScope
+  getCardInfusionScope,
+  getTimelineMode
 } from '../core/state.js';
-import { getTodayStr, getCampaignDayNumber, getExamCountdown, formatDateLocal } from '../utils/dates.js';
+import { getTodayStr, getCampaignDayNumber, getTotalDays, getExamCountdown, formatDateLocal } from '../utils/dates.js';
 import { playRelayClick, playVictoryChime } from '../utils/sound.js';
 import { renderStatusPill } from '../components/status-pill.js';
 import { showExamToast } from '../components/header.js';
@@ -74,6 +75,8 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
   const isOled = !isLight;
   const isCardsInfused = isLight && getCardInfusionScope() === 'all';
 
+  const totalDays = getTotalDays();
+  const isMitra = getTimelineMode() === 'mitra54';
   const mandatoryBlocks = blocks.filter(isDominoTask);
   const lockedCount = mandatoryBlocks.filter(b => rec.completed.includes(b.id)).length;
 
@@ -165,14 +168,14 @@ export function renderDashboard(container, onSettings = null, targetDate = null)
             Planning
           </h1>
           <div class="pl-4 ${isOled ? 'border-l border-white/15' : 'border-l border-black/20'} text-right">
-            <div class="text-[15px] font-bold ${isOled ? 'text-[#FFFFFF]' : 'text-[#09090B]'} leading-tight">CEED Campaign</div>
+            <div class="text-[15px] font-bold ${isOled ? 'text-[#FFFFFF]' : 'text-[#09090B]'} leading-tight">${isMitra ? 'MITRA AIR 1 Sprint' : 'CEED Campaign'}</div>
             <button
               type="button"
               id="btn-hero-countdown"
               class="text-[12px] ${isOled ? 'text-[var(--domino-accent)] hover:underline' : 'text-black/70 hover:text-black'} font-semibold tabular-nums mt-0.5 transition-colors cursor-pointer text-right block ml-auto"
               title="Tap for exact CEED exam timing & countdown"
             >
-              Day ${dayNum} of 87 • ${countdown.days}d left
+              Day ${dayNum} of ${totalDays} • ${countdown.days}d left
             </button>
           </div>
         </div>

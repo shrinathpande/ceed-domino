@@ -59,13 +59,13 @@ export function renderGoalView(container) {
   container.innerHTML = `
     <div id="mitraGoalShell" class="w-full max-w-xl md:max-w-4xl mx-auto px-3 sm:px-6 pt-1 pb-16 select-none">
       
-      <!-- Sticky Segmented Sub-View Switcher -->
-      <div class="sticky top-[88px] sm:top-[92px] z-40 bg-[var(--bg-canvas)]/95 backdrop-blur-md pt-1 pb-2.5 mb-3 border-b border-[var(--border-subtle)]">
-        <div class="grid grid-cols-5 gap-1 p-1 rounded-2xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
+      <!-- Sticky Segmented Sub-View Switcher (Apple Inset Segmented Control) -->
+      <div class="sticky top-[48px] md:top-[84px] z-30 bg-[#000000]/92 backdrop-blur-xl pt-1 pb-2 mb-3 border-b border-white/[0.08]">
+        <div class="grid grid-cols-5 gap-1 p-1 rounded-2xl bg-[#121318] border border-white/[0.08]">
           <button
             type="button"
             data-subview="command"
-            class="mitra-nav-pill py-2 px-1 rounded-xl text-[10.5px] sm:text-xs font-semibold text-center transition-all ${
+            class="mitra-nav-pill min-h-[40px] py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
               _activeSubView === 'command'
                 ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -76,7 +76,7 @@ export function renderGoalView(container) {
           <button
             type="button"
             data-subview="clock"
-            class="mitra-nav-pill py-2 px-1 rounded-xl text-[10.5px] sm:text-xs font-semibold text-center transition-all ${
+            class="mitra-nav-pill min-h-[40px] py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
               _activeSubView === 'clock'
                 ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -87,7 +87,7 @@ export function renderGoalView(container) {
           <button
             type="button"
             data-subview="conquest"
-            class="mitra-nav-pill py-2 px-1 rounded-xl text-[10.5px] sm:text-xs font-semibold text-center transition-all ${
+            class="mitra-nav-pill min-h-[40px] py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
               _activeSubView === 'conquest'
                 ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -98,7 +98,7 @@ export function renderGoalView(container) {
           <button
             type="button"
             data-subview="roadmap"
-            class="mitra-nav-pill py-2 px-1 rounded-xl text-[10.5px] sm:text-xs font-semibold text-center transition-all ${
+            class="mitra-nav-pill min-h-[40px] py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
               _activeSubView === 'roadmap'
                 ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -109,7 +109,7 @@ export function renderGoalView(container) {
           <button
             type="button"
             data-subview="scorecard"
-            class="mitra-nav-pill py-2 px-1 rounded-xl text-[10.5px] sm:text-xs font-semibold text-center transition-all ${
+            class="mitra-nav-pill min-h-[40px] py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
               _activeSubView === 'scorecard'
                 ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -817,9 +817,9 @@ function renderScorecardSubView(dayIndex) {
                       <div class="text-[9px] text-[var(--text-secondary)] line-clamp-1 mt-0.5">${c.desc}</div>
                     </div>
                     <div class="flex items-center justify-between mt-2 pt-1 border-t border-[var(--border-subtle)]">
-                      <button type="button" class="btn-rubric-dec text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 active:scale-95" data-qid="${q.id}" data-cid="${c.id}">-</button>
-                      <span id="val_${q.id}_${c.id}" class="font-mono font-bold text-xs text-[var(--text-primary)]">${scores[c.id]}</span>
-                      <button type="button" class="btn-rubric-inc text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 active:scale-95" data-qid="${q.id}" data-cid="${c.id}">+</button>
+                      <button type="button" class="btn-rubric-dec min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl bg-white/[0.08] text-white active:scale-95 ios-spring text-base font-bold" data-qid="${q.id}" data-cid="${c.id}">-</button>
+                      <span id="val_${q.id}_${c.id}" class="font-mono font-bold text-sm text-[var(--text-primary)]">${scores[c.id]}</span>
+                      <button type="button" class="btn-rubric-inc min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl bg-white/[0.08] text-white active:scale-95 ios-spring text-base font-bold" data-qid="${q.id}" data-cid="${c.id}">+</button>
                     </div>
                   </div>
                 `).join('')}
@@ -862,42 +862,42 @@ function renderScorecardSubView(dayIndex) {
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div>
             <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Date</label>
-            <input type="date" id="sc_date" value="${existingCard.date || todayStr}" class="w-full bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] focus:outline-none" />
+            <input type="date" id="sc_date" value="${existingCard.date || todayStr}" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] text-base focus:outline-none" />
           </div>
           <div>
             <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Day Number</label>
-            <input type="number" id="sc_day" value="${existingCard.dayNumber || dayIndex + 1}" min="1" max="54" class="w-full bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] focus:outline-none" />
+            <input type="number" id="sc_day" value="${existingCard.dayNumber || dayIndex + 1}" min="1" max="54" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] text-base focus:outline-none" />
           </div>
           <div>
             <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Sleep (Hours)</label>
-            <input type="number" step="0.5" id="sc_sleep" value="${existingCard.sleepHours || 7.5}" class="w-full bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] focus:outline-none" />
+            <input type="number" step="0.5" id="sc_sleep" value="${existingCard.sleepHours || 7.5}" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] text-base focus:outline-none" />
           </div>
           <div>
             <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Rush Errors (&lt;30s)</label>
-            <input type="number" id="sc_rush" value="${existingCard.partASync?.rushedErrorsUnder30s || 0}" class="w-full bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] focus:outline-none" />
+            <input type="number" id="sc_rush" value="${existingCard.partASync?.rushedErrorsUnder30s || 0}" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] text-base focus:outline-none" />
           </div>
         </div>
 
-        <!-- Bio Checks -->
-        <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] flex flex-wrap gap-3">
-          <label class="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="sc_wake" ${existingCard.wake0600Hit ? 'checked' : ''} class="accent-[var(--domino-accent)]" />
+        <!-- Bio Checks (Ergonomic 44pt Touch Targets) -->
+        <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <label class="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/[0.06] cursor-pointer ios-spring min-h-[44px]">
+            <input type="checkbox" id="sc_wake" ${existingCard.wake0600Hit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
             <span class="text-[11px] text-[var(--text-primary)]">06:00 Solar Wake</span>
           </label>
-          <label class="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="sc_ex" ${existingCard.exercise90mHit ? 'checked' : ''} class="accent-[var(--domino-accent)]" />
+          <label class="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/[0.06] cursor-pointer ios-spring min-h-[44px]">
+            <input type="checkbox" id="sc_ex" ${existingCard.exercise90mHit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
             <span class="text-[11px] text-[var(--text-primary)]">90m Exercise</span>
           </label>
-          <label class="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="sc_med" ${existingCard.meditation15mHit ? 'checked' : ''} class="accent-[var(--domino-accent)]" />
+          <label class="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/[0.06] cursor-pointer ios-spring min-h-[44px]">
+            <input type="checkbox" id="sc_med" ${existingCard.meditation15mHit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
             <span class="text-[11px] text-[var(--text-primary)]">15m Meditation</span>
           </label>
-          <label class="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="sc_caff" ${existingCard.caffeineCutoff1330Held ? 'checked' : ''} class="accent-[var(--domino-accent)]" />
-            <span class="text-[11px] text-[var(--text-primary)]">13:30 Caffeine Cutoff</span>
+          <label class="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/[0.06] cursor-pointer ios-spring min-h-[44px]">
+            <input type="checkbox" id="sc_caff" ${existingCard.caffeineCutoff1330Held ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
+            <span class="text-[11px] text-[var(--text-primary)]">13:30 Caffeine</span>
           </label>
-          <label class="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="sc_nap" ${existingCard.powerNap25mHit ? 'checked' : ''} class="accent-[var(--domino-accent)]" />
+          <label class="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/[0.06] cursor-pointer ios-spring min-h-[44px] col-span-2 sm:col-span-1">
+            <input type="checkbox" id="sc_nap" ${existingCard.powerNap25mHit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
             <span class="text-[11px] text-[var(--text-primary)]">25m Power Nap</span>
           </label>
         </div>
@@ -905,12 +905,12 @@ function renderScorecardSubView(dayIndex) {
         <!-- Part A & B Scores -->
         <div class="grid grid-cols-2 gap-2">
           <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-            <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Part A Total Score (/150)</label>
-            <input type="number" id="sc_partA" value="${existingCard.partASync?.totalPartA || 114}" min="0" max="150" class="w-full bg-black/60 border border-[var(--border-subtle)] rounded-lg px-2 py-1 font-mono text-sm text-[var(--text-primary)] font-bold focus:outline-none" />
+            <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Part A Total (/150)</label>
+            <input type="number" id="sc_partA" value="${existingCard.partASync?.totalPartA || 114}" min="0" max="150" class="w-full min-h-[44px] bg-black/60 border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 font-mono text-base text-[var(--text-primary)] font-bold focus:outline-none" />
           </div>
           <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-            <label class="block text-[10px] font-mono text-[#F59E0B] uppercase mb-1">Part B Total Score (/100)</label>
-            <input type="number" id="sc_partB" value="${existingCard.partBSyncRubric?.totalPartB || 84}" min="0" max="100" class="w-full bg-black/60 border border-[var(--border-subtle)] rounded-lg px-2 py-1 font-mono text-sm text-[#F59E0B] font-bold focus:outline-none" />
+            <label class="block text-[10px] font-mono text-[#F59E0B] uppercase mb-1">Part B Total (/100)</label>
+            <input type="number" id="sc_partB" value="${existingCard.partBSyncRubric?.totalPartB || 84}" min="0" max="100" class="w-full min-h-[44px] bg-black/60 border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 font-mono text-base text-[#F59E0B] font-bold focus:outline-none" />
           </div>
         </div>
 
@@ -918,15 +918,15 @@ function renderScorecardSubView(dayIndex) {
         <div>
           <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Top 3 Error Patterns Today</label>
           <div class="space-y-1">
-            <input type="text" id="sc_err1" value="${existingCard.top3ErrorPatterns?.[0] || ''}" placeholder="1. e.g. Rushed MSQ 3rd option without proof" class="w-full bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-xs text-[var(--text-primary)] focus:outline-none" />
-            <input type="text" id="sc_err2" value="${existingCard.top3ErrorPatterns?.[1] || ''}" placeholder="2. e.g. Perspective horizon line curved at edges" class="w-full bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-xs text-[var(--text-primary)] focus:outline-none" />
-            <input type="text" id="sc_err3" value="${existingCard.top3ErrorPatterns?.[2] || ''}" placeholder="3. e.g. Off-by-one in hollow cylinder surface count" class="w-full bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-xs text-[var(--text-primary)] focus:outline-none" />
+            <input type="text" id="sc_err1" value="${existingCard.top3ErrorPatterns?.[0] || ''}" placeholder="1. e.g. Rushed MSQ 3rd option without proof" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-base sm:text-xs text-[var(--text-primary)] focus:outline-none" />
+            <input type="text" id="sc_err2" value="${existingCard.top3ErrorPatterns?.[1] || ''}" placeholder="2. e.g. Perspective horizon line curved at edges" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-base sm:text-xs text-[var(--text-primary)] focus:outline-none" />
+            <input type="text" id="sc_err3" value="${existingCard.top3ErrorPatterns?.[2] || ''}" placeholder="3. e.g. Off-by-one in hollow cylinder surface count" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-base sm:text-xs text-[var(--text-primary)] focus:outline-none" />
           </div>
         </div>
 
         <div>
           <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Tomorrow's Single Priority Fix</label>
-          <input type="text" id="sc_fix" value="${existingCard.tomorrowSinglePriorityFix || ''}" placeholder="e.g. 22-minute hard pen-lift on Q1 and strict 2-option MSQ ceiling." class="w-full bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-xs text-[#F59E0B] focus:outline-none" />
+          <input type="text" id="sc_fix" value="${existingCard.tomorrowSinglePriorityFix || ''}" placeholder="e.g. 22-minute hard pen-lift on Q1 and strict 2-option MSQ ceiling." class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-base sm:text-xs text-[#F59E0B] focus:outline-none" />
         </div>
       </form>
     </div>

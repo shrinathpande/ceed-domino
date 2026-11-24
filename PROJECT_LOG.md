@@ -1531,4 +1531,57 @@ Conducted comprehensive multi-viewport stress testing under touch emulation and 
 
 ---
 
+## 38. iPhone 12 Mobile iOS Ergonomics, Bottom Tab Bar & Inset-Grouped Decluttering
+
+### 38.1 Skill Ingestion & Mobile Ergonomics Audit
+- Ingested 4 specialized mobile skills:
+  - `mobile-ios-design` (Apple Human Interface Guidelines, SwiftUI-style clarity, deference, depth, TabView, SF Symbols).
+  - `mobile-native` (Emil Kowalski's mobile-native philosophy: 16px input zoom prevention, -webkit-tap-highlight-color removal, 100dvh, safe area insets).
+  - `mobile-app-ui-design` (60/30/10 color rules, 8-point grid, thumb zone ergonomics, peak-end delight).
+  - `antislop-layoutmobile` (anti-slop mobile layout standards, no desktop squished into phone, 44pt tap targets, zero horizontal leaks).
+- Identified root causes of visual clutter on iPhone 12 (`390px × 844px`):
+  - Top header previously packed both status metrics AND a 5-tab pill bar in a narrow 390px row, creating a cramped and top-heavy viewport.
+  - Multi-nested borders ("boxes-inside-boxes") in Goal and Today cards added unnecessary visual noise without adding useful data.
+
+### 38.2 Native iOS Bottom Tab Bar (`src/components/bottom-tab-bar.js`)
+- Created a fixed, translucent frosted glass bottom tab bar anchored directly in the thumb zone:
+  - Background: `bg-[#000000]/88 backdrop-blur-2xl border-t border-[var(--border-subtle)]`.
+  - Insets: `pb-[env(safe-area-inset-bottom,16px)] pt-1`.
+  - 5 primary destinations: `Today`, `Goal [AIR 1]`, `Stats`, `Studio`, `Config`.
+  - Active indicator: Soft luminous accent aura, bold typography, and gold `AIR 1` badge on Goal tab.
+  - Touch target: Full 48px height with `ios-spring` press feedback and Web Audio relay click.
+
+### 38.3 Airy iOS Navigation Bar (`src/components/header.js`)
+- On mobile devices, eliminated the redundant top 5-tab grid, liberating ~50px of vertical reading area.
+- Top header redesigned into a clean Apple Navigation Bar:
+  - Height: Compact 47px with `pt-[env(safe-area-inset-top,10px)]` notch clearance.
+  - Left: Title `Day XX of YY` with `[MITRA 54]` / `[CEED 87]` sprint switcher pill.
+  - Right: Tap-to-expand `[XXd to CEED]` countdown pill, sun/moon toggle, and streak pill `[🔥 XXd]`.
+
+### 38.4 Apple Inset-Grouped Surface System & Platform Resets
+- **Global Mobile Resets (`src/style.css`)**:
+  - `-webkit-tap-highlight-color: transparent` to eliminate browser tap flash.
+  - `touch-action: manipulation` across all buttons and inputs.
+  - `font-size: 16px !important` on all mobile inputs to completely prevent iOS Safari auto-zooming.
+  - `.ios-spring:active { transform: scale(0.96); opacity: 0.9; }` spring press feedback.
+- **Surface Decluttering**:
+  - `src/views/dashboard.js`: Inset-grouped Planning Hero and domino cards with 44pt checkmark toggles and dynamic `totalDays` integration.
+  - `src/views/goal.js`: Streamlined segmented sub-view switcher, unified metric cards, 44pt day rotation selector pills, 36–40pt stepper buttons for Part B rubric, and 16px form inputs with 44pt touchable biological checks.
+  - `src/app.js`: Sized app shell with `min-h-[100dvh]` and `pb-24` clearance to prevent content overlap with the bottom tab bar.
+
+### 38.5 Headless Chrome CDP Verification on iPhone 12 (390×844)
+- **Top Header Height**: Exactly `47px` (clean notch clearance, zero top clutter).
+- **Bottom Tab Bar**: Present and verified across all 5 destinations (`Today`, `AIR 1 Goal`, `Stats`, `Studio`, `Config`).
+- **Input Zoom Guard**: Verified 9/9 scorecard inputs have computed `font-size: 16px`, preventing iOS Safari auto-zoom.
+- **Horizontal Overflow**: `docOverflowX: false` (scrollWidth = 390px, clientWidth = 390px across all routes).
+- **Console Exceptions**: Exactly `0`.
+- **Screenshots Generated**:
+  - `iphone12_today_view.png`
+  - `iphone12_goal_command.png`
+  - `iphone12_goal_clock.png`
+  - `iphone12_goal_conquest.png`
+  - `iphone12_goal_scorecard.png`
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

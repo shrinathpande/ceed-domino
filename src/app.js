@@ -5,7 +5,7 @@ import { renderSettings } from './views/settings.js';
 import { renderStudioProctor } from './views/studio-proctor.js';
 import { renderStats } from './views/stats.js';
 import { renderHeader } from './components/header.js';
-import { renderBottomDock } from './components/bottom-dock.js';
+import { renderBottomTabBar } from './components/bottom-tab-bar.js';
 import { initGestureNavigation } from './utils/gestures.js';
 import { getTheme, setTheme } from './core/state.js';
 
@@ -16,9 +16,10 @@ let _viewContainer = null;
 export function initApp(container) {
   _appContainer = container;
   _appContainer.innerHTML = `
-    <div id="appShell" class="min-h-screen bg-[var(--ground)] text-[var(--text)] transition-colors relative">
+    <div id="appShell" class="min-h-[100dvh] bg-[var(--ground)] text-[var(--text)] transition-colors relative pb-24">
       <div id="headerSlot"></div>
       <main id="viewContainer" class="w-full"></main>
+      <div id="bottomTabSlot"></div>
     </div>
   `;
 
@@ -66,6 +67,9 @@ function route() {
 
   // Render Top Sticky Header with Navigation
   renderHeader(_appContainer, hash, dateParam);
+
+  // Render Native iOS Bottom Tab Bar (Primary Mobile Ergonomics in Thumb Zone)
+  renderBottomTabBar(_appContainer, hash);
 
   // Remove any obsolete floating bottom dock
   const oldDock = document.getElementById('floatingBottomDock');
