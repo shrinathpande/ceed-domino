@@ -1448,4 +1448,87 @@ Conducted comprehensive multi-viewport stress testing under touch emulation and 
 
 ---
 
+## 37. MITRA CEED 2027 AIR 1 Goal Tab Revamp & Dual-Timeline Engine
+
+### 37.1 Strategic Blueprint Ingestion & Architecture
+- Integrated the candidate's master reference document: **MITRA (Solar Precision Architecture for CEED 2027)** across the 54-day campaign sprint (Nov 24, 2026 – Jan 17, 2027).
+- Ingested core mechanics:
+  - Official Merit Formula: $\text{Final Score} = 0.25 \times \text{Part A (out of 150)} + 0.75 \times \text{Part B (out of 100)}$ with 3x leverage on Part B.
+  - Candidate Diagnostic Baseline: `63.50 / 112.50` vs AIR 1 Target Zone: `91.00 – 95.00 / 112.50`.
+  - Game-Theoretic Laws: 100% NAT Protocol (+4/0 zero penalty), MSQ Partial Harvesting Theorem (Expected Value model, 61.5% 2-option sweet spot vs 25% 4-option bleeding zone), MCQ 2-Option Elimination (1:6 risk ratio), 35-Second Anti-Rush Lock, and 24-Minute Part B Hard Stop per 20M slot.
+  - Neurological & Circadian Clock: 06:00 solar ignition, 08:25 Caffeine #1, 12:45–13:10 25m NSDR/power nap (Stage N2 sleep spindles), 13:30 Hard Caffeine Cutoff, 22:00 Sleep Fortress (8.0h in bed, 5 complete 90-min cycles), and Fri–Sun 17:15–20:15 protected freelance client block.
+
+### 37.2 Single Source of Truth: `src/data/mitra_data.js`
+- Created dedicated data repository export containing:
+  - `MITRA_METADATA`: Exam windows, formula, merit benchmarks, Admit Card date (2027-01-01 13:00 IST).
+  - `MITRA_SECTIONS`: Sectional targets (NAT 24–28/32, MSQ 28–32/40, MCQ 60–66/78, Part B 80–86/100).
+  - `MITRA_TIMETABLE`: 19 clock blocks with start/end times, tags (`BIO`, `NEURO`, `PART A`, `PART B`, `WORK`, `CONSOLIDATION`), and protocols.
+  - `MITRA_ROTATION_MATRIX`: 7-day Monday–Sunday subpart rotation for Part A Tier-1, Part B rescue studio, evening mode, and target PYQ sets.
+  - `CHANAKYA_MATRIX`: 4 tiers (Tier 1 Disgusting Mastery, Tier 2 Surgical Polish, Tier 3 Maintenance Only, Tier 4 Strategic Abandon).
+  - `GAME_THEORY_LAWS`: 5 mathematical scoring laws.
+  - `PRE_MORTEM_SHIELDS`: 5 behavioral firewalls.
+  - `PREDICTIVE_CHECKLIST_2027`: High-probability Part A Question Twins & Part B Prompt Predictions.
+  - `MITRA_ROADMAP_PHASES`: 4 preparation phases + Day 54 Exam Day protocol.
+  - `IITB_RUBRIC`: 4 criteria $\times$ 5 marks per question across Q1–Q5.
+  - `DEFAULT_SCORECARD`: Standardized daily telemetry template.
+
+### 37.3 Dual-Timeline State Engine & Navigation Upgrade
+- **Dual-Timeline State**: Updated `src/core/state.js` and `src/utils/dates.js` with `activeTimeline` (`'mitra54'` vs `'ceed87'`), `getTimelineMode()`, `setTimelineMode()`, `getMitraScorecard()`, and `saveMitraScorecard()`.
+- **Top Header Bar**: Updated `src/components/header.js` to a 5-tab responsive navigation layout:
+  - Position 1: `Today (#/)`
+  - Position 2: `Goal (#/goal)` with target SVG icon and gleaming gold `AIR 1` badge
+  - Position 3: `Stats (#/stats)`
+  - Position 4: `Studio (#/studio)`
+  - Position 5: `Config (#/settings)`
+- **Header Switcher Pill**: Added interactive `MITRA 54` / `CEED 87` timeline toggle in Row 1 of header bar for instant mode switching.
+- **Config Terminal**: Added Dual-Timeline Engine Switcher card in `src/views/settings.js`.
+- **Gesture Navigation**: Updated `src/utils/gestures.js` route sequence to smoothly swipe between all 5 views.
+
+### 37.4 MITRA Goal View (`src/views/goal.js`)
+- Built the complete command center with the user-selected **Segmented Sub-View Switcher**:
+  1. **Command & Merit**:
+     - Real-time countdown to CEED 2027 Exam Day (Jan 17, 2027 09:00 AM IST) with live ticking seconds.
+     - Interactive Final Merit Simulator ($0.25A + 0.75B$) with sliders for NAT, MSQ, MCQ, and Q1–Q5.
+     - Real-time score meter showing candidate baseline (63.50), AIR 1 Gate (91.00–95.00), and current projection.
+     - 3x Leverage Asymmetry visualizer.
+  2. **Clock & Daily Matrix**:
+     - Live 06:00–22:00 Diurnal Protocol Clock highlighting the currently active engagement block with glowing pulse.
+     - Real-time countdown to 13:30 Hard Caffeine Cutoff.
+     - 7-Day Subpart Rotation Matrix with day-of-week switcher pills and weekend freelance mode detection.
+     - Expandable 19-block schedule accordion with tag filtering.
+  3. **Conquest & Laws**:
+     - Interactive Chanakya Conquest Matrix cards with baseline accuracy vs target, benchmark speeds, and high-yield subtopics.
+     - 5 Game-Theoretic Scoring Theorems.
+     - 5 Pre-Mortem Failure Shields.
+  4. **54-Day Roadmap**:
+     - 4-phase battle calendar (Phase 1 Reconstruction $\rightarrow$ Phase 2 Velocity $\rightarrow$ Phase 3 AIR 1 Peak $\rightarrow$ Phase 4 Neuro-Taper $\rightarrow$ Day 54 Exam Day).
+     - Full Day 54 solar protocol (05:45 wake to 09:00–12:00 execution).
+  5. **Rubric & Scorecard**:
+     - Interactive IIT Bombay 100-mark Part B Evaluator (Q1–Q5 with 4 criteria $\times$ 5 marks stepper buttons).
+     - "Transfer Marks to Daily Scorecard" action.
+     - MITRA Daily Scorecard Logger with sleep/bio checkboxes, Part A/B score inputs, top 3 error pattern text inputs, and tomorrow's single priority fix.
+     - `Save Scorecard` (persisted to localStorage) and `Copy YAML for AI Coaching` (matching Section 10 of blueprint).
+
+### 37.5 Verification & Audit Results
+- **Build Status**: `npm run build` succeeded cleanly with 33 modules transformed in 664ms, 0 errors.
+- **Headless Chrome CDP Audit (`scratch/verify_mitra_goal.mjs`)**:
+  - `#/` (Today): Header tabs: `["Today", "Goal", "Stats", "Studio", "Config"]`.
+  - `#/goal` (Command): Title verified, merit score 93.00, interactive slider adjustment verified (Q1 moved to 20 -> 96.50 merit score).
+  - `#/goal` (Clock): Live clock running, active block detected, 7 rotation days verified.
+  - `#/goal` (Conquest): 4 tiers, 5 laws, 5 shields rendered.
+  - `#/goal` (Roadmap): 5 phase cards and Day 54 protocol rendered.
+  - `#/goal` (Scorecard): 84/100 rubric total, live stepper button decrement verified (83/100), scorecard form present.
+  - Timeline Switch: Toggled between `MITRA 54` and `CEED 87` successfully.
+  - Desktop 1200px: `docOverflowX: false`, 0 horizontal scroll.
+  - Console Errors: **0**.
+- **Screenshots Generated**:
+  - `mitra_goal_command.png`: Command Center, countdown, merit simulator.
+  - `mitra_goal_clock.png`: Live diurnal clock, active block, 7-day rotation matrix.
+  - `mitra_goal_conquest.png`: Chanakya Conquest Matrix and Game-Theoretic Laws.
+  - `mitra_goal_roadmap.png`: 54-day phased roadmap and Day 54 protocol.
+  - `mitra_goal_scorecard.png`: IIT Bombay rubric evaluator and daily scorecard logger.
+  - `mitra_goal_desktop.png`: 1200px desktop responsive layout.
+
+---
+
 *This document was compiled directly from repository commits, transcripts, and verified codebase state.*

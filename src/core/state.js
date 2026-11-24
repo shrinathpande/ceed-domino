@@ -25,7 +25,8 @@ const DEFAULT_SETTINGS = {
   endDate: '2027-01-17',
   theme: 'oled',
   accentColor: '#C4B5FD',
-  cardInfusion: 'all'
+  cardInfusion: 'all',
+  timelineMode: 'mitra54'
 };
 
 // Core architectural invariant: any block with 'DOMINO' in badge is mandatory
@@ -685,4 +686,54 @@ export function toggleDominoComplete(dominoId, dateStr) {
   recalculateStreak(state);
   saveState(state);
   return rec.completed.includes(dominoId);
+}
+
+// --- MITRA AIR 1 State & Scorecard Extensions ---
+export const MITRA_SCORECARD_KEY = 'ceed_mitra_scorecards';
+
+export function getTimelineMode() {
+  const state = getState();
+  return state.settings?.timelineMode || 'mitra54';
+}
+
+export function setTimelineMode(mode) {
+  const state = getState();
+  state.settings.timelineMode = mode === 'ceed87' ? 'ceed87' : 'mitra54';
+  saveState(state);
+  document.dispatchEvent(new CustomEvent('timeline-mode-changed', { detail: { mode: state.settings.timelineMode } }));
+  return state.settings.timelineMode;
+}
+
+export function getMitraScorecard(dateStr) {
+  try {
+    const raw = localStorage.getItem(MITRA_SCORECARD_KEY);
+    if (!raw) return null;
+    const cards = JSON.parse(raw);
+    return cards[dateStr] || null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveMitraScorecard(dateStr, cardData) {
+  try {
+    const raw = localStorage.getItem(MITRA_SCORECARD_KEY);
+    const cards = raw ? JSON.parse(raw) : {};
+    cards[dateStr] = { ...cardData, updatedAt: new Date().toISOString() };
+    localStorage.setItem(MITRA_SCORECARD_KEY, JSON.stringify(cards));
+    document.dispatchEvent(new CustomEvent('mitra-scorecard-updated', { detail: { dateStr, cardData: cards[dateStr] } }));
+    return true;
+  } catch (err) {
+    console.error('Failed to save MITRA scorecard:', err);
+    return false;
+  }
+}
+
+export function getAllMitraScorecards() {
+  try {
+    const raw = localStorage.getItem(MITRA_SCORECARD_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
 }

@@ -1,22 +1,30 @@
 /**
  * Date utilities for the CEED Domino Tracker.
  */
-import { getState } from '../core/state.js';
+import { getState, getTimelineMode } from '../core/state.js';
 
 /** Get the configured start date */
 export function getStartDate() {
+  const mode = getTimelineMode();
+  if (mode === 'mitra54') {
+    return new Date('2026-11-24T00:00:00');
+  }
   const state = getState();
-  return new Date(state.settings.startDate + 'T00:00:00');
+  return new Date((state.settings.startDate || '2026-10-22') + 'T00:00:00');
 }
 
 /** Get the configured end date */
 export function getEndDate() {
   const state = getState();
-  return new Date(state.settings.endDate + 'T00:00:00');
+  return new Date((state.settings.endDate || '2027-01-17') + 'T00:00:00');
 }
 
 /** Calculate total days between start and end (inclusive) */
 export function getTotalDays() {
+  const mode = getTimelineMode();
+  if (mode === 'mitra54') {
+    return 54;
+  }
   const start = getStartDate();
   const end = getEndDate();
   return Math.round((end - start) / 86400000) + 1;
@@ -41,9 +49,10 @@ export function getDateStrFromOffset(dayIndex) {
 /** Get current date string clamped to start/end range */
 export function getCurrentDateStr() {
   const formatted = formatDateLocal(new Date());
-  const state = getState();
-  if (formatted < state.settings.startDate) return state.settings.startDate;
-  if (formatted > state.settings.endDate) return state.settings.endDate;
+  const startStr = formatDateLocal(getStartDate());
+  const endStr = formatDateLocal(getEndDate());
+  if (formatted < startStr) return startStr;
+  if (formatted > endStr) return endStr;
   return formatted;
 }
 
@@ -56,6 +65,14 @@ export function getDayIndex(dateStr) {
 
 /** Get phase label based on day index */
 export function getPhaseLabel(dayIndex) {
+  const mode = getTimelineMode();
+  if (mode === 'mitra54') {
+    if (dayIndex <= 18) return 'Phase 1: Reconstruction (Foundation)';
+    if (dayIndex <= 36) return 'Phase 2: Velocity & Storytelling';
+    if (dayIndex <= 49) return 'Phase 3: AIR 1 Championship Peak';
+    if (dayIndex < 54) return 'Phase 4: Neuro-Taper & Banking';
+    return 'Day 54: CEED 2027 Exam Day';
+  }
   const totalDays = getTotalDays();
   const phase1End = Math.floor(totalDays * 0.34);
   const phase2End = Math.floor(totalDays * 0.75);

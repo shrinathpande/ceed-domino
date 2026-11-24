@@ -1,7 +1,7 @@
 // src/utils/gestures.js
 import { playRelayClick } from './sound.js';
 
-const ROUTE_SEQUENCE = ['#/', '#/stats', '#/studio', '#/settings'];
+const ROUTE_SEQUENCE = ['#/', '#/goal', '#/stats', '#/studio', '#/settings'];
 
 let startX = 0;
 let startY = 0;

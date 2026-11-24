@@ -12,7 +12,9 @@ import {
   setCardInfusionScope,
   isOledMode,
   setOledMode,
-  resetState
+  resetState,
+  getTimelineMode,
+  setTimelineMode
 } from '../core/state.js';
 import { playRelayClick } from '../utils/sound.js';
 import { icons } from '../components/icons.js';
@@ -34,6 +36,8 @@ export function renderSettingsView(container) {
   const currentScope = getCardInfusionScope();
   const isCustomPreset = !PASTEL_SWATCHES.some(s => s.hex.toLowerCase() === currentAccent.toLowerCase());
   const isOled = isOledMode();
+  const timelineMode = getTimelineMode();
+  const isMitra = timelineMode === 'mitra54';
 
   container.innerHTML = `
     <section class="w-full max-w-xl md:max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-6 select-none" aria-label="Configuration Terminal">
@@ -60,6 +64,60 @@ export function renderSettingsView(container) {
           >
             <span class="w-2 h-2 rounded-full ${isOled ? 'bg-[#09090B]' : 'bg-[#71717A]'}"></span>
             <span>${isOled ? 'ACTIVE [ON]' : 'OFF'}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 0.5. Dual-Timeline Engine Switcher -->
+      <div class="bento-card mb-3.5 stagger-item stagger-delay-0">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-[#F59E0B] shadow-[0_0_8px_rgba(245,158,11,0.5)]"></span>
+              <span class="text-base font-bold text-[#F4F4F6] tracking-tight">Timeline Engine & Sprint Mode</span>
+            </div>
+            <div class="text-xs text-[#71717A] mt-0.5">Dual-timeline architecture with instant sync</div>
+          </div>
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#18181B] border border-[#27272A]">
+            <span class="text-xs font-mono font-bold ${isMitra ? 'text-[#F59E0B]' : 'text-[#A1A1AA]'} uppercase">
+              ${isMitra ? 'MITRA AIR 1 (54D)' : 'CEED (87D)'}
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button
+            id="btn-set-mitra54"
+            type="button"
+            class="p-3 rounded-xl border text-left transition-all btn-tactile ${
+              isMitra
+                ? 'bg-[#F59E0B]/10 border-[#F59E0B]/50 ring-1 ring-[#F59E0B]/40'
+                : 'bg-[#18181B] border-[#27272A] hover:border-[#3F3F46]'
+            }"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold ${isMitra ? 'text-[#F59E0B]' : 'text-[#F4F4F6]'}">MITRA AIR 1 Sprint</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded ${isMitra ? 'bg-[#F59E0B] text-black font-black' : 'bg-zinc-800 text-zinc-400'}">54 DAYS</span>
+            </div>
+            <div class="text-[11px] text-[#A1A1AA] mt-1">24 Nov 2026 – 17 Jan 2027</div>
+            <div class="text-[10px] text-[#71717A] mt-0.5">Solar Circadian Clock, Merit Equations & 7-Day Matrix</div>
+          </button>
+
+          <button
+            id="btn-set-ceed87"
+            type="button"
+            class="p-3 rounded-xl border text-left transition-all btn-tactile ${
+              !isMitra
+                ? 'bg-[var(--domino-accent)]/10 border-[var(--domino-accent)]/50 ring-1 ring-[var(--domino-accent)]/40'
+                : 'bg-[#18181B] border-[#27272A] hover:border-[#3F3F46]'
+            }"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold ${!isMitra ? 'text-[var(--domino-accent)]' : 'text-[#F4F4F6]'}">Legacy Campaign</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded ${!isMitra ? 'bg-[var(--domino-accent)] text-black font-black' : 'bg-zinc-800 text-zinc-400'}">87 DAYS</span>
+            </div>
+            <div class="text-[11px] text-[#A1A1AA] mt-1">22 Oct 2026 – 17 Jan 2027</div>
+            <div class="text-[10px] text-[#71717A] mt-0.5">Historical complete 87-day domino tracker view</div>
           </button>
         </div>
       </div>
@@ -325,6 +383,18 @@ function bindSettingsEvents(container) {
   container.querySelector('#btn-oled-toggle')?.addEventListener('click', () => {
     const next = !isOledMode();
     setOledMode(next);
+    renderSettingsView(container);
+  });
+
+  // Timeline mode switcher buttons
+  container.querySelector('#btn-set-mitra54')?.addEventListener('click', () => {
+    playRelayClick();
+    setTimelineMode('mitra54');
+    renderSettingsView(container);
+  });
+  container.querySelector('#btn-set-ceed87')?.addEventListener('click', () => {
+    playRelayClick();
+    setTimelineMode('ceed87');
     renderSettingsView(container);
   });
 

@@ -1,6 +1,6 @@
 // src/components/header.js
-import { getState, getCumulativeTelemetry } from '../core/state.js';
-import { getDayIndex, getExamCountdown } from '../utils/dates.js';
+import { getState, getCumulativeTelemetry, getTimelineMode, setTimelineMode } from '../core/state.js';
+import { getDayIndex, getTotalDays, getExamCountdown } from '../utils/dates.js';
 import { icons } from './icons.js';
 import { getColorMode, toggleColorMode } from './theme-toggle.js';
 import { playRelayClick } from '../utils/sound.js';
@@ -176,6 +176,9 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
   const telemetry = getCumulativeTelemetry();
   const todayStr = currentDateStr || new Date().toISOString().slice(0, 10);
   const dayIndex = getDayIndex(todayStr);
+  const totalDays = getTotalDays();
+  const timelineMode = getTimelineMode();
+  const isMitra = timelineMode === 'mitra54';
   const examCountdown = getExamCountdown();
   const isLight = getColorMode() === 'light';
   const cleanRoute = (activeRoute || window.location.hash || '#/').split('?')[0];
@@ -185,25 +188,32 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
       hash: '#/',
       label: 'Today',
       isActive: cleanRoute === '#/' || cleanRoute === '' || cleanRoute === '#',
-      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/><path d="M8 15h2v2h-2z"/></svg>`
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/><path d="M8 15h2v2h-2z"/></svg>`
+    },
+    {
+      hash: '#/goal',
+      label: 'Goal',
+      badge: 'AIR 1',
+      isActive: cleanRoute.startsWith('#/goal'),
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`
     },
     {
       hash: '#/stats',
       label: 'Stats',
       isActive: cleanRoute.startsWith('#/stats'),
-      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M20 18v-4"/><path d="M16 18v-8"/><path d="M12 18v-2"/><path d="M8 18v-5"/></svg>`
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M20 18v-4"/><path d="M16 18v-8"/><path d="M12 18v-2"/><path d="M8 18v-5"/></svg>`
     },
     {
       hash: '#/studio',
       label: 'Studio',
       isActive: cleanRoute.startsWith('#/studio'),
-      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/></svg>`
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/></svg>`
     },
     {
       hash: '#/settings',
       label: 'Config',
       isActive: cleanRoute.startsWith('#/settings'),
-      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M6 4v4"/><path d="M6 12v8"/><path d="M10 16a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M12 4v10"/><path d="M12 18v2"/><path d="M16 7a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M18 4v1"/><path d="M18 9v11"/></svg>`
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M6 4v4"/><path d="M6 12v8"/><path d="M10 16a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M12 4v10"/><path d="M12 18v2"/><path d="M16 7a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M18 4v1"/><path d="M18 9v11"/></svg>`
     }
   ];
 
@@ -223,15 +233,28 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
     <div class="max-w-xl md:max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-2 stagger-item stagger-delay-0">
       <!-- Row 1: Telemetry, Countdown Pill, Sun/Moon Theme Toggle & Streak -->
       <div class="flex items-center justify-between mb-2">
-        <!-- Left: Day of 87 + Interactive [XXd to CEED] Pill -->
-        <div class="flex items-center gap-2">
-          <span class="text-sm font-semibold text-[var(--text-primary)] tracking-tight">
-            Day <span class="font-bold text-[var(--domino-accent)]">${String(dayIndex + 1).padStart(2, '0')}</span> <span class="text-[var(--text-secondary)] font-normal">of 87</span>
+        <!-- Left: Day of XX + Timeline Switcher + Interactive [XXd to CEED] Pill -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <span class="text-xs sm:text-sm font-semibold text-[var(--text-primary)] tracking-tight">
+            Day <span class="font-bold text-[var(--domino-accent)]">${String(dayIndex + 1).padStart(2, '0')}</span> <span class="text-[var(--text-secondary)] font-normal text-[11px] sm:text-xs">of ${totalDays}</span>
           </span>
+          <button
+            id="btn-timeline-toggle"
+            type="button"
+            class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold tracking-wider uppercase border transition-all cursor-pointer select-none active:scale-95 ${
+              isMitra
+                ? 'bg-[#F59E0B]/15 text-[#F59E0B] border-[#F59E0B]/35 hover:bg-[#F59E0B]/25'
+                : 'bg-[var(--surface-well)] text-[var(--text-secondary)] border-[var(--border-subtle)] hover:text-[var(--text-primary)]'
+            }"
+            title="Toggle between 54-Day MITRA AIR 1 Sprint and 87-Day Legacy Campaign"
+            aria-label="Toggle timeline mode"
+          >
+            ${isMitra ? 'MITRA 54' : 'CEED 87'}
+          </button>
           <button
             id="btn-exam-countdown"
             type="button"
-            class="inline-flex items-center px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-medium bg-[var(--surface-well)] hover:opacity-90 text-[var(--text-secondary)] hover:text-[var(--domino-accent)] border border-[var(--border-subtle)] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none active:scale-95"
+            class="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 min-h-[28px] sm:min-h-[32px] rounded-full text-[10px] sm:text-[11px] font-medium bg-[var(--surface-well)] hover:opacity-90 text-[var(--text-secondary)] hover:text-[var(--domino-accent)] border border-[var(--border-subtle)] hover:border-[var(--domino-accent)]/40 transition-all cursor-pointer select-none active:scale-95"
             title="Tap for exact CEED exam timing & live countdown"
             aria-label="Toggle exact countdown to CEED exam"
           >
@@ -260,12 +283,12 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
         </div>
       </div>
 
-      <!-- Row 2: Sticky 4-Tab Navigation Bar (Today, Stats, Studio, Config) -->
-      <nav class="grid grid-cols-4 gap-1 p-1 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)]" aria-label="Main Navigation">
+      <!-- Row 2: Sticky 5-Tab Navigation Bar (Today, Goal [AIR 1], Stats, Studio, Config) -->
+      <nav class="grid grid-cols-5 gap-0.5 sm:gap-1 p-1 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)]" aria-label="Main Navigation">
         ${tabs.map(tab => `
           <a
             href="${tab.hash}"
-            class="flex items-center justify-center gap-1.5 py-2 rounded-full text-[12px] transition-all btn-tactile ${
+            class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2 px-1 rounded-full text-[11px] sm:text-[12px] transition-all btn-tactile ${
               tab.isActive
                 ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium'
@@ -273,12 +296,29 @@ export function renderHeader(container, activeRoute = '#/', currentDateStr = nul
             aria-current="${tab.isActive ? 'page' : 'false'}"
           >
             ${tab.icon}
-            <span>${tab.label}</span>
+            <span class="truncate">${tab.label}</span>
+            ${tab.badge ? `
+              <span class="hidden sm:inline-flex items-center px-1 py-0.2 rounded text-[8px] font-mono font-black uppercase leading-none ${
+                tab.isActive
+                  ? 'bg-black/25 text-[#09090B]'
+                  : 'bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/40'
+              }">${tab.badge}</span>
+            ` : ''}
           </a>
         `).join('')}
       </nav>
     </div>
   `;
+
+  // Bind Timeline Mode Toggle Click
+  headerEl.querySelector('#btn-timeline-toggle')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playRelayClick();
+    const currentMode = getTimelineMode();
+    const nextMode = currentMode === 'mitra54' ? 'ceed87' : 'mitra54';
+    setTimelineMode(nextMode);
+    renderHeader(container, activeRoute, currentDateStr);
+  });
 
   // Bind Exam Countdown Pill Click
   headerEl.querySelector('#btn-exam-countdown')?.addEventListener('click', (e) => {

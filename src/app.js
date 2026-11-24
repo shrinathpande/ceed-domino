@@ -1,5 +1,6 @@
 // src/app.js
 import { renderDashboard } from './views/dashboard.js';
+import { renderGoalView } from './views/goal.js';
 import { renderSettings } from './views/settings.js';
 import { renderStudioProctor } from './views/studio-proctor.js';
 import { renderStats } from './views/stats.js';
@@ -42,6 +43,9 @@ export function initApp(container) {
   // Listen for color mode changes (Light / Night toggle)
   document.addEventListener('color-mode-changed', () => route());
 
+  // Listen for timeline mode changes (54-Day MITRA vs 87-Day Legacy)
+  document.addEventListener('timeline-mode-changed', () => route());
+
   route();
 }
 
@@ -70,7 +74,11 @@ function route() {
   // Scroll to top on route change
   window.scrollTo({ top: 0, behavior: 'instant' });
 
-  if (hash.startsWith('#/studio')) {
+  if (hash.startsWith('#/goal')) {
+    renderGoalView(_viewContainer, () => {
+      window.location.hash = '#/';
+    });
+  } else if (hash.startsWith('#/studio')) {
     renderStudioProctor(_viewContainer, () => {
       window.location.hash = '#/';
     }, dateParam);
