@@ -14,7 +14,7 @@ export function renderBottomTabBar(container, activeRoute = '#/') {
     {
       hash: '#/goal',
       label: 'Goal',
-      badge: 'AIR 1',
+      hasDot: true,
       isActive: cleanRoute.startsWith('#/goal'),
       icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`
     },
@@ -42,35 +42,28 @@ export function renderBottomTabBar(container, activeRoute = '#/') {
   if (!barEl) {
     barEl = document.createElement('nav');
     barEl.id = 'nativeIosBottomTabBar';
-    barEl.className = 'fixed bottom-0 left-0 right-0 z-50 bg-[#000000]/88 backdrop-blur-2xl border-t border-[var(--border-subtle)] pb-[env(safe-area-inset-bottom,16px)] pt-1 select-none transition-all duration-200';
-    barEl.setAttribute('aria-label', 'Primary Application Navigation');
+    barEl.className = 'fixed bottom-3 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[390px] z-50 floating-glass-dock rounded-full px-2 py-1 select-none transition-all duration-200';
+    barEl.setAttribute('aria-label', 'Primary Floating Navigation Dock');
     container.appendChild(barEl);
   }
 
   barEl.innerHTML = `
-    <div class="max-w-md md:max-w-2xl mx-auto px-2 grid grid-cols-5 gap-1 items-center">
+    <div class="grid grid-cols-5 gap-1 items-center">
       ${tabs.map(tab => `
         <a
           href="${tab.hash}"
-          class="flex flex-col items-center justify-center min-h-[48px] py-1 rounded-xl transition-all ios-spring relative ${
+          class="flex flex-col items-center justify-center min-h-[46px] py-1 px-1 rounded-full transition-all ios-spring relative ${
             tab.isActive
-              ? 'text-[var(--domino-accent)] font-bold'
+              ? 'text-[var(--domino-accent)] font-bold bg-white/[0.08]'
               : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium'
           }"
           aria-current="${tab.isActive ? 'page' : 'false'}"
         >
-          <!-- Active Glow Aura -->
-          ${tab.isActive ? `
-            <span class="absolute inset-x-2 top-1 bottom-1 bg-[var(--domino-accent)]/10 rounded-xl -z-10 shadow-[0_0_12px_var(--domino-accent-glow)]"></span>
-          ` : ''}
-
-          <!-- Icon Slot with Badge -->
+          <!-- Icon Slot with Subtle Luminous Dot Indicator -->
           <div class="relative flex items-center justify-center w-6 h-6">
             ${tab.icon}
-            ${tab.badge ? `
-              <span class="absolute -top-1.5 -right-3.5 px-1 py-0.2 rounded-full text-[7.5px] font-mono font-black uppercase tracking-tight bg-[#F59E0B] text-black shadow-[0_0_6px_rgba(245,158,11,0.5)]">
-                ${tab.badge}
-              </span>
+            ${tab.hasDot ? `
+              <span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#F59E0B] shadow-[0_0_8px_rgba(245,158,11,0.85)] border border-[#000000]"></span>
             ` : ''}
           </div>
 

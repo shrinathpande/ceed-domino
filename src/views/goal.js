@@ -57,18 +57,18 @@ export function renderGoalView(container) {
   const isMitra = timelineMode === 'mitra54';
 
   container.innerHTML = `
-    <div id="mitraGoalShell" class="w-full max-w-xl md:max-w-4xl mx-auto px-3 sm:px-6 pt-1 pb-16 select-none">
+    <div id="mitraGoalShell" class="w-full max-w-xl md:max-w-4xl mx-auto px-3 sm:px-6 pt-1 pb-24 select-none">
       
       <!-- Sticky Segmented Sub-View Switcher (Apple Inset Segmented Control) -->
-      <div class="sticky top-[48px] md:top-[84px] z-30 bg-[#000000]/92 backdrop-blur-xl pt-1 pb-2 mb-3 border-b border-white/[0.08]">
-        <div class="grid grid-cols-5 gap-1 p-1 rounded-2xl bg-[#121318] border border-white/[0.08]">
+      <div class="sticky top-[48px] md:top-[84px] z-30 bg-[#000000]/92 backdrop-blur-2xl pt-1 pb-2 mb-3 border-b border-white/[0.06]">
+        <div class="grid grid-cols-5 gap-1 p-1 rounded-2xl bg-[#101116] border border-white/[0.08]">
           <button
             type="button"
             data-subview="command"
-            class="mitra-nav-pill min-h-[40px] py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
+            class="mitra-nav-pill min-h-[38px] py-1.5 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
               _activeSubView === 'command'
-                ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'bg-white/[0.12] text-white font-bold shadow-sm'
+                : 'text-zinc-400 hover:text-white'
             }"
           >
             <span class="block truncate">Command</span>
@@ -76,10 +76,10 @@ export function renderGoalView(container) {
           <button
             type="button"
             data-subview="clock"
-            class="mitra-nav-pill min-h-[40px] py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
+            class="mitra-nav-pill min-h-[38px] py-1.5 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
               _activeSubView === 'clock'
-                ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'bg-white/[0.12] text-white font-bold shadow-sm'
+                : 'text-zinc-400 hover:text-white'
             }"
           >
             <span class="block truncate">Clock</span>
@@ -87,10 +87,10 @@ export function renderGoalView(container) {
           <button
             type="button"
             data-subview="conquest"
-            class="mitra-nav-pill min-h-[40px] py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
+            class="mitra-nav-pill min-h-[38px] py-1.5 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
               _activeSubView === 'conquest'
-                ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'bg-white/[0.12] text-white font-bold shadow-sm'
+                : 'text-zinc-400 hover:text-white'
             }"
           >
             <span class="block truncate">Conquest</span>
@@ -98,10 +98,10 @@ export function renderGoalView(container) {
           <button
             type="button"
             data-subview="roadmap"
-            class="mitra-nav-pill min-h-[40px] py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
+            class="mitra-nav-pill min-h-[38px] py-1.5 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
               _activeSubView === 'roadmap'
-                ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'bg-white/[0.12] text-white font-bold shadow-sm'
+                : 'text-zinc-400 hover:text-white'
             }"
           >
             <span class="block truncate">54d Plan</span>
@@ -109,10 +109,10 @@ export function renderGoalView(container) {
           <button
             type="button"
             data-subview="scorecard"
-            class="mitra-nav-pill min-h-[40px] py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
+            class="mitra-nav-pill min-h-[38px] py-1.5 px-1 rounded-xl text-[11px] sm:text-xs font-semibold text-center transition-all ios-spring ${
               _activeSubView === 'scorecard'
-                ? 'bg-[var(--domino-accent)] text-[#09090B] font-bold shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'bg-white/[0.12] text-white font-bold shadow-sm'
+                : 'text-zinc-400 hover:text-white'
             }"
           >
             <span class="block truncate">Scorecard</span>
@@ -121,7 +121,7 @@ export function renderGoalView(container) {
       </div>
 
       <!-- Sub-View Content Container -->
-      <div id="mitraSubViewContent" class="space-y-3.5">
+      <div id="mitraSubViewContent" class="space-y-4">
         ${renderActiveSubView(dayIndex, totalDays, isMitra)}
       </div>
 
@@ -154,7 +154,7 @@ function renderActiveSubView(dayIndex, totalDays, isMitra) {
 }
 
 // -------------------------------------------------------------
-// SUB-VIEW 1: COMMAND & MERIT CENTER
+// SUB-VIEW 1: COMMAND & MERIT CENTER (MINIMALIST LIVE STATUS STRIP + GROUPED INSET)
 // -------------------------------------------------------------
 function renderCommandSubView(dayIndex, totalDays, isMitra) {
   const countdown = getExamCountdown();
@@ -184,212 +184,178 @@ function renderCommandSubView(dayIndex, totalDays, isMitra) {
     tierBadge = 'DEFICIT';
   }
 
-  // Progress relative to 112.5
+  // Progress relative to 112.5 max merit
   const baselinePct = ((MITRA_METADATA.baselineMerit / 112.5) * 100).toFixed(1);
   const currentPct = Math.min(100, Math.max(0, (meritScore / 112.5) * 100)).toFixed(1);
   const targetMinPct = ((MITRA_METADATA.targetMeritMin / 112.5) * 100).toFixed(1);
 
   return `
-    <!-- 1. Hero Command Banner -->
-    <div class="bento-card relative overflow-hidden p-4 sm:p-5">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-black uppercase bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/40">
-              TARGET: AIR 1
-            </span>
-            <span class="text-xs font-mono text-[var(--text-secondary)]">IIT Bombay IDC • CEED 2027</span>
-          </div>
-          <h1 class="text-xl sm:text-2xl font-black text-[var(--text-primary)] tracking-tight mt-1">
-            MITRA Precision Command Center
-          </h1>
-        </div>
-
+    <!-- 1. Minimalist Live Status Strip (HUD) - Zero Chunky Boxes -->
+    <div class="apple-inset-group p-4 sm:p-5">
+      <div class="flex items-center justify-between gap-2 mb-2">
         <div class="flex items-center gap-2">
-          <div class="px-3 py-1.5 rounded-xl bg-black/60 border border-[var(--border-subtle)] text-right">
-            <div class="text-[9px] font-mono text-[var(--text-secondary)] uppercase">Campaign Progress</div>
-            <div class="text-sm font-mono font-bold text-[var(--domino-accent)]">
-              Day ${dayIndex + 1} <span class="text-[var(--text-secondary)] font-normal text-xs">/ ${totalDays}</span>
-            </div>
-          </div>
+          <span class="w-2 h-2 rounded-full bg-[#F59E0B] shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#F59E0B]">TARGET: AIR 1</span>
+          <span class="text-zinc-600">•</span>
+          <span class="text-xs text-zinc-400">IIT Bombay IDC</span>
+        </div>
+        <div class="text-xs font-mono text-zinc-400">
+          Day <strong class="text-white">${dayIndex + 1}</strong> of ${totalDays}
         </div>
       </div>
 
-      <!-- Live Countdown Grid -->
-      <div class="grid grid-cols-4 gap-2 pt-1 pb-2">
-        <div class="p-2 sm:p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] text-center">
-          <div id="liveCdDays" class="text-lg sm:text-2xl font-mono font-black text-[var(--text-primary)]">${countdown.days}</div>
-          <div class="text-[9px] sm:text-[10px] font-mono uppercase text-[var(--text-secondary)]">Days</div>
+      <!-- Monolithic Tabular Countdown HUD Strip -->
+      <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pt-1 pb-1">
+        <div class="flex items-baseline gap-1.5 font-mono text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+          <span id="liveCdDays" class="text-white">${countdown.days}</span><span class="text-xs font-medium text-zinc-500 mr-1.5">d</span>
+          <span id="liveCdHours" class="text-white">${String(countdown.hours).padStart(2, '0')}</span><span class="text-xs font-medium text-zinc-500 mr-1.5">h</span>
+          <span id="liveCdMins" class="text-white">${String(countdown.minutes).padStart(2, '0')}</span><span class="text-xs font-medium text-zinc-500 mr-1.5">m</span>
+          <span id="liveCdSecs" class="text-[var(--domino-accent)]">${String(countdown.seconds).padStart(2, '0')}</span><span class="text-xs font-medium text-zinc-500">s</span>
         </div>
-        <div class="p-2 sm:p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] text-center">
-          <div id="liveCdHours" class="text-lg sm:text-2xl font-mono font-black text-[var(--text-primary)]">${String(countdown.hours).padStart(2, '0')}</div>
-          <div class="text-[9px] sm:text-[10px] font-mono uppercase text-[var(--text-secondary)]">Hours</div>
+        <div class="text-xs text-zinc-400 font-mono">
+          Exam: <span class="text-white font-medium">Sunday, 17 Jan 2027</span>
         </div>
-        <div class="p-2 sm:p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] text-center">
-          <div id="liveCdMins" class="text-lg sm:text-2xl font-mono font-black text-[var(--text-primary)]">${String(countdown.minutes).padStart(2, '0')}</div>
-          <div class="text-[9px] sm:text-[10px] font-mono uppercase text-[var(--text-secondary)]">Minutes</div>
-        </div>
-        <div class="p-2 sm:p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] text-center">
-          <div id="liveCdSecs" class="text-lg sm:text-2xl font-mono font-black text-[var(--domino-accent)]">${String(countdown.seconds).padStart(2, '0')}</div>
-          <div class="text-[9px] sm:text-[10px] font-mono uppercase text-[var(--text-secondary)]">Seconds</div>
-        </div>
-      </div>
-
-      <div class="mt-2 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
-        <span>Exam: <strong class="text-[var(--text-primary)]">Sunday, 17 Jan 2027</strong> (09:00 – 12:00 IST)</span>
-        <span class="font-mono text-[#F59E0B]">Admit Card: 01 Jan 2027</span>
       </div>
     </div>
 
-    <!-- 2. Interactive Merit Equation Simulator -->
-    <div class="bento-card p-4 sm:p-5">
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <div class="text-base font-bold text-[var(--text-primary)] tracking-tight">Official Final Merit Simulator</div>
-          <div class="text-xs font-mono text-[var(--text-secondary)] mt-0.5">
-            Final Score = 0.25 × Part A (150) + 0.75 × Part B (100)
-          </div>
-        </div>
-        <div class="px-2.5 py-1 rounded-full text-xs font-mono font-black" style="background-color: ${tierColor}20; color: ${tierColor}; border: 1px solid ${tierColor}40;">
-          ${tierBadge}
-        </div>
-      </div>
-
-      <!-- Real-Time Score Board -->
-      <div class="p-3.5 sm:p-4 rounded-2xl bg-black/70 border border-[var(--border-subtle)] mb-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <!-- 2. Apple Editorial Inset Merit Simulator - Single Unified Surface -->
+    <div class="apple-inset-group">
+      <!-- Card Header -->
+      <div class="p-4 sm:p-5 border-b border-white/[0.06]">
+        <div class="flex items-start justify-between gap-3">
           <div>
-            <div class="text-[11px] font-mono uppercase text-[var(--text-secondary)]">Projected Merit Score</div>
-            <div class="flex items-baseline gap-2 mt-0.5">
-              <span id="displayMeritScore" class="text-3xl sm:text-4xl font-mono font-black text-[var(--domino-accent)]">
+            <div class="text-xs font-mono uppercase tracking-wider text-zinc-400">Official Merit Equation Simulator</div>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span id="displayMeritScore" class="text-4xl sm:text-5xl font-mono font-extrabold tracking-tight text-white">
                 ${meritScore.toFixed(2)}
               </span>
-              <span class="text-sm font-mono text-[var(--text-secondary)]">/ 112.50 Max</span>
+              <span class="text-sm font-mono text-zinc-500">/ 112.50 Max</span>
             </div>
-            <div class="text-xs font-medium mt-1" style="color: ${tierColor};">${tierLabel}</div>
+            <div class="flex items-center gap-2 mt-1.5">
+              <span class="w-2 h-2 rounded-full" style="background-color: ${tierColor};"></span>
+              <span class="text-xs font-semibold tracking-wide" style="color: ${tierColor};">${tierLabel}</span>
+            </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 text-right">
-            <div class="p-2 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-              <div class="text-[9px] font-mono text-[var(--text-secondary)]">Part A (0.25×)</div>
-              <div id="displayPartATotal" class="text-sm font-mono font-bold text-[var(--text-primary)]">${partATotal} / 150</div>
-              <div id="displayPartAContrib" class="text-[10px] font-mono text-[var(--text-secondary)]">+${(0.25 * partATotal).toFixed(2)} pts</div>
+          <!-- Sectional Contributions (No nested cards, clean typographic layout) -->
+          <div class="text-right space-y-1">
+            <div>
+              <span class="text-[10px] font-mono text-zinc-400 uppercase">Part A (25%)</span>
+              <div id="displayPartATotal" class="text-sm font-mono font-bold text-white">${partATotal} / 150</div>
+              <div id="displayPartAContrib" class="text-[11px] font-mono text-zinc-400">+${(0.25 * partATotal).toFixed(2)} pts</div>
             </div>
-            <div class="p-2 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-              <div class="text-[9px] font-mono text-[#F59E0B]">Part B (0.75×)</div>
+            <div class="pt-1">
+              <span class="text-[10px] font-mono text-[#F59E0B] uppercase">Part B (75%)</span>
               <div id="displayPartBTotal" class="text-sm font-mono font-bold text-[#F59E0B]">${partBTotal} / 100</div>
-              <div id="displayPartBContrib" class="text-[10px] font-mono text-[#F59E0B]">+${(0.75 * partBTotal).toFixed(2)} pts</div>
+              <div id="displayPartBContrib" class="text-[11px] font-mono text-[#F59E0B]">+${(0.75 * partBTotal).toFixed(2)} pts</div>
             </div>
           </div>
         </div>
 
-        <!-- Comparative Merit Range Track -->
-        <div class="mt-3.5 pt-3 border-t border-[var(--border-subtle)]">
-          <div class="flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)] mb-1">
+        <!-- Continuous Comparative Merit Track -->
+        <div class="mt-4 pt-3 border-t border-white/[0.06]">
+          <div class="flex items-center justify-between text-[11px] font-mono text-zinc-400 mb-1.5">
             <span>Baseline: 63.50</span>
-            <span class="text-[#F59E0B]">AIR 1 Gate: 91.00–95.00</span>
+            <span class="text-[#F59E0B] font-semibold">AIR 1 Gate: 91.00–95.00</span>
             <span>Max: 112.50</span>
           </div>
-          <div class="h-2.5 w-full bg-zinc-900 rounded-full overflow-hidden relative border border-zinc-800">
-            <!-- Baseline Marker -->
+          <div class="h-2 w-full bg-zinc-900 rounded-full overflow-hidden relative border border-white/[0.08]">
             <div class="absolute top-0 bottom-0 w-0.5 bg-zinc-600 z-10" style="left: ${baselinePct}%;"></div>
-            <!-- Target Zone -->
-            <div class="absolute top-0 bottom-0 bg-[#F59E0B]/20 z-0" style="left: ${targetMinPct}%; width: 5%;"></div>
-            <!-- Current Simulation Bar -->
-            <div id="meritProgressBar" class="h-full bg-gradient-to-r from-[var(--domino-accent)] to-[#F59E0B] transition-all duration-300" style="width: ${currentPct}%;"></div>
+            <div class="absolute top-0 bottom-0 bg-[#F59E0B]/25 z-0" style="left: ${targetMinPct}%; width: 5%;"></div>
+            <div id="meritProgressBar" class="h-full bg-gradient-to-r from-[var(--domino-accent)] to-[#F59E0B] transition-all duration-200" style="width: ${currentPct}%;"></div>
           </div>
+        </div>
+
+        <!-- 3x Leverage Law Callout -->
+        <div class="mt-3.5 flex items-start gap-2.5 text-xs text-zinc-400 bg-[#F59E0B]/[0.08] p-2.5 rounded-xl border border-[#F59E0B]/20">
+          <span class="text-[#F59E0B] font-bold shrink-0">3× Leverage:</span>
+          <span>+1 mark in Part B adds <strong>+0.75</strong> final rank points (vs +0.25 for Part A). Part B governs 75% of your All India Rank.</span>
         </div>
       </div>
 
-      <!-- 3x Leverage Asymmetry Visualizer -->
-      <div class="p-3 rounded-xl bg-[#F59E0B]/10 border border-[#F59E0B]/30 mb-4 flex items-start gap-2.5">
-        <div class="p-1.5 rounded-lg bg-[#F59E0B]/20 text-[#F59E0B] mt-0.5">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <div class="text-xs text-[var(--text-secondary)] leading-relaxed">
-          <strong class="text-[#F59E0B]">3x Leverage Law:</strong> +1 mark in Part B adds <strong class="text-[var(--text-primary)]">+0.75</strong> final merit points. In Part A, +1 mark yields only <strong class="text-[var(--text-primary)]">+0.25</strong>. Part B delivers <strong>75%</strong> of your final All India Rank!
-        </div>
-      </div>
-
-      <!-- Sectional Sliders / Inputs -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-        <!-- Part A Inputs -->
-        <div class="p-3 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] space-y-2.5">
-          <div class="text-xs font-mono font-bold text-[var(--text-primary)] uppercase flex justify-between">
-            <span>Part A Sections (150 Marks)</span>
-            <span class="text-[var(--text-secondary)]">Cutoff Filter</span>
+      <!-- Sliders Inset Rows (Clean Hairline Grouped List) -->
+      <div class="divide-y divide-white/[0.05]">
+        <!-- Part A Section -->
+        <div class="p-4 sm:p-5">
+          <div class="flex items-center justify-between text-xs font-mono font-bold uppercase text-zinc-400 mb-3">
+            <span>Part A Sections (150 Marks Cutoff Filter)</span>
+            <span class="text-zinc-500">Target &ge;114</span>
           </div>
 
-          <div>
-            <div class="flex justify-between text-[11px] mb-1">
-              <span class="text-[var(--text-secondary)]">NAT (8 Qs × 4M)</span>
-              <span id="val_nat" class="font-mono font-bold text-[var(--text-primary)]">${_meritState.nat} / 32</span>
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-zinc-300">NAT (8 Qs × 4M)</span>
+                <span id="val_nat" class="font-mono font-bold text-white">${_meritState.nat} / 32</span>
+              </div>
+              <input type="range" id="slider_nat" min="0" max="32" step="4" value="${_meritState.nat}" class="ios-slider w-full" />
             </div>
-            <input type="range" id="slider_nat" min="0" max="32" step="4" value="${_meritState.nat}" class="w-full accent-[var(--domino-accent)] cursor-pointer" />
-          </div>
 
-          <div>
-            <div class="flex justify-between text-[11px] mb-1">
-              <span class="text-[var(--text-secondary)]">MSQ (10 Qs × 4M)</span>
-              <span id="val_msq" class="font-mono font-bold text-[var(--text-primary)]">${_meritState.msq} / 40</span>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-zinc-300">MSQ (10 Qs × 4M)</span>
+                <span id="val_msq" class="font-mono font-bold text-white">${_meritState.msq} / 40</span>
+              </div>
+              <input type="range" id="slider_msq" min="0" max="40" step="1" value="${_meritState.msq}" class="ios-slider w-full" />
             </div>
-            <input type="range" id="slider_msq" min="0" max="40" step="1" value="${_meritState.msq}" class="w-full accent-[var(--domino-accent)] cursor-pointer" />
-          </div>
 
-          <div>
-            <div class="flex justify-between text-[11px] mb-1">
-              <span class="text-[var(--text-secondary)]">MCQ (26 Qs × 3M)</span>
-              <span id="val_mcq" class="font-mono font-bold text-[var(--text-primary)]">${_meritState.mcq} / 78</span>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-zinc-300">MCQ (26 Qs × 3M)</span>
+                <span id="val_mcq" class="font-mono font-bold text-white">${_meritState.mcq} / 78</span>
+              </div>
+              <input type="range" id="slider_mcq" min="0" max="78" step="1" value="${_meritState.mcq}" class="ios-slider w-full" />
             </div>
-            <input type="range" id="slider_mcq" min="0" max="78" step="1" value="${_meritState.mcq}" class="w-full accent-[var(--domino-accent)] cursor-pointer" />
           </div>
         </div>
 
-        <!-- Part B Inputs -->
-        <div class="p-3 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] space-y-2.5">
-          <div class="text-xs font-mono font-bold text-[#F59E0B] uppercase flex justify-between">
-            <span>Part B Mandatory (100 Marks)</span>
-            <span>24m Hard Stop</span>
+        <!-- Part B Section -->
+        <div class="p-4 sm:p-5">
+          <div class="flex items-center justify-between text-xs font-mono font-bold uppercase text-[#F59E0B] mb-3">
+            <span>Part B Mandatory Studio (100 Marks)</span>
+            <span class="text-zinc-500">24m Hard Stop / Question</span>
           </div>
 
-          <div>
-            <div class="flex justify-between text-[11px] mb-1">
-              <span class="text-[var(--text-secondary)]">Q1: Sketching & POV</span>
-              <span id="val_q1" class="font-mono font-bold text-[#F59E0B]">${_meritState.q1} / 20</span>
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-zinc-300">Q1: Sketching & POV</span>
+                <span id="val_q1" class="font-mono font-bold text-[#F59E0B]">${_meritState.q1} / 20</span>
+              </div>
+              <input type="range" id="slider_q1" min="0" max="20" step="1" value="${_meritState.q1}" class="ios-slider w-full" />
             </div>
-            <input type="range" id="slider_q1" min="0" max="20" step="1" value="${_meritState.q1}" class="w-full accent-[#F59E0B] cursor-pointer" />
-          </div>
 
-          <div>
-            <div class="flex justify-between text-[11px] mb-1">
-              <span class="text-[var(--text-secondary)]">Q2: 4-Frame Creativity</span>
-              <span id="val_q2" class="font-mono font-bold text-[#F59E0B]">${_meritState.q2} / 20</span>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-zinc-300">Q2: 4-Frame Narrative Creativity</span>
+                <span id="val_q2" class="font-mono font-bold text-[#F59E0B]">${_meritState.q2} / 20</span>
+              </div>
+              <input type="range" id="slider_q2" min="0" max="20" step="1" value="${_meritState.q2}" class="ios-slider w-full" />
             </div>
-            <input type="range" id="slider_q2" min="0" max="20" step="1" value="${_meritState.q2}" class="w-full accent-[#F59E0B] cursor-pointer" />
-          </div>
 
-          <div>
-            <div class="flex justify-between text-[11px] mb-1">
-              <span class="text-[var(--text-secondary)]">Q3: Visual Sensitivity</span>
-              <span id="val_q3" class="font-mono font-bold text-[#F59E0B]">${_meritState.q3} / 20</span>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-zinc-300">Q3: Visual Sensitivity & Type</span>
+                <span id="val_q3" class="font-mono font-bold text-[#F59E0B]">${_meritState.q3} / 20</span>
+              </div>
+              <input type="range" id="slider_q3" min="0" max="20" step="1" value="${_meritState.q3}" class="ios-slider w-full" />
             </div>
-            <input type="range" id="slider_q3" min="0" max="20" step="1" value="${_meritState.q3}" class="w-full accent-[#F59E0B] cursor-pointer" />
-          </div>
 
-          <div>
-            <div class="flex justify-between text-[11px] mb-1">
-              <span class="text-[var(--text-secondary)]">Q4: Form Sensitivity</span>
-              <span id="val_q4" class="font-mono font-bold text-[#F59E0B]">${_meritState.q4} / 20</span>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-zinc-300">Q4: Form Sensitivity & Ergonomics</span>
+                <span id="val_q4" class="font-mono font-bold text-[#F59E0B]">${_meritState.q4} / 20</span>
+              </div>
+              <input type="range" id="slider_q4" min="0" max="20" step="1" value="${_meritState.q4}" class="ios-slider w-full" />
             </div>
-            <input type="range" id="slider_q4" min="0" max="20" step="1" value="${_meritState.q4}" class="w-full accent-[#F59E0B] cursor-pointer" />
-          </div>
 
-          <div>
-            <div class="flex justify-between text-[11px] mb-1">
-              <span class="text-[var(--text-secondary)]">Q5: Problem ID & Solutions</span>
-              <span id="val_q5" class="font-mono font-bold text-[#F59E0B]">${_meritState.q5} / 20</span>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-zinc-300">Q5: Problem ID & Visual Solutions</span>
+                <span id="val_q5" class="font-mono font-bold text-[#F59E0B]">${_meritState.q5} / 20</span>
+              </div>
+              <input type="range" id="slider_q5" min="0" max="20" step="1" value="${_meritState.q5}" class="ios-slider w-full" />
             </div>
-            <input type="range" id="slider_q5" min="0" max="20" step="1" value="${_meritState.q5}" class="w-full accent-[#F59E0B] cursor-pointer" />
           </div>
         </div>
       </div>
@@ -398,7 +364,7 @@ function renderCommandSubView(dayIndex, totalDays, isMitra) {
 }
 
 // -------------------------------------------------------------
-// SUB-VIEW 2: CLOCK & DAILY PROTOCOL MATRIX
+// SUB-VIEW 2: CLOCK & DAILY PROTOCOL (APPLE CALENDAR TIMELINE SPINE)
 // -------------------------------------------------------------
 function renderClockSubView() {
   const now = new Date();
@@ -409,7 +375,7 @@ function renderClockSubView() {
 
   // Find active block
   let activeBlock = null;
-  let nextBlock = null;
+  let activeIndex = -1;
   for (let i = 0; i < MITRA_TIMETABLE.length; i++) {
     const b = MITRA_TIMETABLE[i];
     if (b.weekendOnly && !isWeekend) continue;
@@ -419,14 +385,14 @@ function renderClockSubView() {
     const [eh, em] = b.end.split(':').map(Number);
     let sMin = sh * 60 + sm;
     let eMin = eh * 60 + em;
-    if (eMin < sMin) eMin += 24 * 60; // Crosses midnight
+    if (eMin < sMin) eMin += 24 * 60;
 
     let testCurrent = currentTotalMins;
     if (testCurrent < sMin && sh >= 22) testCurrent += 24 * 60;
 
     if (testCurrent >= sMin && testCurrent < eMin) {
       activeBlock = b;
-      nextBlock = MITRA_TIMETABLE[(i + 1) % MITRA_TIMETABLE.length];
+      activeIndex = i;
       break;
     }
   }
@@ -439,80 +405,77 @@ function renderClockSubView() {
   if (diffCutoff > 0) {
     const ch = Math.floor(diffCutoff / 60);
     const cm = diffCutoff % 60;
-    caffeineText = `${ch}h ${cm}m remaining`;
+    caffeineText = `${ch}h ${cm}m left`;
     caffeineClass = 'text-[#F59E0B] bg-[#F59E0B]/15 border-[#F59E0B]/30';
   }
 
   const selectedRotation = MITRA_ROTATION_MATRIX.find(r => r.dayIndex === _selectedRotationDay) || MITRA_ROTATION_MATRIX[0];
 
   return `
-    <!-- 1. Live Protocol Clock Hero -->
-    <div class="bento-card p-4 sm:p-5">
+    <!-- 1. Circadian Overview HUD -->
+    <div class="apple-inset-group p-4 sm:p-5">
       <div class="flex items-center justify-between mb-3">
         <div>
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-ping"></span>
-            <span class="text-base font-bold text-[var(--text-primary)] tracking-tight">Active Solar Circadian Clock</span>
+            <span class="text-sm font-bold text-white tracking-tight">Active Circadian Clock</span>
           </div>
-          <div class="text-xs font-mono text-[var(--text-secondary)] mt-0.5">Strict 06:00 – 22:00 Diurnal Synchronization</div>
+          <div class="text-xs font-mono text-zinc-400 mt-0.5">06:00 – 22:00 Diurnal Synchronization</div>
         </div>
-        <div id="liveClockDisplay" class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-primary)]">
+        <div id="liveClockDisplay" class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-white/[0.08] text-white">
           ${String(currentHours).padStart(2, '0')}:${String(currentMins).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} IST
         </div>
       </div>
 
-      <!-- Active Block Highlight Banner -->
-      <div class="p-4 rounded-2xl bg-black/80 border border-[var(--domino-accent)]/50 shadow-[0_0_15px_var(--domino-accent-glow)] mb-3">
+      <!-- Current Engagement Banner -->
+      <div class="p-3.5 rounded-2xl bg-[#09090C] border border-[var(--domino-accent)]/50 shadow-[0_0_20px_var(--domino-accent-glow)] mb-3">
         <div class="flex items-center justify-between text-xs font-mono mb-1">
-          <span class="px-2 py-0.5 rounded bg-[var(--domino-accent)] text-[#09090B] font-black uppercase text-[10px]">
+          <span class="px-2 py-0.5 rounded bg-[var(--domino-accent)] text-[#09090B] font-bold text-[10px] uppercase">
             ${activeBlock ? activeBlock.tag : 'REST'} • CURRENT ENGAGEMENT
           </span>
-          <span class="text-[var(--text-primary)] font-bold">
+          <span class="text-white font-bold">
             ${activeBlock ? `${activeBlock.start} – ${activeBlock.end}` : 'Night Rest'}
           </span>
         </div>
-        <div class="text-lg sm:text-xl font-bold text-[var(--text-primary)] mt-1">
-          ${activeBlock ? activeBlock.name : 'Sleep Fortress (N3 Recovery)'}
+        <div class="text-base sm:text-lg font-bold text-white mt-1">
+          ${activeBlock ? activeBlock.name : 'Sleep Fortress (N3 Deep Recovery)'}
         </div>
-        <div class="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">
+        <div class="text-xs text-zinc-300 mt-1 leading-relaxed">
           ${activeBlock ? activeBlock.protocol : 'Lights out at 22:00 sharp. 5 complete 90-min cycles for motor skill synthesis.'}
         </div>
       </div>
 
-      <!-- Circadian Triggers Row -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <!-- Circadian Thresholds Strip -->
+      <div class="grid grid-cols-3 gap-2 text-center">
         <div class="p-2.5 rounded-xl border ${caffeineClass}">
-          <div class="text-[10px] font-mono uppercase font-bold">13:30 Hard Caffeine Cutoff</div>
-          <div class="text-sm font-mono font-bold mt-0.5">${caffeineText}</div>
-          <div class="text-[9px] text-[var(--text-secondary)] mt-0.5">Zero caffeine 8.5h pre-sleep</div>
+          <div class="text-[9px] font-mono uppercase font-bold text-zinc-400">13:30 Caffeine Cut</div>
+          <div class="text-xs font-mono font-bold mt-0.5">${caffeineText}</div>
         </div>
-        <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-          <div class="text-[10px] font-mono text-[var(--text-secondary)] uppercase">12:45–13:10 NSDR / Nap</div>
-          <div class="text-sm font-mono font-bold text-[var(--text-primary)] mt-0.5">25-Min Spindles</div>
-          <div class="text-[9px] text-[var(--text-secondary)] mt-0.5">Locks morning sketching motor pathways</div>
+        <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+          <div class="text-[9px] font-mono text-zinc-400 uppercase">12:45 NSDR Nap</div>
+          <div class="text-xs font-mono font-bold text-white mt-0.5">25-Min Spindles</div>
         </div>
-        <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-          <div class="text-[10px] font-mono text-[var(--text-secondary)] uppercase">22:00 Sleep Fortress</div>
-          <div class="text-sm font-mono font-bold text-[var(--text-primary)] mt-0.5">8.0h in Bed</div>
-          <div class="text-[9px] text-[var(--text-secondary)] mt-0.5">Blue light cutoff at 21:30</div>
+        <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+          <div class="text-[9px] font-mono text-zinc-400 uppercase">22:00 Sleep Lock</div>
+          <div class="text-xs font-mono font-bold text-white mt-0.5">8.0h in Bed</div>
         </div>
       </div>
     </div>
 
     <!-- 2. Seven-Day Subpart Rotation Matrix -->
-    <div class="bento-card p-4 sm:p-5">
+    <div class="apple-inset-group p-4 sm:p-5">
       <div class="flex items-center justify-between mb-3">
         <div>
-          <div class="text-base font-bold text-[var(--text-primary)] tracking-tight">Seven-Day Subpart Rotation Matrix</div>
-          <div class="text-xs text-[var(--text-secondary)] mt-0.5">Zero syllabus leakage across 54 days</div>
+          <div class="text-sm font-bold text-white tracking-tight">Seven-Day Subpart Rotation Matrix</div>
+          <div class="text-xs text-zinc-400 mt-0.5">Zero syllabus leakage across 54 days</div>
         </div>
-        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
-          ${isWeekend ? 'WEEKEND FREELANCE ACTIVE' : 'WEEKDAY FULL SPRINT'}
+        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.08] text-zinc-300">
+          ${isWeekend ? 'WEEKEND FREELANCE' : 'WEEKDAY SPRINT'}
         </span>
       </div>
 
       <!-- Day Switcher Pills -->
-      <div class="grid grid-cols-7 gap-1 p-1 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] mb-3">
+      <div class="grid grid-cols-7 gap-1 p-1 rounded-xl bg-black/40 border border-white/[0.06] mb-3">
         ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d, idx) => {
           const isSelected = idx === _selectedRotationDay;
           const isToday = idx === now.getDay();
@@ -520,69 +483,88 @@ function renderClockSubView() {
             <button
               type="button"
               data-rotation-day="${idx}"
-              class="py-1.5 px-1 rounded-lg text-center text-xs font-mono font-bold transition-all ${
+              class="py-1.5 px-1 rounded-lg text-center text-xs font-mono font-bold transition-all ios-spring ${
                 isSelected
-                  ? 'bg-[var(--domino-accent)] text-[#09090B] shadow-sm'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                  ? 'bg-white/[0.16] text-white shadow-sm'
+                  : 'text-zinc-400 hover:text-white'
               }"
             >
               <span>${d}</span>
-              ${isToday ? `<span class="block w-1 h-1 rounded-full mx-auto mt-0.5 ${isSelected ? 'bg-black' : 'bg-[#F59E0B]'}"></span>` : ''}
+              ${isToday ? `<span class="block w-1 h-1 rounded-full mx-auto mt-0.5 ${isSelected ? 'bg-white' : 'bg-[#F59E0B]'}"></span>` : ''}
             </button>
           `;
         }).join('')}
       </div>
 
-      <!-- Selected Day Rotation Details Card -->
-      <div class="p-3.5 rounded-2xl bg-black/60 border border-[var(--border-subtle)] space-y-2.5">
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-bold text-[var(--text-primary)]">${selectedRotation.dayName} Rotation</span>
+      <!-- Selected Day Details Inset List -->
+      <div class="apple-inset-group divide-y divide-white/[0.05] bg-black/50">
+        <div class="apple-row flex items-center justify-between">
+          <span class="text-xs font-bold text-white">${selectedRotation.dayName} Focus</span>
           <span class="text-xs font-mono text-[#F59E0B]">${selectedRotation.pyqTarget}</span>
         </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-            <div class="text-[10px] font-mono text-[var(--text-secondary)] uppercase">Part A Tier-1 (14:30–15:45)</div>
-            <div class="font-medium text-[var(--text-primary)] mt-1">${selectedRotation.partASubpart}</div>
-          </div>
-          <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-            <div class="text-[10px] font-mono text-[#F59E0B] uppercase">Part B Rescue Studio (16:00–17:15)</div>
-            <div class="font-medium text-[var(--text-primary)] mt-1">${selectedRotation.partBRescue}</div>
-          </div>
+        <div class="apple-row">
+          <div class="text-[10px] font-mono text-zinc-400 uppercase">Part A Tier-1 (14:30–15:45)</div>
+          <div class="text-xs font-medium text-white mt-0.5">${selectedRotation.partASubpart}</div>
         </div>
-
-        <div class="p-2.5 rounded-xl ${selectedRotation.isFreelance ? 'bg-[#F59E0B]/10 border border-[#F59E0B]/30' : 'bg-[var(--surface-well)] border border-[var(--border-subtle)]'} text-xs">
-          <div class="text-[10px] font-mono ${selectedRotation.isFreelance ? 'text-[#F59E0B]' : 'text-[var(--text-secondary)]'} uppercase">
-            Evening Block (17:15–20:15)
-          </div>
-          <div class="font-medium text-[var(--text-primary)] mt-0.5">${selectedRotation.eveningMode}</div>
+        <div class="apple-row">
+          <div class="text-[10px] font-mono text-[#F59E0B] uppercase">Part B Rescue Studio (16:00–17:15)</div>
+          <div class="text-xs font-medium text-white mt-0.5">${selectedRotation.partBRescue}</div>
+        </div>
+        <div class="apple-row">
+          <div class="text-[10px] font-mono text-zinc-400 uppercase">Evening Block (17:15–20:15)</div>
+          <div class="text-xs font-medium text-white mt-0.5">${selectedRotation.eveningMode}</div>
         </div>
       </div>
     </div>
 
-    <!-- 3. Full 19-Block Schedule Accordion -->
-    <div class="bento-card p-4 sm:p-5">
-      <div class="flex items-center justify-between mb-3">
-        <div class="text-base font-bold text-[var(--text-primary)] tracking-tight">Full Diurnal Timetable (06:00 – 22:00)</div>
-        <button id="btnToggleTimetable" class="text-xs text-[var(--domino-accent)] hover:underline">Toggle Full List</button>
+    <!-- 3. Apple Calendar Timeline Spine (06:00 – 22:00 Diurnal Schedule) -->
+    <div class="apple-inset-group p-4 sm:p-5">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <div class="text-sm font-bold text-white tracking-tight">Full Diurnal Timeline</div>
+          <div class="text-xs text-zinc-400 mt-0.5">Chronological flow with active block telemetry</div>
+        </div>
+        <span class="text-xs font-mono text-zinc-500">19 Blocks</span>
       </div>
 
-      <div id="fullTimetableList" class="space-y-1.5 max-h-96 overflow-y-auto pr-1">
-        ${MITRA_TIMETABLE.map(b => {
-          let badgeColor = 'bg-zinc-800 text-zinc-300';
-          if (b.tag === 'PART A') badgeColor = 'bg-sky-950 text-sky-400 border border-sky-800/40';
-          if (b.tag === 'PART B') badgeColor = 'bg-amber-950 text-amber-400 border border-amber-800/40';
-          if (b.tag === 'BIO') badgeColor = 'bg-emerald-950 text-emerald-400 border border-emerald-800/40';
-          if (b.tag === 'WORK') badgeColor = 'bg-purple-950 text-purple-400 border border-purple-800/40';
+      <!-- Continuous Timeline Track -->
+      <div class="timeline-track space-y-3.5 pl-1 pr-1">
+        ${MITRA_TIMETABLE.map((b, idx) => {
+          const isActive = idx === activeIndex;
+          const [sh, sm] = b.start.split(':').map(Number);
+          const blockMin = sh * 60 + sm;
+          const isPast = blockMin + 30 < currentTotalMins && !isActive;
+
+          let tagColor = 'text-zinc-400 bg-white/[0.06] border-white/[0.08]';
+          if (b.tag === 'PART A') tagColor = 'text-sky-400 bg-sky-950/40 border-sky-800/40';
+          if (b.tag === 'PART B') tagColor = 'text-[#F59E0B] bg-amber-950/40 border-amber-800/40';
+          if (b.tag === 'BIO') tagColor = 'text-emerald-400 bg-emerald-950/40 border-emerald-800/40';
+          if (b.tag === 'WORK') tagColor = 'text-purple-400 bg-purple-950/40 border-purple-800/40';
+
           return `
-            <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] flex items-start justify-between gap-2 text-xs">
-              <div class="space-y-0.5 flex-1">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono font-bold text-[var(--text-primary)]">${b.start} – ${b.end}</span>
-                  <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase ${badgeColor}">${b.tag}</span>
-                  <span class="font-semibold text-[var(--text-primary)]">${b.name}</span>
+            <div class="flex items-start gap-4 transition-opacity duration-200 ${isActive ? 'opacity-100' : isPast ? 'opacity-40 hover:opacity-80' : 'opacity-85'}">
+              <!-- Left: Time Marker (55px width aligned with spine) -->
+              <div class="w-[50px] shrink-0 text-right pt-0.5">
+                <span class="font-mono text-xs font-bold ${isActive ? 'text-[var(--domino-accent)]' : 'text-zinc-400'}">${b.start}</span>
+              </div>
+
+              <!-- Center: Node Dot on Spine -->
+              <div class="relative z-10 flex items-center justify-center pt-1.5 shrink-0">
+                ${isActive ? `
+                  <span class="w-3 h-3 rounded-full bg-[var(--domino-accent)] shadow-[0_0_10px_var(--domino-accent-glow)] ring-2 ring-black"></span>
+                ` : `
+                  <span class="w-2 h-2 rounded-full bg-zinc-600 ring-2 ring-black"></span>
+                `}
+              </div>
+
+              <!-- Right: Content Row (No nested dark box, clean typographic hierarchy) -->
+              <div class="flex-1 pb-1">
+                <div class="flex items-baseline gap-2 flex-wrap">
+                  <span class="text-xs sm:text-sm font-bold ${isActive ? 'text-white' : 'text-zinc-200'}">${b.name}</span>
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase border ${tagColor}">${b.tag}</span>
+                  <span class="text-[11px] font-mono text-zinc-500">${b.end}</span>
                 </div>
-                <div class="text-[11px] text-[var(--text-secondary)] leading-tight">${b.protocol}</div>
+                <div class="text-xs text-zinc-400 mt-0.5 leading-relaxed">${b.protocol}</div>
               </div>
             </div>
           `;
@@ -593,87 +575,97 @@ function renderClockSubView() {
 }
 
 // -------------------------------------------------------------
-// SUB-VIEW 3: CONQUEST MATRIX & LAWS
+// SUB-VIEW 3: CONQUEST MATRIX & LAWS (APPLE INSET GROUPED ROWS)
 // -------------------------------------------------------------
 function renderConquestSubView() {
   return `
-    <!-- 1. Chanakya Conquest Matrix -->
-    <div class="bento-card p-4 sm:p-5">
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <div class="text-base font-bold text-[var(--text-primary)] tracking-tight">Chanakya Conquest Matrix</div>
-          <div class="text-xs text-[var(--text-secondary)] mt-0.5">Tiered syllabus mastery based on 10-year weightages</div>
-        </div>
+    <!-- 1. Chanakya Conquest Matrix (Grouped Inset Lists) -->
+    <div class="space-y-4">
+      <div>
+        <h2 class="text-base font-bold text-white tracking-tight">Chanakya Conquest Matrix</h2>
+        <p class="text-xs text-zinc-400 mt-0.5">10-year weightage breakdown with strict accuracy gates</p>
       </div>
 
-      <div class="space-y-3">
-        ${CHANAKYA_MATRIX.map(tier => `
-          <div class="p-3.5 rounded-2xl bg-black/60 border border-[var(--border-subtle)] space-y-2">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${tier.color};"></span>
-                <span class="text-sm font-bold text-[var(--text-primary)]">${tier.tier}</span>
-              </div>
-              <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded" style="background-color: ${tier.color}20; color: ${tier.color}; border: 1px solid ${tier.color}40;">
-                ${tier.badge}
-              </span>
+      ${CHANAKYA_MATRIX.map(tier => `
+        <div class="apple-inset-group">
+          <!-- Tier Header -->
+          <div class="p-3.5 sm:p-4 border-b border-white/[0.06] flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full" style="background-color: ${tier.color};"></span>
+              <span class="text-sm font-bold text-white">${tier.tier}</span>
             </div>
-            <div class="text-xs text-[var(--text-secondary)]">${tier.description}</div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-              ${tier.topics.map(t => `
-                <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] space-y-1 text-xs">
-                  <div class="flex items-start justify-between gap-1">
-                    <span class="font-bold text-[var(--text-primary)]">${t.name}</span>
-                    <span class="text-[10px] font-mono text-[var(--text-secondary)] shrink-0">${t.weight}</span>
-                  </div>
-                  <div class="flex items-center justify-between text-[11px] font-mono">
-                    <span class="text-[var(--text-secondary)]">Acc: <strong class="text-[var(--text-primary)]">${t.baselineAcc}</strong></span>
-                    <span class="text-[#F59E0B]">Target: ${t.targetAcc}</span>
-                    <span class="text-[var(--text-secondary)]">${t.speed}</span>
-                  </div>
-                  <div class="text-[10.5px] text-[var(--text-secondary)] leading-tight pt-0.5">${t.subtopics}</div>
-                </div>
-              `).join('')}
-            </div>
+            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-white/[0.08]" style="color: ${tier.color};">
+              ${tier.badge}
+            </span>
           </div>
-        `).join('')}
-      </div>
+
+          <!-- Description -->
+          <div class="px-4 py-2 text-xs text-zinc-400 border-b border-white/[0.05] bg-black/20">
+            ${tier.description}
+          </div>
+
+          <!-- Topics Inset Rows (Hairline dividers, no individual nested cards) -->
+          <div class="divide-y divide-white/[0.05]">
+            ${tier.topics.map(t => `
+              <div class="apple-row flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div class="flex-1">
+                  <div class="flex items-baseline gap-2">
+                    <span class="text-xs font-bold text-white">${t.name}</span>
+                    <span class="text-[10px] font-mono text-zinc-400">${t.weight}</span>
+                  </div>
+                  <div class="text-[11px] text-zinc-400 mt-0.5">${t.subtopics}</div>
+                </div>
+
+                <div class="flex items-center gap-3 shrink-0 self-end sm:self-auto text-xs font-mono">
+                  <span class="text-zinc-400">Acc: <strong class="text-white">${t.baselineAcc}</strong></span>
+                  <span class="text-[#F59E0B] font-semibold">Target: ${t.targetAcc}</span>
+                  <span class="text-zinc-500 text-[10px]">${t.speed}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
     </div>
 
     <!-- 2. Game-Theoretic Scoring Theorems -->
-    <div class="bento-card p-4 sm:p-5">
-      <div class="text-base font-bold text-[var(--text-primary)] tracking-tight mb-1">5 Game-Theoretic Scoring Theorems</div>
-      <div class="text-xs text-[var(--text-secondary)] mb-3">Mathematically proven decision laws for CEED Part A and Part B</div>
+    <div class="apple-inset-group">
+      <div class="p-4 border-b border-white/[0.06]">
+        <div class="text-sm font-bold text-white tracking-tight">5 Game-Theoretic Scoring Theorems</div>
+        <div class="text-xs text-zinc-400 mt-0.5">Mathematically proven decision laws for CEED Part A and Part B</div>
+      </div>
 
-      <div class="space-y-2.5">
+      <div class="divide-y divide-white/[0.05]">
         ${GAME_THEORY_LAWS.map(law => `
-          <div class="p-3 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] space-y-1 text-xs">
+          <div class="apple-row space-y-1">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-[var(--domino-accent)] text-sm">${law.title}</span>
+              <span class="text-xs font-bold text-[var(--domino-accent)]">${law.title}</span>
+              <span class="text-[10px] font-mono text-[#F59E0B]">Protocol</span>
             </div>
-            <div class="font-semibold text-[var(--text-primary)]">${law.rule}</div>
-            <div class="text-[11.5px] text-[var(--text-secondary)] leading-relaxed">${law.rationale}</div>
-            <div class="text-[11px] font-mono text-[#F59E0B] pt-0.5">Protocol: ${law.protocol}</div>
+            <div class="text-xs font-medium text-white">${law.rule}</div>
+            <div class="text-[11.5px] text-zinc-400 leading-relaxed">${law.rationale}</div>
+            <div class="text-[11px] font-mono text-zinc-300 pt-0.5">${law.protocol}</div>
           </div>
         `).join('')}
       </div>
     </div>
 
     <!-- 3. Pre-Mortem Failure Shields -->
-    <div class="bento-card p-4 sm:p-5">
-      <div class="text-base font-bold text-[var(--text-primary)] tracking-tight mb-1">Pre-Mortem Failure Shields</div>
-      <div class="text-xs text-[var(--text-secondary)] mb-3">Proactive behavioral firewalls against high-probability breakdown modes</div>
+    <div class="apple-inset-group">
+      <div class="p-4 border-b border-white/[0.06]">
+        <div class="text-sm font-bold text-white tracking-tight">Pre-Mortem Failure Shields</div>
+        <div class="text-xs text-zinc-400 mt-0.5">Proactive firewalls against high-probability breakdown modes</div>
+      </div>
 
-      <div class="space-y-2">
+      <div class="divide-y divide-white/[0.05]">
         ${PRE_MORTEM_SHIELDS.map((s, idx) => `
-          <div class="p-2.5 rounded-xl bg-black/60 border border-[var(--border-subtle)] flex items-start gap-2 text-xs">
-            <span class="w-5 h-5 rounded-full bg-red-950/40 border border-red-800/40 text-red-400 flex items-center justify-center shrink-0 font-mono text-[10px]">
+          <div class="apple-row flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-red-950/40 border border-red-800/40 text-red-400 flex items-center justify-center shrink-0 font-mono text-[10px] mt-0.5">
               ${idx + 1}
             </span>
-            <div class="space-y-0.5">
-              <div class="font-bold text-[var(--text-primary)]">${s.trigger}</div>
-              <div class="text-[11px] text-[var(--text-secondary)] leading-relaxed">${s.shield}</div>
+            <div class="space-y-0.5 flex-1">
+              <div class="text-xs font-bold text-white">${s.trigger}</div>
+              <div class="text-[11px] text-zinc-400 leading-relaxed">${s.shield}</div>
             </div>
           </div>
         `).join('')}
@@ -683,88 +675,85 @@ function renderConquestSubView() {
 }
 
 // -------------------------------------------------------------
-// SUB-VIEW 4: 54-DAY ROADMAP & MILESTONES
+// SUB-VIEW 4: 54-DAY ROADMAP & MILESTONES (VERTICAL STEPPER WITH ZERO COLLISION)
 // -------------------------------------------------------------
 function renderRoadmapSubView(dayIndex) {
   return `
-    <!-- 1. Phased Battle Calendar -->
-    <div class="bento-card p-4 sm:p-5">
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <div class="text-base font-bold text-[var(--text-primary)] tracking-tight">54-Day Phased Roadmap</div>
-          <div class="text-xs text-[var(--text-secondary)] mt-0.5">From diagnostic baseline to AIR 1 championship execution</div>
-        </div>
+    <div class="space-y-4">
+      <div>
+        <h2 class="text-base font-bold text-white tracking-tight">54-Day Phased Roadmap</h2>
+        <p class="text-xs text-zinc-400 mt-0.5">From diagnostic baseline to AIR 1 championship execution</p>
       </div>
 
-      <div class="space-y-3">
+      <!-- Vertical Milestone Stepper Container -->
+      <div class="apple-inset-group divide-y divide-white/[0.06]">
         ${MITRA_ROADMAP_PHASES.map((p, idx) => {
           const isActive = dayIndex >= (idx === 0 ? 0 : idx === 1 ? 19 : idx === 2 ? 37 : idx === 3 ? 50 : 54) &&
                            dayIndex <= (idx === 0 ? 18 : idx === 1 ? 36 : idx === 2 ? 49 : idx === 3 ? 53 : 54);
           return `
-            <div class="p-3.5 rounded-2xl border transition-all ${
-              isActive
-                ? 'bg-black/80 border-[var(--domino-accent)] shadow-[0_0_12px_var(--domino-accent-glow)]'
-                : 'bg-black/50 border-[var(--border-subtle)]'
-            }">
-              <div class="flex items-center justify-between mb-1">
+            <div class="p-4 sm:p-5 transition-all ${isActive ? 'bg-white/[0.04]' : ''}">
+              <!-- Phase Header: Completely Stacked / Responsive to ELIMINATE Text Collision Bug -->
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
                 <div class="flex items-center gap-2">
                   <span class="text-xs font-mono font-bold px-2 py-0.5 rounded ${
-                    isActive ? 'bg-[var(--domino-accent)] text-[#09090B]' : 'bg-zinc-800 text-zinc-400'
+                    isActive ? 'bg-[var(--domino-accent)] text-[#09090B]' : 'bg-white/[0.08] text-zinc-400'
                   }">
                     ${p.days}
                   </span>
-                  <span class="text-sm font-bold text-[var(--text-primary)]">${p.name}</span>
+                  <span class="text-sm sm:text-base font-bold text-white">${p.name}</span>
                 </div>
-                <span class="text-xs font-mono text-[var(--text-secondary)]">${p.dates}</span>
+                <!-- Clean Date Range Pill (Guaranteed separate line or clean right alignment) -->
+                <span class="text-xs font-mono text-zinc-400 self-start sm:self-auto">${p.dates}</span>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 text-xs">
-                <div class="p-2 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-                  <span class="text-[10px] font-mono text-[var(--text-secondary)] uppercase">Part A KPI</span>
-                  <div class="font-medium text-[var(--text-primary)] mt-0.5">${p.partAKPI}</div>
+              <!-- Inline KPI Metrics (No heavy inner box soup) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2.5 text-xs">
+                <div class="p-2.5 rounded-xl bg-black/40 border border-white/[0.05]">
+                  <span class="text-[10px] font-mono text-zinc-400 uppercase">Part A KPI</span>
+                  <div class="font-medium text-white mt-0.5 leading-snug">${p.partAKPI}</div>
                 </div>
-                <div class="p-2 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
+                <div class="p-2.5 rounded-xl bg-black/40 border border-white/[0.05]">
                   <span class="text-[10px] font-mono text-[#F59E0B] uppercase">Part B KPI</span>
-                  <div class="font-medium text-[var(--text-primary)] mt-0.5">${p.partBKPI}</div>
+                  <div class="font-medium text-white mt-0.5 leading-snug">${p.partBKPI}</div>
                 </div>
               </div>
 
-              <div class="mt-2 text-[11px] text-[var(--text-secondary)] font-mono">
-                Mock Cadence: <strong class="text-[var(--text-primary)]">${p.mockCadence}</strong>
+              <div class="mt-2.5 text-xs text-zinc-400 font-mono">
+                Mock Cadence: <strong class="text-white">${p.mockCadence}</strong>
               </div>
             </div>
           `;
         }).join('')}
       </div>
-    </div>
 
-    <!-- 2. Exam Day Protocol (Day 54) -->
-    <div class="bento-card p-4 sm:p-5">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-sm font-mono font-black px-2 py-0.5 rounded bg-[#F59E0B] text-black uppercase">DAY 54 PROTOCOL</span>
-        <span class="text-xs font-mono text-[var(--text-secondary)]">Sunday, 17 January 2027</span>
-      </div>
-      <div class="text-base font-bold text-[var(--text-primary)]">Exam Day Solar Synchronization</div>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 text-xs">
-        <div class="p-2 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-          <div class="text-[10px] font-mono text-[var(--text-secondary)]">05:45 AM</div>
-          <div class="font-bold text-[var(--text-primary)] mt-0.5">Wake & Hydrate</div>
-          <div class="text-[10px] text-[var(--text-secondary)]">500ml salt water</div>
+      <!-- Day 54 Exam Protocol -->
+      <div class="apple-inset-group p-4 sm:p-5">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-[#F59E0B] text-black uppercase">DAY 54 PROTOCOL</span>
+          <span class="text-xs font-mono text-zinc-400">Sunday, 17 January 2027</span>
         </div>
-        <div class="p-2 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-          <div class="text-[10px] font-mono text-[var(--text-secondary)]">07:00 AM</div>
-          <div class="font-bold text-[var(--text-primary)] mt-0.5">Protein Breakfast</div>
-          <div class="text-[10px] text-[var(--text-secondary)]">Low GI sustained</div>
-        </div>
-        <div class="p-2 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-          <div class="text-[10px] font-mono text-[#F59E0B]">08:15 AM</div>
-          <div class="font-bold text-[#F59E0B] mt-0.5">Caffeine Dose #1</div>
-          <div class="text-[10px] text-[var(--text-secondary)]">120mg peak at 09:00</div>
-        </div>
-        <div class="p-2 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-          <div class="text-[10px] font-mono text-[#10B981]">09:00–12:00</div>
-          <div class="font-bold text-[#10B981] mt-0.5">AIR 1 Execution</div>
-          <div class="text-[10px] text-[var(--text-secondary)]">Part A 1h + Part B 2h</div>
+        <div class="text-sm font-bold text-white">Exam Day Solar Synchronization</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 text-xs">
+          <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div class="text-[10px] font-mono text-zinc-400">05:45 AM</div>
+            <div class="font-bold text-white mt-0.5">Solar Ignition</div>
+            <div class="text-[10px] text-zinc-400 mt-0.5">Wake, light, salt water</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div class="text-[10px] font-mono text-zinc-400">08:00 AM</div>
+            <div class="font-bold text-white mt-0.5">Center Gate</div>
+            <div class="text-[10px] text-zinc-400 mt-0.5">Biometrics & seated</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div class="text-[10px] font-mono text-[#F59E0B]">09:00–10:00</div>
+            <div class="font-bold text-[#F59E0B] mt-0.5">Part A Strike</div>
+            <div class="text-[10px] text-zinc-400 mt-0.5">NAT &rarr; MSQ &rarr; MCQ</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div class="text-[10px] font-mono text-[#F59E0B]">10:00–12:00</div>
+            <div class="font-bold text-[#F59E0B] mt-0.5">Part B Mastery</div>
+            <div class="text-[10px] text-zinc-400 mt-0.5">Strict 24m per question</div>
+          </div>
         </div>
       </div>
     </div>
@@ -772,163 +761,163 @@ function renderRoadmapSubView(dayIndex) {
 }
 
 // -------------------------------------------------------------
-// SUB-VIEW 5: RUBRIC & SCORECARD
+// SUB-VIEW 5: SCORECARD & IIT BOMBAY RUBRIC (ERGONOMIC APPLE INSET)
 // -------------------------------------------------------------
 function renderScorecardSubView(dayIndex) {
   const todayStr = new Date().toISOString().slice(0, 10);
   const existingCard = getMitraScorecard(todayStr) || DEFAULT_SCORECARD;
 
-  // Compute total rubric score
   let rubricTotal = 0;
-  for (const qKey of Object.keys(_rubricScores)) {
-    const qObj = _rubricScores[qKey];
-    rubricTotal += qObj.c1 + qObj.c2 + qObj.c3 + qObj.c4;
+  for (const q of Object.keys(_rubricScores)) {
+    rubricTotal += _rubricScores[q].c1 + _rubricScores[q].c2 + _rubricScores[q].c3 + _rubricScores[q].c4;
   }
 
   return `
-    <!-- 1. IIT Bombay 100-Mark Part B Evaluator -->
-    <div class="bento-card p-4 sm:p-5">
-      <div class="flex items-center justify-between mb-2">
-        <div>
-          <div class="text-base font-bold text-[var(--text-primary)] tracking-tight">IIT Bombay 100-Mark Part B Evaluator</div>
-          <div class="text-xs text-[var(--text-secondary)] mt-0.5">4 criteria × 5 marks per question (Nightly 20:45 Audit)</div>
+    <div class="space-y-4">
+      <!-- 1. IIT Bombay 5-Criterion Rubric -->
+      <div class="apple-inset-group p-4 sm:p-5">
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <div class="text-sm font-bold text-white tracking-tight">IIT Bombay 5-Criterion Evaluator Rubric</div>
+            <div class="text-xs text-zinc-400 mt-0.5">Official grading metric: 5 questions × 4 criteria (max 20/Q)</div>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] font-mono text-zinc-400 uppercase">Part B Rubric Total</span>
+            <div id="rubricTotalDisplay" class="text-lg font-mono font-extrabold text-[#F59E0B]">${rubricTotal} / 100</div>
+          </div>
         </div>
-        <div class="text-right">
-          <div class="text-[10px] font-mono text-[var(--text-secondary)]">Rubric Total</div>
-          <div id="rubricTotalDisplay" class="text-xl font-mono font-black text-[#F59E0B]">${rubricTotal} / 100</div>
+
+        <div class="space-y-3 mt-3">
+          ${IITB_RUBRIC.map(q => {
+            const scores = _rubricScores[q.id] || { c1: 4, c2: 4, c3: 4, c4: 4 };
+            const qTotal = scores.c1 + scores.c2 + scores.c3 + scores.c4;
+            return `
+              <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-white">${q.title}</span>
+                  <span id="score_${q.id}" class="font-mono font-bold text-[#F59E0B]">${qTotal} / 20</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
+                  ${q.criteria.map(c => `
+                    <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.05] flex flex-col justify-between">
+                      <div>
+                        <div class="text-[10px] font-semibold text-zinc-300 leading-tight">${c.name}</div>
+                        <div class="text-[9px] text-zinc-500 line-clamp-1 mt-0.5">${c.desc}</div>
+                      </div>
+                      <div class="flex items-center justify-between mt-2 pt-1 border-t border-white/[0.06]">
+                        <button type="button" class="btn-rubric-dec min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl bg-white/[0.08] text-white active:scale-95 ios-spring text-base font-bold" data-qid="${q.id}" data-cid="${c.id}">-</button>
+                        <span id="val_${q.id}_${c.id}" class="font-mono font-bold text-sm text-white">${scores[c.id]}</span>
+                        <button type="button" class="btn-rubric-inc min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl bg-white/[0.08] text-white active:scale-95 ios-spring text-base font-bold" data-qid="${q.id}" data-cid="${c.id}">+</button>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="mt-3.5 pt-3 border-t border-white/[0.06] flex justify-end">
+          <button
+            id="btnApplyRubricToScorecard"
+            type="button"
+            class="px-4 py-2 rounded-full text-xs font-mono font-bold bg-[#F59E0B] text-black ios-spring shadow-sm"
+          >
+            Transfer ${rubricTotal} Marks to Daily Scorecard
+          </button>
         </div>
       </div>
 
-      <div class="space-y-3 mt-3">
-        ${IITB_RUBRIC.map(q => {
-          const scores = _rubricScores[q.id] || { c1: 4, c2: 4, c3: 4, c4: 4 };
-          const qTotal = scores.c1 + scores.c2 + scores.c3 + scores.c4;
-          return `
-            <div class="p-3 rounded-xl bg-black/60 border border-[var(--border-subtle)] space-y-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-bold text-[var(--text-primary)]">${q.title}</span>
-                <span id="score_${q.id}" class="font-mono font-bold text-[#F59E0B]">${qTotal} / 20</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
-                ${q.criteria.map(c => `
-                  <div class="p-2 rounded-lg bg-[var(--surface-well)] border border-[var(--border-subtle)] flex flex-col justify-between">
-                    <div>
-                      <div class="text-[10px] font-medium text-[var(--text-secondary)] leading-tight">${c.name}</div>
-                      <div class="text-[9px] text-[var(--text-secondary)] line-clamp-1 mt-0.5">${c.desc}</div>
-                    </div>
-                    <div class="flex items-center justify-between mt-2 pt-1 border-t border-[var(--border-subtle)]">
-                      <button type="button" class="btn-rubric-dec min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl bg-white/[0.08] text-white active:scale-95 ios-spring text-base font-bold" data-qid="${q.id}" data-cid="${c.id}">-</button>
-                      <span id="val_${q.id}_${c.id}" class="font-mono font-bold text-sm text-[var(--text-primary)]">${scores[c.id]}</span>
-                      <button type="button" class="btn-rubric-inc min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl bg-white/[0.08] text-white active:scale-95 ios-spring text-base font-bold" data-qid="${q.id}" data-cid="${c.id}">+</button>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
+      <!-- 2. MITRA Daily Scorecard Logger -->
+      <div class="apple-inset-group p-4 sm:p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <div class="text-sm font-bold text-white tracking-tight">MITRA Daily Telemetry Logger</div>
+            <div class="text-xs text-zinc-400 mt-0.5">Standardized daily telemetry for AI coaching & self-reflection</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnCopyScorecardYaml" type="button" class="px-3 py-1.5 rounded-full text-xs font-mono font-semibold bg-white/[0.08] text-zinc-300 hover:text-white ios-spring">
+              Copy YAML
+            </button>
+            <button id="btnSaveScorecard" type="button" class="px-3.5 py-1.5 rounded-full text-xs font-mono font-bold bg-[var(--domino-accent)] text-[#09090B] ios-spring">
+              Save Card
+            </button>
+          </div>
+        </div>
+
+        <!-- Form Inputs -->
+        <form id="mitraScorecardForm" class="space-y-3.5 text-xs">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div>
+              <label class="block text-[10px] font-mono text-zinc-400 uppercase mb-1">Date</label>
+              <input type="date" id="sc_date" value="${existingCard.date || todayStr}" class="w-full min-h-[44px] bg-black/50 border border-white/[0.08] rounded-xl px-2.5 py-1.5 font-mono text-white text-base focus:outline-none" />
             </div>
-          `;
-        }).join('')}
+            <div>
+              <label class="block text-[10px] font-mono text-zinc-400 uppercase mb-1">Day Number</label>
+              <input type="number" id="sc_day" value="${existingCard.dayNumber || dayIndex + 1}" min="1" max="54" class="w-full min-h-[44px] bg-black/50 border border-white/[0.08] rounded-xl px-2.5 py-1.5 font-mono text-white text-base focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-zinc-400 uppercase mb-1">Sleep (Hours)</label>
+              <input type="number" step="0.5" id="sc_sleep" value="${existingCard.sleepHours || 7.5}" class="w-full min-h-[44px] bg-black/50 border border-white/[0.08] rounded-xl px-2.5 py-1.5 font-mono text-white text-base focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-zinc-400 uppercase mb-1">Rush Errors (&lt;30s)</label>
+              <input type="number" id="sc_rush" value="${existingCard.partASync?.rushedErrorsUnder30s || 0}" class="w-full min-h-[44px] bg-black/50 border border-white/[0.08] rounded-xl px-2.5 py-1.5 font-mono text-white text-base focus:outline-none" />
+            </div>
+          </div>
+
+          <!-- Bio Checks (Ergonomic 44pt Touch Targets) -->
+          <div class="p-2.5 rounded-2xl bg-black/40 border border-white/[0.06] grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <label class="flex items-center gap-2 p-2 rounded-xl bg-white/[0.04] border border-white/[0.04] cursor-pointer ios-spring min-h-[44px]">
+              <input type="checkbox" id="sc_wake" ${existingCard.wake0600Hit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
+              <span class="text-xs text-white">06:00 Solar Wake</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-xl bg-white/[0.04] border border-white/[0.04] cursor-pointer ios-spring min-h-[44px]">
+              <input type="checkbox" id="sc_ex" ${existingCard.exercise90mHit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
+              <span class="text-xs text-white">90m Exercise</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-xl bg-white/[0.04] border border-white/[0.04] cursor-pointer ios-spring min-h-[44px]">
+              <input type="checkbox" id="sc_med" ${existingCard.meditation15mHit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
+              <span class="text-xs text-white">15m Meditation</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-xl bg-white/[0.04] border border-white/[0.04] cursor-pointer ios-spring min-h-[44px]">
+              <input type="checkbox" id="sc_caff" ${existingCard.caffeineCutoff1330Held ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
+              <span class="text-xs text-white">13:30 Caffeine Cut</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-xl bg-white/[0.04] border border-white/[0.04] cursor-pointer ios-spring min-h-[44px] col-span-2 sm:col-span-1">
+              <input type="checkbox" id="sc_nap" ${existingCard.powerNap25mHit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
+              <span class="text-xs text-white">25m NSDR Nap</span>
+            </label>
+          </div>
+
+          <!-- Part A & B Scores -->
+          <div class="grid grid-cols-2 gap-2">
+            <div class="p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+              <label class="block text-[10px] font-mono text-zinc-400 uppercase mb-1">Part A Total (/150)</label>
+              <input type="number" id="sc_partA" value="${existingCard.partASync?.totalPartA || 114}" min="0" max="150" class="w-full min-h-[44px] bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1 font-mono text-base text-white font-bold focus:outline-none" />
+            </div>
+            <div class="p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+              <label class="block text-[10px] font-mono text-[#F59E0B] uppercase mb-1">Part B Total (/100)</label>
+              <input type="number" id="sc_partB" value="${existingCard.partBSyncRubric?.totalPartB || 84}" min="0" max="100" class="w-full min-h-[44px] bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1 font-mono text-base text-[#F59E0B] font-bold focus:outline-none" />
+            </div>
+          </div>
+
+          <!-- Error Patterns -->
+          <div>
+            <label class="block text-[10px] font-mono text-zinc-400 uppercase mb-1">Top 3 Error Patterns Today</label>
+            <div class="space-y-1.5">
+              <input type="text" id="sc_err1" value="${existingCard.top3ErrorPatterns?.[0] || ''}" placeholder="1. e.g. Rushed MSQ 3rd option without proof" class="w-full min-h-[44px] bg-black/50 border border-white/[0.08] rounded-xl px-2.5 py-1 text-base text-white focus:outline-none" />
+              <input type="text" id="sc_err2" value="${existingCard.top3ErrorPatterns?.[1] || ''}" placeholder="2. e.g. Perspective horizon line curved at edges" class="w-full min-h-[44px] bg-black/50 border border-white/[0.08] rounded-xl px-2.5 py-1 text-base text-white focus:outline-none" />
+              <input type="text" id="sc_err3" value="${existingCard.top3ErrorPatterns?.[2] || ''}" placeholder="3. e.g. Off-by-one in hollow cylinder surface count" class="w-full min-h-[44px] bg-black/50 border border-white/[0.08] rounded-xl px-2.5 py-1 text-base text-white focus:outline-none" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-mono text-zinc-400 uppercase mb-1">Tomorrow's Single Priority Fix</label>
+            <input type="text" id="sc_fix" value="${existingCard.tomorrowSinglePriorityFix || ''}" placeholder="e.g. 22-minute hard pen-lift on Q1 and strict 2-option MSQ ceiling." class="w-full min-h-[44px] bg-black/50 border border-white/[0.08] rounded-xl px-2.5 py-1 text-base text-[#F59E0B] font-medium focus:outline-none" />
+          </div>
+        </form>
       </div>
-
-      <div class="mt-3 pt-3 border-t border-[var(--border-subtle)] flex justify-end">
-        <button
-          id="btnApplyRubricToScorecard"
-          type="button"
-          class="px-3.5 py-1.5 rounded-full text-xs font-mono font-bold bg-[#F59E0B] text-black btn-tactile shadow-sm"
-        >
-          Transfer ${rubricTotal} Marks to Daily Scorecard
-        </button>
-      </div>
-    </div>
-
-    <!-- 2. MITRA Daily Scorecard Logger -->
-    <div class="bento-card p-4 sm:p-5">
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <div class="text-base font-bold text-[var(--text-primary)] tracking-tight">MITRA Daily Scorecard Logger</div>
-          <div class="text-xs text-[var(--text-secondary)] mt-0.5">Standardized daily telemetry for AI coaching & self-reflection</div>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <button id="btnCopyScorecardYaml" type="button" class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-[var(--surface-well)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-[var(--domino-accent)]">
-            Copy YAML
-          </button>
-          <button id="btnSaveScorecard" type="button" class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-[var(--domino-accent)] text-[#09090B]">
-            Save Card
-          </button>
-        </div>
-      </div>
-
-      <!-- Form Inputs -->
-      <form id="mitraScorecardForm" class="space-y-3 text-xs">
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <div>
-            <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Date</label>
-            <input type="date" id="sc_date" value="${existingCard.date || todayStr}" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] text-base focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Day Number</label>
-            <input type="number" id="sc_day" value="${existingCard.dayNumber || dayIndex + 1}" min="1" max="54" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] text-base focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Sleep (Hours)</label>
-            <input type="number" step="0.5" id="sc_sleep" value="${existingCard.sleepHours || 7.5}" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] text-base focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Rush Errors (&lt;30s)</label>
-            <input type="number" id="sc_rush" value="${existingCard.partASync?.rushedErrorsUnder30s || 0}" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-xl px-2.5 py-1.5 font-mono text-[var(--text-primary)] text-base focus:outline-none" />
-          </div>
-        </div>
-
-        <!-- Bio Checks (Ergonomic 44pt Touch Targets) -->
-        <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)] grid grid-cols-2 sm:grid-cols-3 gap-2">
-          <label class="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/[0.06] cursor-pointer ios-spring min-h-[44px]">
-            <input type="checkbox" id="sc_wake" ${existingCard.wake0600Hit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
-            <span class="text-[11px] text-[var(--text-primary)]">06:00 Solar Wake</span>
-          </label>
-          <label class="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/[0.06] cursor-pointer ios-spring min-h-[44px]">
-            <input type="checkbox" id="sc_ex" ${existingCard.exercise90mHit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
-            <span class="text-[11px] text-[var(--text-primary)]">90m Exercise</span>
-          </label>
-          <label class="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/[0.06] cursor-pointer ios-spring min-h-[44px]">
-            <input type="checkbox" id="sc_med" ${existingCard.meditation15mHit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
-            <span class="text-[11px] text-[var(--text-primary)]">15m Meditation</span>
-          </label>
-          <label class="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/[0.06] cursor-pointer ios-spring min-h-[44px]">
-            <input type="checkbox" id="sc_caff" ${existingCard.caffeineCutoff1330Held ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
-            <span class="text-[11px] text-[var(--text-primary)]">13:30 Caffeine</span>
-          </label>
-          <label class="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/[0.06] cursor-pointer ios-spring min-h-[44px] col-span-2 sm:col-span-1">
-            <input type="checkbox" id="sc_nap" ${existingCard.powerNap25mHit ? 'checked' : ''} class="w-4 h-4 accent-[var(--domino-accent)]" />
-            <span class="text-[11px] text-[var(--text-primary)]">25m Power Nap</span>
-          </label>
-        </div>
-
-        <!-- Part A & B Scores -->
-        <div class="grid grid-cols-2 gap-2">
-          <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-            <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Part A Total (/150)</label>
-            <input type="number" id="sc_partA" value="${existingCard.partASync?.totalPartA || 114}" min="0" max="150" class="w-full min-h-[44px] bg-black/60 border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 font-mono text-base text-[var(--text-primary)] font-bold focus:outline-none" />
-          </div>
-          <div class="p-2.5 rounded-xl bg-[var(--surface-well)] border border-[var(--border-subtle)]">
-            <label class="block text-[10px] font-mono text-[#F59E0B] uppercase mb-1">Part B Total (/100)</label>
-            <input type="number" id="sc_partB" value="${existingCard.partBSyncRubric?.totalPartB || 84}" min="0" max="100" class="w-full min-h-[44px] bg-black/60 border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 font-mono text-base text-[#F59E0B] font-bold focus:outline-none" />
-          </div>
-        </div>
-
-        <!-- Error Patterns -->
-        <div>
-          <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Top 3 Error Patterns Today</label>
-          <div class="space-y-1">
-            <input type="text" id="sc_err1" value="${existingCard.top3ErrorPatterns?.[0] || ''}" placeholder="1. e.g. Rushed MSQ 3rd option without proof" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-base sm:text-xs text-[var(--text-primary)] focus:outline-none" />
-            <input type="text" id="sc_err2" value="${existingCard.top3ErrorPatterns?.[1] || ''}" placeholder="2. e.g. Perspective horizon line curved at edges" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-base sm:text-xs text-[var(--text-primary)] focus:outline-none" />
-            <input type="text" id="sc_err3" value="${existingCard.top3ErrorPatterns?.[2] || ''}" placeholder="3. e.g. Off-by-one in hollow cylinder surface count" class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-base sm:text-xs text-[var(--text-primary)] focus:outline-none" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-[10px] font-mono text-[var(--text-secondary)] uppercase mb-1">Tomorrow's Single Priority Fix</label>
-          <input type="text" id="sc_fix" value="${existingCard.tomorrowSinglePriorityFix || ''}" placeholder="e.g. 22-minute hard pen-lift on Q1 and strict 2-option MSQ ceiling." class="w-full min-h-[44px] bg-[var(--surface-well)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-base sm:text-xs text-[#F59E0B] focus:outline-none" />
-        </div>
-      </form>
     </div>
   `;
 }
@@ -1023,23 +1012,10 @@ function bindSubViewEvents(container) {
         renderGoalView(container);
       });
     });
-
-    // Toggle full timetable
-    const btnToggle = container.querySelector('#btnToggleTimetable');
-    const list = container.querySelector('#fullTimetableList');
-    btnToggle?.addEventListener('click', () => {
-      playRelayClick();
-      if (list) {
-        const isHidden = list.style.display === 'none';
-        list.style.display = isHidden ? 'block' : 'none';
-        btnToggle.textContent = isHidden ? 'Hide List' : 'Show List';
-      }
-    });
   }
 
   // Scorecard & Rubric View
   if (_activeSubView === 'scorecard') {
-    // Rubric increment / decrement
     container.querySelectorAll('.btn-rubric-inc').forEach(btn => {
       btn.addEventListener('click', () => {
         playRelayClick();
@@ -1064,7 +1040,6 @@ function bindSubViewEvents(container) {
       });
     });
 
-    // Transfer rubric total to Part B input
     container.querySelector('#btnApplyRubricToScorecard')?.addEventListener('click', () => {
       playRelayClick();
       let total = 0;
@@ -1076,7 +1051,6 @@ function bindSubViewEvents(container) {
       alert(`Applied ${total} Part B marks to today's scorecard.`);
     });
 
-    // Save Scorecard
     container.querySelector('#btnSaveScorecard')?.addEventListener('click', () => {
       playRelayClick();
       const date = container.querySelector('#sc_date')?.value || new Date().toISOString().slice(0, 10);
@@ -1128,7 +1102,6 @@ function bindSubViewEvents(container) {
       alert(`MITRA Scorecard for Day ${dayNumber} (${date}) saved successfully!`);
     });
 
-    // Copy Scorecard YAML
     container.querySelector('#btnCopyScorecardYaml')?.addEventListener('click', () => {
       playRelayClick();
       const date = container.querySelector('#sc_date')?.value || new Date().toISOString().slice(0, 10);
